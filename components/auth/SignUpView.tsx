@@ -51,8 +51,8 @@ export function SignUpView() {
       
       // Redirect to onboarding
       router.push('/onboarding')
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred')
     } finally {
       setLoading(false)
     }

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Star, 
@@ -43,7 +44,11 @@ type MenuItem = {
   subcategory?: string;
 };
 
-export default function ReviewFlow({ initialData, simulationData }: { initialData?: any, simulationData?: any }) {
+type ReviewFlowData = Partial<BusinessInfo> & {
+  menuItems?: MenuItem[];
+};
+
+export default function ReviewFlow({ initialData, simulationData }: { initialData?: ReviewFlowData, simulationData?: ReviewFlowData }) {
   const searchParams = useSearchParams();
   const data = simulationData || initialData;
   const [business, setBusiness] = useState<BusinessInfo>({
@@ -260,7 +265,13 @@ export default function ReviewFlow({ initialData, simulationData }: { initialDat
                 <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent" />
                 <div className="w-full h-full rounded-[1.5rem] overflow-hidden bg-slate-50 flex items-center justify-center">
                   {business.logo ? (
-                    <img src={business.logo} alt="Logo" className="w-full h-full object-contain p-2" />
+                    <Image 
+                      src={business.logo} 
+                      alt="Logo" 
+                      width={112} 
+                      height={112} 
+                      className="w-full h-full object-contain p-2" 
+                    />
                   ) : (
                     <span className="text-5xl font-display font-black" style={{ color: c }}>
                       {business.name[0]}

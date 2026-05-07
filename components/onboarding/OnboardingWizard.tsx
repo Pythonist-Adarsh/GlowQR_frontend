@@ -2,7 +2,8 @@
 
 import { useState, lazy, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Camera, Store, Coffee, Wine, ChefHat, UploadCloud, ChevronRight, ChevronLeft, Plus, Trash2, CheckCircle2, Download, ExternalLink, ArrowRight } from 'lucide-react'
+import { Camera, Store, Coffee, Wine, ChefHat, UploadCloud, ChevronRight, ChevronLeft, Plus, Trash2, CheckCircle2, Download, ArrowRight } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react'
@@ -637,7 +638,12 @@ export function OnboardingWizard() {
                         {/* Background Logo Blur Effect */}
                         {logoPreview && (
                           <div className="absolute inset-0 opacity-20 blur-3xl pointer-events-none">
-                            <img src={logoPreview} alt="" className="w-full h-full object-cover scale-150" />
+                            <Image 
+                              src={logoPreview} 
+                              alt="" 
+                              fill
+                              className="object-cover scale-150" 
+                            />
                           </div>
                         )}
                         {/* Interactive Scan Effect */}
@@ -675,7 +681,13 @@ export function OnboardingWizard() {
                             className="w-32 h-32 bg-white/10 backdrop-blur-md rounded-[2rem] flex items-center justify-center border border-white/20 shadow-2xl relative z-20"
                           >
                             {logoPreview ? (
-                              <img src={logoPreview} alt="Target" className="w-20 h-20 object-contain" />
+                              <Image 
+                                src={logoPreview} 
+                                alt="Target" 
+                                width={80} 
+                                height={80} 
+                                className="object-contain" 
+                              />
                             ) : (
                               <Camera className="w-12 h-12 text-white/50" />
                             )}
