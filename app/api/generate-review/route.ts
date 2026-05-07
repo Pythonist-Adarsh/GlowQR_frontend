@@ -4,10 +4,8 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { 
-      overall_rating, 
       food_rating, 
       service_rating, 
-      atmosphere_rating, 
       meal_type, 
       selected_items, 
       wait_time, 

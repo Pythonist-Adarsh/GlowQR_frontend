@@ -24,7 +24,7 @@ async function getBusinessData(slug: string) {
   };
 }
 
-export default async function BusinessReviewPage({ params }: { params: { slug: string } }) {
+export default async function BusinessReviewPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const businessData = await getBusinessData(slug);
 
