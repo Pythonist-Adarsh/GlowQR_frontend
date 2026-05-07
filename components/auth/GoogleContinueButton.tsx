@@ -1,5 +1,7 @@
 'use client'
 
+import { API_BASE_URL } from '@/lib/api-config'
+
 type Props = {
   label: string
 }
@@ -8,7 +10,7 @@ export function GoogleContinueButton({ label }: Props) {
   return (
     <button
       type="button"
-      onClick={() => window.location.href = '/onboarding'}
+      onClick={() => window.location.href = `${API_BASE_URL}/auth/google`}
       className="flex w-full items-center justify-center gap-3 rounded-[var(--radius-md)] border border-[#E8DFD4] bg-white px-4 py-3 text-sm font-medium text-[#3D261C] shadow-sm transition-colors hover:bg-[#FAF6EF]"
     >
       <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden>

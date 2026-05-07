@@ -7,6 +7,7 @@ import { motion } from 'framer-motion'
 import { AuthBrandPanel } from '@/components/auth/AuthBrandPanel'
 import { AuthDivider } from '@/components/auth/AuthDivider'
 import { GoogleContinueButton } from '@/components/auth/GoogleContinueButton'
+import { API_BASE_URL } from '@/lib/api-config'
 
 const QUOTE =
   'From opening night to fully booked weekends — our guests finally leave the reviews we used to chase. One QR did the hospitality heavy lifting.'
@@ -28,7 +29,7 @@ export function SignUpView() {
     setError('')
 
     try {
-      const response = await fetch('http://localhost:8000/register', {
+      const response = await fetch(`${API_BASE_URL}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

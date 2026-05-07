@@ -1,16 +1,59 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { AuthBrandPanel } from '@/components/auth/AuthBrandPanel'
 import { AuthDivider } from '@/components/auth/AuthDivider'
 import { GoogleContinueButton } from '@/components/auth/GoogleContinueButton'
+import { API_BASE_URL } from '@/lib/api-config'
 
 const QUOTE =
   'We doubled our Google reviews in three weeks. Guests love the menu — owners love the insights.'
 const ATTR = 'Camille Roux — Owner, Café Lumière'
 
 export function SignInView() {
+  const router = useRouter()
+  const [formData, setFormData] = useState({ email: '', password: '' })
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const handleSignIn = async () => {
+    if (!formData.email || !formData.password) {
+      setError('Please fill in all fields')
+      return
+    }
+
+    setLoading(true)
+    setError('')
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.detail || 'Login failed')
+      }
+
+      // Store token
+      localStorage.setItem('token', data.access_token)
+      
+      // Redirect to onboarding or dashboard
+      router.push('/onboarding')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred')
+    } finally {
+      setLoading(false)
+    }
+  }
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <AuthBrandPanel quote={QUOTE} attribution={ATTR} className="order-2 lg:order-1" />
@@ -36,10 +79,18 @@ export function SignInView() {
           <GoogleContinueButton label="Continue with Google" />
           <AuthDivider />
 
+          {error && (
+            <p className="text-sm font-medium text-red-500 bg-red-50 p-3 rounded-lg border border-red-100">
+              {error}
+            </p>
+          )}
+
           <label className="block">
             <span className="sr-only">Email</span>
             <input
               type="email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               placeholder="you@business.com"
               autoComplete="email"
               className="w-full rounded-[var(--radius-md)] border border-[#E8DFD4] bg-white px-4 py-3 text-[15px] text-[#3D261C] outline-none placeholder:text-[#A89888] focus:border-[#F07C3C] focus:ring-2 focus:ring-[#F07C3C]/25"
@@ -49,6 +100,8 @@ export function SignInView() {
             <span className="sr-only">Password</span>
             <input
               type="password"
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               placeholder="Password"
               autoComplete="current-password"
               className="w-full rounded-[var(--radius-md)] border border-[#E8DFD4] bg-white px-4 py-3 text-[15px] text-[#3D261C] outline-none placeholder:text-[#A89888] focus:border-[#F07C3C] focus:ring-2 focus:ring-[#F07C3C]/25"
@@ -57,7 +110,8 @@ export function SignInView() {
 
           <motion.button
             type="button"
-            onClick={() => window.location.href = '/onboarding'}
+            onClick={handleSignIn}
+            disabled={loading}
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
             className="relative w-full overflow-hidden rounded-[var(--radius-md)] bg-[#3D261C] py-3.5 text-[15px] font-semibold text-white shadow-[0_8px_24px_rgba(61,38,28,0.25)]"
@@ -67,7 +121,7 @@ export function SignInView() {
               animate={{ x: ['-100%', '400%'] }}
               transition={{ duration: 2.8, repeat: Infinity, repeatDelay: 1.2, ease: 'easeInOut' }}
             />
-            Sign in
+            {loading ? 'Signing in...' : 'Sign in'}
           </motion.button>
         </div>
 
