@@ -2,20 +2,20 @@
 
 import { useState, lazy, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Camera, Store, Coffee, Wine, ChefHat, UploadCloud, ChevronRight, ChevronLeft, Plus, Trash2, CheckCircle2, Download, ArrowRight } from 'lucide-react'
+import { Camera, Store, Coffee, Wine, ChefHat, UploadCloud, ChevronRight, ChevronLeft, Plus, Trash2, CheckCircle2, Download, ArrowRight, Phone, MapPin, Globe, Clock, Link2 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react'
+import { API_BASE_URL } from '@/lib/api-config'
 
 // Lazy load ReviewFlow for simulation to keep initial bundle smaller
 const ReviewFlow = lazy(() => import('../review/ReviewFlow'))
 
 const steps = [
-  { id: 'basics', title: 'Basic Info' },
-  { id: 'logo', title: 'Logo Setup' },
-  { id: 'type', title: 'Business Type' },
-  { id: 'menu', title: 'Menu Items' },
+  { id: 'basics', title: 'Business Basics' },
+  { id: 'category', title: 'Business Category' },
+  { id: 'hours', title: 'Business Hours' },
 ]
 
 const businessTypes = [
@@ -31,8 +31,26 @@ export function OnboardingWizard() {
   // State for form
   const [businessName, setBusinessName] = useState('')
   const [tagline, setTagline] = useState('')
-  const [location, setLocation] = useState('')
+  const [businessWebsite, setBusinessWebsite] = useState('')
   const [googleReviewLink, setGoogleReviewLink] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState('')
+  const [address, setAddress] = useState('')
+  const [city, setCity] = useState('')
+  const [pincode, setPincode] = useState('')
+  const [placeId, setPlaceId] = useState('')
+  
+  const [businessHours, setBusinessHours] = useState<{
+    [key: string]: { open: string; close: string; isClosed: boolean }
+  }>({
+    monday: { open: '09:00', close: '21:00', isClosed: false },
+    tuesday: { open: '09:00', close: '21:00', isClosed: false },
+    wednesday: { open: '09:00', close: '21:00', isClosed: false },
+    thursday: { open: '09:00', close: '21:00', isClosed: false },
+    friday: { open: '09:00', close: '22:00', isClosed: false },
+    saturday: { open: '10:00', close: '23:00', isClosed: false },
+    sunday: { open: '10:00', close: '20:00', isClosed: false },
+  })
+
   const [logo, setLogo] = useState<File | null>(null)
   const [businessType, setBusinessType] = useState('')
   const [menuItems, setMenuItems] = useState<{ id: string; name: string; price: string; emoji?: string; category: string; subcategory?: string }[]>([])
@@ -42,18 +60,59 @@ export function OnboardingWizard() {
   const [isSimulatingScan, setIsSimulatingScan] = useState(false)
   const [isScanningLocal, setIsScanningLocal] = useState(false)
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
   
   const router = useRouter()
   
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(s => s + 1)
     } else {
-      setShowQRPopup(true)
-      // Transition to success state
-      setTimeout(() => {
-        setShowFinalQR(true)
-      }, 2000)
+      setLoading(true)
+      try {
+        const token = localStorage.getItem('token')
+        if (!token) {
+          router.push('/sign-in')
+          return
+        }
+
+        const response = await fetch(`${API_BASE_URL}/businesses/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            name: businessName,
+            tagline: tagline,
+            primary_color: primaryColor,
+            google_review_url: googleReviewLink,
+            phone_number: phoneNumber,
+            address: address,
+            city: city,
+            pincode: pincode,
+            place_id: placeId,
+            category: businessType,
+            business_hours: businessHours
+          })
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.detail || 'Failed to save business')
+        }
+
+        setShowQRPopup(true)
+        // Transition to success state
+        setTimeout(() => {
+          setShowFinalQR(true)
+        }, 2000)
+      } catch (err) {
+        console.error('Error saving business:', err)
+        alert(err instanceof Error ? err.message : 'Something went wrong')
+      } finally {
+        setLoading(false)
+      }
     }
   }
 
@@ -168,82 +227,22 @@ export function OnboardingWizard() {
                 exit={{ opacity: 0, y: -10, filter: 'blur(4px)' }}
                 transition={{ duration: 0.4, ease: [0.34, 1.56, 0.64, 1] }}
                 className="w-full"
-              >
-                {/* Step 1: Basics */}
+                     {/* Step 1: Business Basics */}
                 {currentStep === 0 && (
                   <div className="space-y-8">
-                    <div>
-                      <h2 className="font-display text-3xl font-bold text-[#3D261C]">Welcome! Let&apos;s get started</h2>
-                      <p className="mt-2 text-[#5C4A3D] text-[15px]">Tell us the name of your business and an optional tagline.</p>
-                    </div>
-                    
-                    <div className="space-y-5">
-                      <label className="block">
-                        <span className="block text-sm font-semibold text-[#3D261C] mb-1.5">Business Name</span>
-                        <input
-                          type="text"
-                          value={businessName}
-                          onChange={e => setBusinessName(e.target.value)}
-                          placeholder="e.g. Café Lumière"
-                          className="w-full rounded-[var(--radius-md)] border border-[#E8DFD4] bg-white px-4 py-3.5 text-[15px] text-[#3D261C] outline-none transition-all placeholder:text-[#A89888] focus:border-[#F07C3C] focus:ring-4 focus:ring-[#F07C3C]/10"
-                        />
-                      </label>
-                      <label className="block">
-                        <span className="block text-sm font-semibold text-[#3D261C] mb-1.5">Tagline <span className="text-[#A89888] font-normal">(Optional)</span></span>
-                        <input
-                          type="text"
-                          value={tagline}
-                          onChange={e => setTagline(e.target.value)}
-                          placeholder="e.g. The best coffee in Paris"
-                          className="w-full rounded-[var(--radius-md)] border border-[#E8DFD4] bg-white px-4 py-3.5 text-[15px] text-[#3D261C] outline-none transition-all placeholder:text-[#A89888] focus:border-[#F07C3C] focus:ring-4 focus:ring-[#F07C3C]/10"
-                        />
-                      </label>
-                      <label className="block">
-                        <span className="block text-sm font-semibold text-[#3D261C] mb-1.5">Location <span className="text-[#A89888] font-normal">(Optional)</span></span>
-                        <input
-                          type="text"
-                          value={location}
-                          onChange={e => setLocation(e.target.value)}
-                          placeholder="e.g. 123 Paris St, France"
-                          className="w-full rounded-[var(--radius-md)] border border-[#E8DFD4] bg-white px-4 py-3.5 text-[15px] text-[#3D261C] outline-none transition-all placeholder:text-[#A89888] focus:border-[#F07C3C] focus:ring-4 focus:ring-[#F07C3C]/10"
-                        />
-                      </label>
-                      <label className="block">
-                        <span className="block text-sm font-semibold text-[#3D261C] mb-1.5">Google Review Link <span className="text-[#A89888] font-normal">(Optional)</span></span>
-                        <input
-                          type="url"
-                          value={googleReviewLink}
-                          onChange={e => setGoogleReviewLink(e.target.value)}
-                          placeholder="e.g. https://g.page/r/..."
-                          className="w-full rounded-[var(--radius-md)] border border-[#E8DFD4] bg-white px-4 py-3.5 text-[15px] text-[#3D261C] outline-none transition-all placeholder:text-[#A89888] focus:border-[#F07C3C] focus:ring-4 focus:ring-[#F07C3C]/10"
-                        />
-                      </label>
-                    </div>
-                  </div>
-                )}
-
-                {/* Step 2: Logo */}
-                {currentStep === 1 && (
-                  <div className="space-y-8">
-                    <div>
-                      <h2 className="font-display text-3xl font-bold text-[#3D261C]">Add your logo</h2>
-                      <p className="mt-2 text-[#5C4A3D] text-[15px]">This will be displayed prominently on your QR scan page.</p>
-                    </div>
-                    
-                    <div className="flex justify-center">
-                      <div className="w-full max-w-sm">
-                        <label className="group flex flex-col items-center justify-center w-full h-56 border-2 border-dashed border-[#E8DFD4] rounded-[var(--radius-lg)] cursor-pointer bg-[#FDF8F1]/50 hover:bg-[#FDF8F1] hover:border-[#F07C3C] transition-all duration-300">
-                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <motion.div 
-                              whileHover={{ scale: 1.1, rotate: 5 }}
-                              className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 group-hover:shadow-md transition-shadow text-[#A89888] group-hover:text-[#F07C3C]"
-                            >
-                              {logo ? <CheckCircle2 className="w-7 h-7 text-green-500" /> : <UploadCloud className="w-7 h-7" />}
-                            </motion.div>
-                            <p className="mb-2 text-[15px] text-[#5C4A3D]">
-                              <span className="font-semibold text-[#F07C3C]">Click to upload</span> or drag and drop
-                            </p>
-                            <p className="text-xs text-[#A89888] font-medium tracking-wide">SVG, PNG, JPG (MAX. 800x400px)</p>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h2 className="font-display text-3xl font-bold text-[#3D261C]">Business Basics</h2>
+                        <p className="mt-2 text-[#5C4A3D] text-[15px]">Set up your core business information.</p>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <label className="relative group cursor-pointer">
+                          <div className={`w-20 h-20 rounded-2xl border-2 border-dashed border-[#E8DFD4] flex items-center justify-center overflow-hidden bg-white transition-all group-hover:border-[#F07C3C] ${logoPreview ? 'border-solid border-[#F07C3C]' : ''}`}>
+                            {logoPreview ? (
+                              <Image src={logoPreview} alt="Logo" fill className="object-contain p-2" />
+                            ) : (
+                              <UploadCloud className="w-8 h-8 text-[#A89888] group-hover:text-[#F07C3C]" />
+                            )}
                           </div>
                           <input type="file" accept="image/*" className="hidden" onChange={(e) => {
                             if (e.target.files?.[0]) {
@@ -253,19 +252,115 @@ export function OnboardingWizard() {
                             }
                           }} />
                         </label>
+                        <span className="text-[10px] font-bold text-[#A89888] uppercase tracking-wider mt-2">Brand Logo</span>
                       </div>
                     </div>
-                    {logo && (
-                      <motion.p 
-                        initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }}
-                        className="text-center text-sm font-semibold text-[#3D261C]"
-                      >
-                        Selected: {logo.name}
-                      </motion.p>
-                    )}
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <label className="block space-y-1.5">
+                        <span className="text-sm font-semibold text-[#3D261C]">Business Name</span>
+                        <div className="relative">
+                          <Store className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A89888]" />
+                          <input
+                            type="text"
+                            value={businessName}
+                            onChange={e => setBusinessName(e.target.value)}
+                            placeholder="e.g. Café Lumière"
+                            className="w-full pl-11 pr-4 py-3 rounded-xl border border-[#E8DFD4] focus:border-[#F07C3C] focus:ring-4 focus:ring-[#F07C3C]/10 outline-none transition-all"
+                          />
+                        </div>
+                      </label>
 
-                    <div className="mt-10 pt-8 border-t border-[#E8DFD4]">
-                      <h3 className="text-sm font-bold text-[#3D261C] mb-4 uppercase tracking-widest">Brand Color</h3>
+                      <label className="block space-y-1.5">
+                        <span className="text-sm font-semibold text-[#3D261C]">Business Website</span>
+                        <div className="relative">
+                          <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A89888]" />
+                          <input
+                            type="url"
+                            value={businessWebsite}
+                            onChange={e => setBusinessWebsite(e.target.value)}
+                            placeholder="e.g. https://cafelumiere.com"
+                            className="w-full pl-11 pr-4 py-3 rounded-xl border border-[#E8DFD4] focus:border-[#F07C3C] focus:ring-4 focus:ring-[#F07C3C]/10 outline-none transition-all"
+                          />
+                        </div>
+                      </label>
+
+                      <label className="block space-y-1.5">
+                        <span className="text-sm font-semibold text-[#3D261C]">Google Review URL</span>
+                        <div className="relative">
+                          <Link2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A89888]" />
+                          <input
+                            type="url"
+                            value={googleReviewLink}
+                            onChange={e => setGoogleReviewLink(e.target.value)}
+                            placeholder="Paste your Google Maps review link"
+                            className="w-full pl-11 pr-4 py-3 rounded-xl border border-[#E8DFD4] focus:border-[#F07C3C] focus:ring-4 focus:ring-[#F07C3C]/10 outline-none transition-all"
+                          />
+                        </div>
+                      </label>
+
+                      <label className="block space-y-1.5">
+                        <span className="text-sm font-semibold text-[#3D261C]">Phone Number (WhatsApp)</span>
+                        <div className="relative">
+                          <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A89888]" />
+                          <input
+                            type="tel"
+                            value={phoneNumber}
+                            onChange={e => setPhoneNumber(e.target.value)}
+                            placeholder="+1 234 567 890"
+                            className="w-full pl-11 pr-4 py-3 rounded-xl border border-[#E8DFD4] focus:border-[#F07C3C] focus:ring-4 focus:ring-[#F07C3C]/10 outline-none transition-all"
+                          />
+                        </div>
+                      </label>
+
+                      <label className="block space-y-1.5 md:col-span-2">
+                        <span className="text-sm font-semibold text-[#3D261C]">Business Address</span>
+                        <div className="relative">
+                          <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A89888]" />
+                          <input
+                            type="text"
+                            value={address}
+                            onChange={e => {
+                              setAddress(e.target.value);
+                              // TIP: To implement real Google Places Autocomplete:
+                              // 1. Add <Script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY&libraries=places" /> to layout.tsx
+                              // 2. Initialize google.maps.places.Autocomplete on this input
+                              // 3. On 'place_changed' event, call setPlaceId(place.place_id) and update city/pincode
+                              if (e.target.value.length > 10) {
+                                setPlaceId('ChIJN1t_tDeuEmsRUsoyG83frY4'); // Mock Place ID for demo
+                              }
+                            }}
+                            placeholder="Start typing your full business address..."
+                            className="w-full pl-11 pr-4 py-3 rounded-xl border border-[#E8DFD4] focus:border-[#F07C3C] focus:ring-4 focus:ring-[#F07C3C]/10 outline-none transition-all"
+                          />
+                        </div>
+                      </label>
+
+                      <label className="block space-y-1.5">
+                        <span className="text-sm font-semibold text-[#3D261C]">City</span>
+                        <input
+                          type="text"
+                          value={city}
+                          onChange={e => setCity(e.target.value)}
+                          placeholder="e.g. Paris"
+                          className="w-full px-4 py-3 rounded-xl border border-[#E8DFD4] focus:border-[#F07C3C] focus:ring-4 focus:ring-[#F07C3C]/10 outline-none transition-all"
+                        />
+                      </label>
+
+                      <label className="block space-y-1.5">
+                        <span className="text-sm font-semibold text-[#3D261C]">Pincode</span>
+                        <input
+                          type="text"
+                          value={pincode}
+                          onChange={e => setPincode(e.target.value)}
+                          placeholder="e.g. 75001"
+                          className="w-full px-4 py-3 rounded-xl border border-[#E8DFD4] focus:border-[#F07C3C] focus:ring-4 focus:ring-[#F07C3C]/10 outline-none transition-all"
+                        />
+                      </label>
+                    </div>
+
+                    <div className="pt-6 border-t border-[#E8DFD4]">
+                      <h3 className="text-sm font-bold text-[#3D261C] mb-4 uppercase tracking-widest">Brand Accent Color</h3>
                       <div className="flex flex-wrap gap-3 justify-center">
                         {['#F07C3C', '#C8102E', '#2E5BFF', '#00A86B', '#7C3AED', '#3D261C'].map((color) => (
                           <button
@@ -284,17 +379,16 @@ export function OnboardingWizard() {
                           className="w-10 h-10 rounded-full border-none cursor-pointer bg-transparent overflow-hidden"
                         />
                       </div>
-                      <p className="text-center text-xs text-[#A89888] mt-3 font-medium">Select your primary brand color for the review page.</p>
                     </div>
                   </div>
                 )}
 
-                {/* Step 3: Type */}
-                {currentStep === 2 && (
+                {/* Step 2: Category */}
+                {currentStep === 1 && (
                   <div className="space-y-8">
                     <div>
-                      <h2 className="font-display text-3xl font-bold text-[#3D261C]">What&apos;s your business type?</h2>
-                      <p className="mt-2 text-[#5C4A3D] text-[15px]">This helps us tailor your experience and menu setup.</p>
+                      <h2 className="font-display text-3xl font-bold text-[#3D261C]">Business Category</h2>
+                      <p className="mt-2 text-[#5C4A3D] text-[15px]">Which category best describes your business?</p>
                     </div>
                     
                     <div className="grid grid-cols-2 gap-4">
@@ -305,7 +399,7 @@ export function OnboardingWizard() {
                           <button
                             key={type.id}
                             onClick={() => setBusinessType(type.id)}
-                            className={`group relative flex flex-col items-center justify-center p-6 rounded-[var(--radius-lg)] border-2 transition-all duration-300 ${
+                            className={`group relative flex flex-col items-center justify-center p-6 rounded-2xl border-2 transition-all duration-300 ${
                               isSelected 
                                 ? 'border-[#F07C3C] bg-[#FDF8F1] text-[#F07C3C] shadow-[0_4px_20px_rgba(240,124,60,0.15)]' 
                                 : 'border-[#E8DFD4] bg-white hover:border-[#F07C3C]/50 hover:bg-[#FDF8F1]/50 text-[#5C4A3D]'
@@ -315,13 +409,6 @@ export function OnboardingWizard() {
                               <Icon className="w-6 h-6" />
                             </div>
                             <span className="font-semibold">{type.name}</span>
-                            {isSelected && (
-                              <motion.div 
-                                layoutId="activeType"
-                                className="absolute inset-0 border-2 border-[#F07C3C] rounded-[var(--radius-lg)]" 
-                                style={{ zIndex: -1 }} 
-                              />
-                            )}
                           </button>
                         )
                       })}
@@ -329,129 +416,69 @@ export function OnboardingWizard() {
                   </div>
                 )}
 
-                {/* Step 4: Menu Items */}
-                {currentStep === 3 && (
+                {/* Step 3: Business Hours */}
+                {currentStep === 2 && (
                   <div className="space-y-8">
                     <div>
-                      <h2 className="font-display text-3xl font-bold text-[#3D261C]">Add your menu items</h2>
-                      <p className="mt-2 text-[#5C4A3D] text-[15px]">Upload an image of your menu to extract items automatically, or add them manually.</p>
+                      <h2 className="font-display text-3xl font-bold text-[#3D261C]">Business Hours</h2>
+                      <p className="mt-2 text-[#5C4A3D] text-[15px]">When are you open for customers?</p>
                     </div>
                     
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      <label className="group flex flex-col items-center justify-center p-6 border-2 border-dashed border-[#E8DFD4] bg-[#FDF8F1]/30 rounded-[var(--radius-lg)] cursor-pointer hover:bg-[#FDF8F1] hover:border-[#F07C3C] transition-all duration-300">
-                        <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm mb-3 group-hover:shadow-md transition-shadow text-[#8A735F] group-hover:text-[#F07C3C]">
-                          <Camera className="w-5 h-5" />
-                        </div>
-                        <span className="font-semibold text-[#3D261C]">
-                          {isProcessingMenu ? 'Extracting...' : 'Upload Menu Image'}
-                        </span>
-                        <span className="text-[13px] text-[#A89888] text-center mt-1 leading-relaxed">
-                          {isProcessingMenu ? 'Please wait while we read your menu...' : 'We&apos;ll use AI to extract your items automatically'}
-                        </span>
-                        <input 
-                          type="file" 
-                          accept="image/*,.csv,.pdf" 
-                          className="hidden" 
-                          onChange={(e) => {
-                            if (e.target.files && e.target.files.length > 0) {
-                              setIsProcessingMenu(true);
-                              // Mock AI extraction delay
-                              setTimeout(() => {
-                                setMenuItems(prev => [
-                                  ...prev,
-                                  { id: Math.random().toString(), name: 'Signature Coffee', price: '$4.50', category: 'Beverages', subcategory: 'Coffee', emoji: '☕' },
-                                  { id: Math.random().toString(), name: 'Avocado Toast', price: '$12.00', category: 'Main Course', subcategory: 'Breakfast', emoji: '🥑' },
-                                  { id: Math.random().toString(), name: 'Fresh Croissant', price: '$3.50', category: 'Bakery', subcategory: 'Pastries', emoji: '🥐' },
-                                  { id: Math.random().toString(), name: 'Iced Latte', price: '$5.00', category: 'Beverages', subcategory: 'Coffee', emoji: '🥤' },
-                                  { id: Math.random().toString(), name: 'Classic Burger', price: '$15.00', category: 'Main Course', subcategory: 'Lunch', emoji: '🍔' },
-                                  { id: Math.random().toString(), name: 'Caesar Salad', price: '$10.00', category: 'Main Course', subcategory: 'Salads', emoji: '🥗' }
-                                ]);
-                                setIsProcessingMenu(false);
-                                e.target.value = ''; // clear input
-                              }, 1500);
-                            }
-                          }}
-                        />
-                      </label>
-
-                      <button 
-                        type="button"
-                        onClick={addMenuItem}
-                        disabled={isProcessingMenu}
-                        className="group flex flex-col items-center justify-center p-6 border-2 border-[#E8DFD4] bg-white rounded-[var(--radius-lg)] cursor-pointer hover:border-[#F07C3C]/50 hover:bg-[#FDF8F1] transition-all duration-300 shadow-sm hover:shadow-md"
-                      >
-                        <div className="w-12 h-12 bg-[#FDF8F1] rounded-full flex items-center justify-center mb-3 group-hover:bg-white transition-colors text-[#8A735F] group-hover:text-[#F07C3C]">
-                          <Plus className="w-5 h-5" />
-                        </div>
-                        <span className="font-semibold text-[#3D261C]">Add Manually</span>
-                        <span className="text-[13px] text-[#A89888] text-center mt-1 leading-relaxed">Type in your menu items one by one</span>
-                      </button>
-                    </div>
-
-                    {menuItems.length > 0 && (
-                      <motion.div 
-                        initial={{ opacity: 0, height: 0 }} 
-                        animate={{ opacity: 1, height: 'auto' }}
-                        className="space-y-3 mt-6 pt-6 border-t border-[#E8DFD4]"
-                      >
-                        <h3 className="font-semibold text-[#3D261C] mb-4">Your Items</h3>
-                        <AnimatePresence>
-                          {menuItems.map((item) => (
-                            <motion.div 
-                              key={item.id} 
-                              layout
-                              initial={{ opacity: 0, x: -20 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              exit={{ opacity: 0, scale: 0.95 }}
-                              className="flex items-center gap-3 bg-[#FDF8F1] p-2 pr-4 rounded-[var(--radius-md)] border border-[#E8DFD4]/50"
-                            >
-                              <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
-                                <div className="flex gap-2">
-                                  <input
-                                    type="text"
-                                    placeholder="Item name"
-                                    value={item.name}
-                                    onChange={(e) => updateMenuItem(item.id, 'name', e.target.value)}
-                                    className="flex-1 bg-white rounded-[var(--radius-sm)] border border-[#E8DFD4] px-4 py-2.5 text-[15px] outline-none focus:border-[#F07C3C] transition-all font-medium text-[#3D261C]"
-                                  />
-                                  <input
-                                    type="text"
-                                    placeholder="Price"
-                                    value={item.price}
-                                    onChange={(e) => updateMenuItem(item.id, 'price', e.target.value)}
-                                    className="w-24 bg-white rounded-[var(--radius-sm)] border border-[#E8DFD4] px-4 py-2.5 text-[15px] outline-none focus:border-[#F07C3C] transition-all font-medium text-[#3D261C]"
-                                  />
-                                </div>
-                                <div className="flex gap-2">
-                                  <input
-                                    type="text"
-                                    placeholder="Category"
-                                    value={item.category}
-                                    onChange={(e) => updateMenuItem(item.id, 'category', e.target.value)}
-                                    className="flex-1 bg-white rounded-[var(--radius-sm)] border border-[#E8DFD4] px-4 py-2.5 text-[15px] outline-none focus:border-[#F07C3C] transition-all font-medium text-[#3D261C]"
-                                  />
-                                  <input
-                                    type="text"
-                                    placeholder="Sub-cat"
-                                    value={item.subcategory || ''}
-                                    onChange={(e) => updateMenuItem(item.id, 'subcategory', e.target.value)}
-                                    className="flex-1 bg-white rounded-[var(--radius-sm)] border border-[#E8DFD4] px-4 py-2.5 text-[15px] outline-none focus:border-[#F07C3C] transition-all font-medium text-[#3D261C]"
-                                  />
-                                </div>
+                    <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                      {Object.entries(businessHours).map(([day, hours]) => (
+                        <div key={day} className="flex items-center justify-between p-4 bg-white rounded-xl border border-[#E8DFD4] hover:shadow-sm transition-shadow">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-2 h-2 rounded-full ${hours.isClosed ? 'bg-red-400' : 'bg-green-400'}`} />
+                            <span className="font-bold text-[#3D261C] capitalize w-24">{day}</span>
+                          </div>
+                          
+                          <div className="flex items-center gap-4">
+                            {!hours.isClosed ? (
+                              <div className="flex items-center gap-2">
+                                <input
+                                  type="time"
+                                  value={hours.open}
+                                  onChange={(e) => setBusinessHours({
+                                    ...businessHours,
+                                    [day]: { ...hours, open: e.target.value }
+                                  })}
+                                  className="bg-[#FDF8F1] border-none rounded-lg px-2 py-1 text-sm font-semibold text-[#F07C3C]"
+                                />
+                                <span className="text-[#A89888] font-bold">-</span>
+                                <input
+                                  type="time"
+                                  value={hours.close}
+                                  onChange={(e) => setBusinessHours({
+                                    ...businessHours,
+                                    [day]: { ...hours, close: e.target.value }
+                                  })}
+                                  className="bg-[#FDF8F1] border-none rounded-lg px-2 py-1 text-sm font-semibold text-[#F07C3C]"
+                                />
                               </div>
-                              <button 
-                                type="button"
-                                onClick={() => removeMenuItem(item.id)}
-                                className="p-2 text-[#A89888] hover:text-[#D94848] hover:bg-white rounded-md transition-colors"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </motion.div>
-                          ))}
-                        </AnimatePresence>
-                      </motion.div>
-                    )}
+                            ) : (
+                              <span className="text-[#A89888] text-sm font-bold uppercase tracking-wider">Closed for business</span>
+                            )}
+                            
+                            <button
+                              onClick={() => setBusinessHours({
+                                ...businessHours,
+                                [day]: { ...hours, isClosed: !hours.isClosed }
+                              })}
+                              className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter transition-all ${
+                                hours.isClosed 
+                                  ? 'bg-[#F07C3C] text-white' 
+                                  : 'bg-[#E8DFD4] text-[#8A735F]'
+                              }`}
+                            >
+                              {hours.isClosed ? 'Open' : 'Close'}
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
+                )}
+    </div>
                 )}
               </motion.div>
             </AnimatePresence>
@@ -467,10 +494,16 @@ export function OnboardingWizard() {
             </button>
             <button
               onClick={handleNext}
-              disabled={currentStep === 0 && !businessName}
+              disabled={(currentStep === 0 && !businessName) || loading}
               className="flex items-center gap-2 px-8 py-3 bg-[#F07C3C] text-white rounded-[var(--radius-md)] font-bold shadow-lg shadow-[#F07C3C]/20 hover:bg-[#D96321] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {currentStep === steps.length - 1 ? 'Finish Setup' : 'Next Step'} <ChevronRight className="w-5 h-5" />
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <>
+                  {currentStep === steps.length - 1 ? 'Finish Setup' : 'Next Step'} <ChevronRight className="w-5 h-5" />
+                </>
+              )}
             </button>
           </div>
         </motion.div>
