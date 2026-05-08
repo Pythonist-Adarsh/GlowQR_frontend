@@ -2,7 +2,7 @@
 
 import { useState, lazy, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Camera, Store, Coffee, Wine, ChefHat, UploadCloud, ChevronRight, ChevronLeft, Plus, Trash2, CheckCircle2, Download, ArrowRight, Phone, MapPin, Globe, Clock, Link2 } from 'lucide-react'
+import { Camera, Store, Coffee, Wine, ChefHat, UploadCloud, ChevronRight, ChevronLeft, Plus, CheckCircle2, Download, ArrowRight, MapPin, Clock, Sparkles } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -21,12 +21,7 @@ const steps = [
   { id: 'qr', title: 'Final QR Code', subtitle: 'Your identity is ready to be shared.' },
 ]
 
-const businessTypes = [
-  { id: 'restaurant', name: 'Restaurant', icon: ChefHat },
-  { id: 'cafe', name: 'Café / Coffee Shop', icon: Coffee },
-  { id: 'bar', name: 'Bar / Lounge', icon: Wine },
-  { id: 'store', name: 'Retail Store', icon: Store },
-]
+
 
 export function OnboardingWizard() {
   const [currentStep, setCurrentStep] = useState(0)
@@ -63,12 +58,11 @@ export function OnboardingWizard() {
   const [signatureDish, setSignatureDish] = useState('')
   const [highlightedDishes, setHighlightedDishes] = useState('')
   const [excludedDishes, setExcludedDishes] = useState('')
-  const [menuItems, setMenuItems] = useState<{ id: string; name: string; price: string; emoji?: string; category: string; subcategory?: string }[]>([])
+
   
   // Step 5 State
   const [experienceType, setExperienceType] = useState('classic')
-  const [logo, setLogo] = useState<File | null>(null)
-  const [logoPreview, setLogoPreview] = useState<string | null>(null)
+
   const [primaryColor, setPrimaryColor] = useState('#6366F1')
   const [welcomeMessage, setWelcomeMessage] = useState('')
   const [aiVariants, setAiVariants] = useState('3 variants (Premium)')
@@ -216,7 +210,20 @@ export function OnboardingWizard() {
     )
   }
 
-  const InputField = ({ label, type, value, onChange, placeholder, hint, required, optional, production, className = '' }: any) => (
+  interface InputFieldProps {
+    label: string;
+    type?: string;
+    value: string;
+    onChange: (val: string) => void;
+    placeholder?: string;
+    hint?: string;
+    required?: boolean;
+    optional?: boolean;
+    production?: boolean;
+    className?: string;
+  }
+
+  const InputField = ({ label, type = 'text', value, onChange, placeholder, hint, required, optional, production, className = '' }: InputFieldProps) => (
     <div className={`space-y-1.5 ${className}`}>
       <div className="flex items-center">
         <span className="text-sm font-semibold text-[#3D261C]">{label}</span>
