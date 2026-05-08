@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, lazy, Suspense, useCallback, memo, useDeferredValue, useEffect, useMemo } from 'react'
+import { useState, lazy, Suspense, useCallback, memo, useDeferredValue, useEffect, useMemo, useRef } from 'react'
 import { motion, AnimatePresence, useAnimation } from 'framer-motion'
 import { 
   Camera, UploadCloud, ChevronRight, ChevronLeft, Plus, CheckCircle2, 
   Download, ArrowRight, MapPin, Clock, Sparkles, Globe, Phone, Mail, 
-  Instagram, Palette, Layers, Star, Info, AlertTriangle, Building2,
+  Layers, Star, Info, AlertTriangle, Building2,
   Utensils, Coffee, Croissant, Wine, Pizza, ChefHat, Truck, Package,
   Hotel, Flower2, Scissors, ShoppingBag, Dumbbell, Stethoscope, GraduationCap,
   Sparkle, Smartphone, Zap, Heart
@@ -71,6 +71,7 @@ const Badge = memo(({ text, type }: { text: string, type: 'required' | 'optional
 Badge.displayName = 'Badge'
 
 interface InputFieldProps {
+  id: string;
   label: string;
   type?: string;
   value: string;
@@ -83,42 +84,73 @@ interface InputFieldProps {
   className?: string;
 }
 
-const InputField = memo(({ label, type = 'text', value, onChange, placeholder, hint, required, optional, production, className = '' }: InputFieldProps) => (
-  <div className={`space-y-2 ${className}`}>
-    <div className="flex items-center justify-between">
-      <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{label}</span>
-      <div className="flex gap-1">
-        {required && <Badge text="Required" type="required" />}
-        {optional && <Badge text="Optional" type="optional" />}
-        {production && <Badge text="Production" type="production" />}
+const InputField = memo(({ id, label, type = 'text', value, onChange, placeholder, hint, required, optional, production, className = '' }: InputFieldProps) => {
+  const [localValue, setLocalValue] = useState(value)
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null)
+
+  // Sync local state when external value changes (mount/reset)
+  useEffect(() => {
+    setLocalValue(value)
+  }, [value])
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value
+    setLocalValue(val)
+    
+    // Debounce the parent update to prevent lag during rapid typing
+    if (debounceTimer.current) clearTimeout(debounceTimer.current)
+    debounceTimer.current = setTimeout(() => {
+      onChange(val)
+    }, 150) // Reduced to 150ms for snappier feel while still preventing layout thrashing
+  }
+
+  const handleBlur = () => {
+    // Ensure parent is in sync when focus is lost
+    if (debounceTimer.current) clearTimeout(debounceTimer.current)
+    onChange(localValue)
+  }
+
+  return (
+    <div className={`space-y-2 ${className}`}>
+      <div className="flex items-center justify-between">
+        <label htmlFor={id} className="text-xs font-bold text-slate-400 uppercase tracking-widest cursor-pointer">{label}</label>
+        <div className="flex gap-1">
+          {required && <Badge text="Required" type="required" />}
+          {optional && <Badge text="Optional" type="optional" />}
+          {production && <Badge text="Production" type="production" />}
+        </div>
       </div>
+      <div className="relative group">
+        <input
+          id={id}
+          name={id}
+          type={type}
+          value={localValue}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          placeholder={placeholder}
+          autoComplete="off"
+          className="w-full bg-white/5 border border-white/10 px-4 py-3.5 rounded-2xl focus:border-[#6C63FF] focus:ring-4 focus:ring-[#6C63FF]/20 outline-none transition-all placeholder:text-slate-600 text-white group-hover:border-white/20"
+        />
+        <div className="absolute inset-0 rounded-2xl bg-[#6C63FF]/5 opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none" />
+        
+        {localValue.length > 2 && (
+          <motion.div 
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="absolute right-4 top-1/2 -translate-y-1/2"
+          >
+            <CheckCircle2 className="w-4 h-4 text-emerald-500/50" />
+          </motion.div>
+        )}
+      </div>
+      {hint && <p className="text-[11px] text-slate-500 leading-relaxed">{hint}</p>}
     </div>
-    <div className="relative group">
-      <input
-        type={type}
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="w-full bg-white/5 border border-white/10 px-4 py-3.5 rounded-2xl focus:border-[#6C63FF] focus:ring-4 focus:ring-[#6C63FF]/20 outline-none transition-all placeholder:text-slate-600 text-white group-hover:border-white/20"
-      />
-      <div className="absolute inset-0 rounded-2xl bg-[#6C63FF]/5 opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none" />
-      
-      {/* Interaction Feedback */}
-      {value.length > 3 && (
-        <motion.div 
-          initial={{ opacity: 0, x: 10 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="absolute right-4 top-1/2 -translate-y-1/2"
-        >
-          <CheckCircle2 className="w-4 h-4 text-emerald-500/50" />
-        </motion.div>
-      )}
-    </div>
-    {hint && <p className="text-[11px] text-slate-500 leading-relaxed">{hint}</p>}
-  </div>
-))
+  )
+})
 
 InputField.displayName = 'InputField'
+
 
 const InfoBox = memo(({ icon: Icon, title, description, variant = 'purple' }: { icon: any, title: string, description: string, variant?: 'purple' | 'amber' | 'emerald' }) => {
   const styles = {
@@ -164,15 +196,15 @@ const BusinessStep = memo(({
       description="This information powers our AI to write contextual, high-ranking reviews. Required fields are marked for base functionality."
     />
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <InputField label="Business Name" value={businessName} onChange={setBusinessName} placeholder="e.g. Cafe Romeo" required />
-      <InputField label="Tagline" value={tagline} onChange={setTagline} placeholder="e.g. Best artisanal coffee" optional />
-      <InputField label="Website" value={businessWebsite} onChange={setBusinessWebsite} placeholder="e.g. https://caferomeo.in" optional />
-      <InputField label="Google Review Link" value={googleReviewLink} onChange={setGoogleReviewLink} placeholder="Paste Maps link here" required hint="Where customers are sent after copying AI reviews." />
+      <InputField id="businessName" label="Business Name" value={businessName} onChange={setBusinessName} placeholder="e.g. Cafe Romeo" required />
+      <InputField id="tagline" label="Tagline" value={tagline} onChange={setTagline} placeholder="e.g. Best artisanal coffee" optional />
+      <InputField id="website" label="Website" value={businessWebsite} onChange={setBusinessWebsite} placeholder="e.g. https://caferomeo.in" optional />
+      <InputField id="reviewLink" label="Google Review Link" value={googleReviewLink} onChange={setGoogleReviewLink} placeholder="Paste Maps link here" required hint="Where customers are sent after copying AI reviews." />
     </div>
     <div className="pt-8 border-t border-white/5 grid grid-cols-1 md:grid-cols-3 gap-6">
-      <InputField label="Place ID" value={placeId} onChange={setPlaceId} placeholder="Optional" production />
-      <InputField label="Current Rating" value={googleRating} onChange={setGoogleRating} placeholder="4.5" production />
-      <InputField label="Total Reviews" value={reviewCount} onChange={setReviewCount} placeholder="120" production />
+      <InputField id="placeId" label="Place ID" value={placeId} onChange={setPlaceId} placeholder="Optional" production />
+      <InputField id="rating" label="Current Rating" value={googleRating} onChange={setGoogleRating} placeholder="4.5" production />
+      <InputField id="reviewCount" label="Total Reviews" value={reviewCount} onChange={setReviewCount} placeholder="120" production />
     </div>
   </div>
 ))
@@ -185,18 +217,18 @@ const LocationStep = memo(({
 }: any) => (
   <div className="space-y-10">
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <InputField label="City" value={city} onChange={setCity} placeholder="e.g. Lucknow" required />
-      <InputField label="Area" value={area} onChange={setArea} placeholder="e.g. Hazratganj" optional />
-      <InputField label="Address" value={address} onChange={setAddress} placeholder="Full address" className="md:col-span-2" optional />
-      <InputField label="State" value={state} onChange={setState} placeholder="Uttar Pradesh" optional />
-      <InputField label="PIN" value={pincode} onChange={setPincode} placeholder="226001" optional />
+      <InputField id="city" label="City" value={city} onChange={setCity} placeholder="e.g. Lucknow" required />
+      <InputField id="area" label="Area" value={area} onChange={setArea} placeholder="e.g. Hazratganj" optional />
+      <InputField id="address" label="Address" value={address} onChange={setAddress} placeholder="Full address" className="md:col-span-2" optional />
+      <InputField id="state" label="State" value={state} onChange={setState} placeholder="Uttar Pradesh" optional />
+      <InputField id="pincode" label="PIN" value={pincode} onChange={setPincode} placeholder="226001" optional />
     </div>
     <div className="pt-10 border-t border-white/5 space-y-8">
       <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500">Operation & Contact</h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <InputField label="Phone" value={phoneNumber} onChange={setPhoneNumber} placeholder="+91..." production />
-        <InputField label="WhatsApp" value={whatsappNumber} onChange={setWhatsappNumber} placeholder="+91..." production />
-        <InputField label="Manager Email" value={ownerEmail} onChange={setOwnerEmail} placeholder="owner@..." required />
+        <InputField id="phone" label="Phone" value={phoneNumber} onChange={setPhoneNumber} placeholder="+91..." production />
+        <InputField id="whatsapp" label="WhatsApp" value={whatsappNumber} onChange={setWhatsappNumber} placeholder="+91..." production />
+        <InputField id="email" label="Manager Email" value={ownerEmail} onChange={setOwnerEmail} placeholder="owner@..." required />
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 items-end">
         <div className="space-y-2">
@@ -268,7 +300,7 @@ const CategoryStep = memo(({ businessType, setBusinessType, priceRange, setPrice
           ))}
         </div>
       </div>
-      <InputField label="Speciality" value={cuisine} onChange={setCuisine} placeholder="e.g. Italian, Street Food" optional />
+      <InputField id="speciality" label="Speciality" value={cuisine} onChange={setCuisine} placeholder="e.g. Italian, Street Food" optional />
     </div>
   </div>
 ))
@@ -288,7 +320,7 @@ const MenuStep = memo(({ signatureDish, setSignatureDish, highlightedDishes, set
         <input type="file" className="hidden" accept=".pdf" />
       </motion.label>
       <div className="space-y-6">
-        <InputField label="Signature Dish" value={signatureDish} onChange={setSignatureDish} placeholder="What are you famous for?" required hint="AI emphasizes this item in reviews." />
+        <InputField id="signatureDish" label="Signature Dish" value={signatureDish} onChange={setSignatureDish} placeholder="What are you famous for?" required hint="AI emphasizes this item in reviews." />
         <div className="space-y-2">
           <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Highlights</span>
           <textarea 
@@ -517,8 +549,11 @@ export function OnboardingWizard() {
   }, [])
 
   useEffect(() => {
-    const data = { businessName, tagline, businessWebsite, googleReviewLink, city, ownerEmail, currentStep }
-    localStorage.setItem('onboarding_progress', JSON.stringify(data))
+    const timer = setTimeout(() => {
+      const data = { businessName, tagline, businessWebsite, googleReviewLink, city, ownerEmail, currentStep }
+      localStorage.setItem('onboarding_progress', JSON.stringify(data))
+    }, 1000)
+    return () => clearTimeout(timer)
   }, [businessName, tagline, businessWebsite, googleReviewLink, city, ownerEmail, currentStep])
 
   // --- Deferred Values for Performance ---
@@ -528,6 +563,22 @@ export function OnboardingWizard() {
   const deferredLogo = useDeferredValue(logoPreview)
   const deferredCategory = useDeferredValue(businessType)
   const deferredRating = useDeferredValue(googleRating)
+
+  // --- Memoized Data for Performance ---
+  const memoizedMenuItems = useMemo(() => 
+    menuItems.map(m => ({ id: m.id, name: m.name, emoji: m.emoji || "🍽️" })),
+    [menuItems]
+  )
+
+  const simulationData = useMemo(() => ({
+    name: businessName || "Your Business",
+    tagline: tagline,
+    address: address || "Our Location",
+    primaryColor: primaryColor,
+    logo: logoPreview,
+    googleReviewUrl: googleReviewLink || "#",
+    menuItems: memoizedMenuItems
+  }), [businessName, tagline, address, primaryColor, logoPreview, googleReviewLink, memoizedMenuItems])
 
   // --- Handlers ---
 
@@ -596,7 +647,8 @@ export function OnboardingWizard() {
         setLoading(false)
       }
     }
-  }, [currentStep, businessName, tagline, primaryColor, googleReviewLink, phoneNumber, whatsappNumber, address, city, area, state, pincode, ownerEmail, placeId, googleRating, reviewCount, businessType, priceRange, cuisine, dietaryOptions, signature_dish, highlightedDishes, excluded_dishes, experienceType, welcomeMessage, aiVariants, reviewLanguage, openingTime, closingTime, daysOpen, loading, router])
+  }, [currentStep, businessName, tagline, primaryColor, googleReviewLink, phoneNumber, whatsappNumber, address, city, area, state, pincode, ownerEmail, placeId, googleRating, reviewCount, businessType, priceRange, cuisine, dietaryOptions, signatureDish, highlightedDishes, excludedDishes, experienceType, welcomeMessage, aiVariants, reviewLanguage, openingTime, closingTime, daysOpen, loading, router])
+
 
   const handleBack = useCallback(() => {
     if (currentStep > 0) {
@@ -608,18 +660,10 @@ export function OnboardingWizard() {
   }, [currentStep, router])
 
   const getReviewUrl = useCallback(() => {
-    const data = {
-      name: businessName || "Your Business",
-      tagline: tagline,
-      address: address || "Our Location",
-      primaryColor: primaryColor,
-      logo: logoPreview,
-      googleReviewUrl: googleReviewLink || "#",
-      menuItems: menuItems.map(m => ({ id: m.id, name: m.name, emoji: m.emoji || "🍽️" }))
-    }
-    const encoded = btoa(encodeURIComponent(JSON.stringify(data)))
+    const encoded = btoa(encodeURIComponent(JSON.stringify(simulationData)))
     return `${window.location.origin}/review?data=${encoded}`
-  }, [businessName, tagline, address, primaryColor, logoPreview, googleReviewLink, menuItems])
+  }, [simulationData])
+
 
   const downloadQR = (format: 'png' | 'svg') => {
     if (format === 'png') {
@@ -750,12 +794,12 @@ export function OnboardingWizard() {
                 {/* Background Accent for Step */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-[#6C63FF]/5 blur-[100px] rounded-full -mr-32 -mt-32 pointer-events-none" />
                 
-                <AnimatePresence mode="popLayout">
+                <AnimatePresence mode="sync">
                   <motion.div
                     key={`step-container-${currentStep}`}
-                    initial={{ opacity: 0, x: 30, filter: 'blur(8px)' }}
-                    animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-                    exit={{ opacity: 0, x: -30, filter: 'blur(8px)' }}
+                    initial={{ opacity: 0, x: 30 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -30 }}
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   >
                     {currentStep === 0 && (
@@ -769,6 +813,7 @@ export function OnboardingWizard() {
                         reviewCount={reviewCount} setReviewCount={setReviewCount}
                       />
                     )}
+
                     {currentStep === 1 && (
                       <LocationStep 
                         city={city} setCity={setCity}
@@ -1005,17 +1050,10 @@ export function OnboardingWizard() {
                       <motion.div key="content" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="h-full overflow-y-auto">
                         <Suspense fallback={<div className="h-full flex items-center justify-center text-slate-900 font-bold">Loading Brand...</div>}>
                           <div className="h-full scale-[0.98] origin-top">
-                            <ReviewFlow simulationData={{
-                              name: businessName || "Your Business",
-                              tagline: tagline,
-                              address: address || "Our Location",
-                              primaryColor: primaryColor,
-                              logo: logoPreview,
-                              googleReviewUrl: googleReviewLink || "#",
-                              menuItems: menuItems.map(m => ({ id: m.id, name: m.name, emoji: m.emoji || "🍽️" }))
-                            }} />
+                            <ReviewFlow simulationData={simulationData} />
                           </div>
                         </Suspense>
+
                       </motion.div>
                     )}
                   </AnimatePresence>
