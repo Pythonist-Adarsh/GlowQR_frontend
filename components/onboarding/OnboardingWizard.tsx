@@ -2,7 +2,7 @@
 
 import { useState, lazy, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Camera, Store, Coffee, Wine, ChefHat, UploadCloud, ChevronRight, ChevronLeft, Plus, CheckCircle2, Download, ArrowRight, MapPin, Clock, Sparkles } from 'lucide-react'
+import { Camera, UploadCloud, ChevronRight, ChevronLeft, Plus, CheckCircle2, Download, ArrowRight, MapPin, Clock, Sparkles } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -73,6 +73,17 @@ export function OnboardingWizard() {
   const [showFinalQR, setShowFinalQR] = useState(false)
   const [isSimulatingScan, setIsSimulatingScan] = useState(false)
   const [isScanningLocal, setIsScanningLocal] = useState(false)
+  const [logoPreview, setLogoPreview] = useState<string | null>(null)
+  
+  interface MenuItem {
+    id: string;
+    name: string;
+    price?: string;
+    category?: string;
+    subcategory?: string;
+    emoji?: string;
+  }
+  const [menuItems] = useState<MenuItem[]>([])
   
   const router = useRouter()
   
@@ -641,7 +652,6 @@ export function OnboardingWizard() {
                               )}
                               <input type="file" className="hidden" accept="image/*" onChange={e => {
                                 if (e.target.files?.[0]) {
-                                  setLogo(e.target.files[0])
                                   setLogoPreview(URL.createObjectURL(e.target.files[0]))
                                 }
                               }} />
