@@ -30,7 +30,7 @@ type BusinessInfo = {
   name: string;
   tagline?: string;
   logo?: string | null;
-  location?: string;
+  address?: string;
   primaryColor: string;
   googleReviewUrl: string;
 };
@@ -55,7 +55,7 @@ export default function ReviewFlow({ initialData, simulationData }: { initialDat
     name: "Our Business",
     tagline: "Experience the excellence",
     logo: null,
-    location: "Our Location",
+    address: "Our Location",
     primaryColor: "#F07C3C",
     googleReviewUrl: "#",
   });
@@ -95,7 +95,7 @@ export default function ReviewFlow({ initialData, simulationData }: { initialDat
         name: data.name || "Our Business",
         tagline: data.tagline,
         logo: data.logo,
-        location: data.location || "Our Location",
+        address: data.address || "Our Location",
         primaryColor: data.primaryColor || "#F07C3C",
         googleReviewUrl: data.googleReviewUrl || "#",
       });
@@ -113,7 +113,7 @@ export default function ReviewFlow({ initialData, simulationData }: { initialDat
           name: decoded.name || "Our Business",
           tagline: decoded.tagline,
           logo: decoded.logo,
-          location: decoded.location || "Our Location",
+          address: decoded.address || "Our Location",
           primaryColor: decoded.primaryColor || "#F07C3C",
           googleReviewUrl: decoded.googleReviewUrl || "#",
         });
@@ -156,7 +156,7 @@ export default function ReviewFlow({ initialData, simulationData }: { initialDat
               spend_range: spendRange,
               seating_type: seatingType,
               business_name: business.name,
-              location: business.location
+              address: business.address
             })
           });
 
@@ -400,7 +400,7 @@ export default function ReviewFlow({ initialData, simulationData }: { initialDat
               What did you enjoy?
             </h2>
             <p className="text-slate-500 mb-8 flex items-center gap-1.5 text-sm">
-              <MapPin className="w-4 h-4" /> {business.location}
+              <MapPin className="w-4 h-4" /> {business.address}
             </p>
             
             {menuItems.length === 0 && (
@@ -794,7 +794,7 @@ export default function ReviewFlow({ initialData, simulationData }: { initialDat
             <h2 className="text-4xl font-display font-bold text-slate-900 mb-4 tracking-tight">You&apos;re a Star!</h2>
             <p className="text-slate-500 mb-12 text-lg leading-relaxed">
               Your feedback is invaluable to <span className="font-semibold text-slate-900">{business.name}</span>. 
-              Thank you for helping us grow in <span className="font-semibold text-slate-900">{business.location}</span>!
+              Thank you for helping us grow in <span className="font-semibold text-slate-900">{business.address}</span>!
             </p>
             <div className="pt-10 border-t border-slate-100">
               <motion.p 

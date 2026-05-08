@@ -122,7 +122,7 @@ export function OnboardingWizard() {
     const data = {
       name: businessName || "Your Business",
       tagline: tagline,
-      location: location || "Our Location",
+      address: address || "Our Location",
       primaryColor: primaryColor,
       logo: logoPreview,
       googleReviewUrl: googleReviewLink || "#",
@@ -227,6 +227,7 @@ export function OnboardingWizard() {
                 exit={{ opacity: 0, y: -10, filter: 'blur(4px)' }}
                 transition={{ duration: 0.4, ease: [0.34, 1.56, 0.64, 1] }}
                 className="w-full"
+              >
                      {/* Step 1: Business Basics */}
                 {currentStep === 0 && (
                   <div className="space-y-8">
@@ -477,8 +478,6 @@ export function OnboardingWizard() {
                       ))}
                     </div>
                   </div>
-                )}
-    </div>
                 )}
               </motion.div>
             </AnimatePresence>
@@ -771,7 +770,7 @@ export function OnboardingWizard() {
                             <ReviewFlow simulationData={{
                               name: businessName || "Your Business",
                               tagline: tagline,
-                              location: location || "Our Location",
+                              address: address || "Our Location",
                               primaryColor: primaryColor,
                               logo: logoPreview,
                               googleReviewUrl: googleReviewLink || "#",
