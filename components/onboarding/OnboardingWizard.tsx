@@ -1,14 +1,13 @@
 'use client'
 
-import { useState, lazy, Suspense, useCallback, memo, useDeferredValue, useEffect, useMemo, useRef } from 'react'
-import { motion, AnimatePresence, useAnimation } from 'framer-motion'
+import { useState, lazy, useCallback, memo, useDeferredValue, useEffect, useMemo, useRef, Suspense } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { 
-  Camera, UploadCloud, ChevronRight, ChevronLeft, Plus, CheckCircle2, 
-  Download, ArrowRight, MapPin, Clock, Sparkles, Globe, Phone, Mail, 
-  Layers, Star, Info, AlertTriangle, Building2,
+  Camera, UploadCloud, ChevronRight, CheckCircle2, 
+  Download, ArrowRight, Sparkles, Star, Layers, Building2,
   Utensils, Coffee, Croissant, Wine, Pizza, ChefHat, Truck, Package,
   Hotel, Flower2, Scissors, ShoppingBag, Dumbbell, Stethoscope, GraduationCap,
-  Sparkle, Smartphone, Zap, Heart
+  Sparkle, Smartphone, Zap, Heart, LucideIcon, Plus
 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -87,10 +86,15 @@ interface InputFieldProps {
 const InputField = memo(({ id, label, type = 'text', value, onChange, placeholder, hint, required, optional, production, className = '' }: InputFieldProps) => {
   const [localValue, setLocalValue] = useState(value)
   const debounceTimer = useRef<NodeJS.Timeout | null>(null)
+  const lastSentValue = useRef(value)
 
-  // Sync local state when external value changes (mount/reset)
+  // Sync local state when external value changes (mount/reset/localStorage load)
+  // But ONLY if it's not what we just sent (to prevent clobbering while typing)
   useEffect(() => {
-    setLocalValue(value)
+    if (value !== lastSentValue.current) {
+      setLocalValue(value)
+      lastSentValue.current = value
+    }
   }, [value])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,14 +104,17 @@ const InputField = memo(({ id, label, type = 'text', value, onChange, placeholde
     // Debounce the parent update to prevent lag during rapid typing
     if (debounceTimer.current) clearTimeout(debounceTimer.current)
     debounceTimer.current = setTimeout(() => {
+      lastSentValue.current = val
       onChange(val)
-    }, 150) // Reduced to 150ms for snappier feel while still preventing layout thrashing
+    }, 150)
   }
 
   const handleBlur = () => {
-    // Ensure parent is in sync when focus is lost
     if (debounceTimer.current) clearTimeout(debounceTimer.current)
-    onChange(localValue)
+    if (localValue !== value) {
+      lastSentValue.current = localValue
+      onChange(localValue)
+    }
   }
 
   return (
@@ -151,8 +158,67 @@ const InputField = memo(({ id, label, type = 'text', value, onChange, placeholde
 
 InputField.displayName = 'InputField'
 
+interface TextAreaFieldProps {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (val: string) => void;
+  placeholder?: string;
+  hint?: string;
+  className?: string;
+}
 
-const InfoBox = memo(({ icon: Icon, title, description, variant = 'purple' }: { icon: any, title: string, description: string, variant?: 'purple' | 'amber' | 'emerald' }) => {
+const TextAreaField = memo(({ id, label, value, onChange, placeholder, hint, className = '' }: TextAreaFieldProps) => {
+  const [localValue, setLocalValue] = useState(value)
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null)
+  const lastSentValue = useRef(value)
+
+  useEffect(() => {
+    if (value !== lastSentValue.current) {
+      setLocalValue(value)
+      lastSentValue.current = value
+    }
+  }, [value])
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const val = e.target.value
+    setLocalValue(val)
+    
+    if (debounceTimer.current) clearTimeout(debounceTimer.current)
+    debounceTimer.current = setTimeout(() => {
+      lastSentValue.current = val
+      onChange(val)
+    }, 200)
+  }
+
+  const handleBlur = () => {
+    if (debounceTimer.current) clearTimeout(debounceTimer.current)
+    if (localValue !== value) {
+      lastSentValue.current = localValue
+      onChange(localValue)
+    }
+  }
+
+  return (
+    <div className={`space-y-2 ${className}`}>
+      <label htmlFor={id} className="text-xs font-bold text-slate-500 uppercase tracking-widest cursor-pointer">{label}</label>
+      <textarea
+        id={id}
+        value={localValue}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        placeholder={placeholder}
+        className="w-full bg-white/5 border border-white/10 p-4 rounded-2xl min-h-[120px] text-white outline-none focus:border-[#6C63FF] transition-all hover:border-white/20 focus:ring-4 focus:ring-[#6C63FF]/10 placeholder:text-slate-600"
+      />
+      {hint && <p className="text-[11px] text-slate-500 leading-relaxed">{hint}</p>}
+    </div>
+  )
+})
+
+TextAreaField.displayName = 'TextAreaField'
+
+
+const InfoBox = memo(({ icon: Icon, title, description, variant = 'purple' }: { icon: LucideIcon, title: string, description: string, variant?: 'purple' | 'amber' | 'emerald' }) => {
   const styles = {
     purple: 'bg-violet-500/10 border-violet-500/20 text-violet-200',
     amber: 'bg-amber-500/10 border-amber-500/20 text-amber-200',
@@ -184,11 +250,28 @@ InfoBox.displayName = 'InfoBox'
 
 // --- Step Content Components (Split for Performance) ---
 
+interface BusinessStepProps {
+  businessName: string;
+  setBusinessName: (val: string) => void;
+  tagline: string;
+  setTagline: (val: string) => void;
+  businessWebsite: string;
+  setBusinessWebsite: (val: string) => void;
+  googleReviewLink: string;
+  setGoogleReviewLink: (val: string) => void;
+  placeId: string;
+  setPlaceId: (val: string) => void;
+  googleRating: string;
+  setGoogleRating: (val: string) => void;
+  reviewCount: string;
+  setReviewCount: (val: string) => void;
+}
+
 const BusinessStep = memo(({ 
   businessName, setBusinessName, tagline, setTagline, 
   businessWebsite, setBusinessWebsite, googleReviewLink, setGoogleReviewLink,
   placeId, setPlaceId, googleRating, setGoogleRating, reviewCount, setReviewCount 
-}: any) => (
+}: BusinessStepProps) => (
   <div className="space-y-10">
     <InfoBox 
       icon={Sparkles} 
@@ -210,11 +293,36 @@ const BusinessStep = memo(({
 ))
 BusinessStep.displayName = 'BusinessStep'
 
+interface LocationStepProps {
+  city: string;
+  setCity: (val: string) => void;
+  area: string;
+  setArea: (val: string) => void;
+  address: string;
+  setAddress: (val: string) => void;
+  state: string;
+  setState: (val: string) => void;
+  pincode: string;
+  setPincode: (val: string) => void;
+  phoneNumber: string;
+  setPhoneNumber: (val: string) => void;
+  whatsappNumber: string;
+  setWhatsappNumber: (val: string) => void;
+  ownerEmail: string;
+  setOwnerEmail: (val: string) => void;
+  openingTime: string;
+  setOpeningTime: (val: string) => void;
+  closingTime: string;
+  setClosingTime: (val: string) => void;
+  daysOpen: string[];
+  setDaysOpen: (val: string[]) => void;
+}
+
 const LocationStep = memo(({
   city, setCity, area, setArea, address, setAddress, state, setState, pincode, setPincode,
   phoneNumber, setPhoneNumber, whatsappNumber, setWhatsappNumber, ownerEmail, setOwnerEmail,
   openingTime, setOpeningTime, closingTime, setClosingTime, daysOpen, setDaysOpen
-}: any) => (
+}: LocationStepProps) => (
   <div className="space-y-10">
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       <InputField id="city" label="City" value={city} onChange={setCity} placeholder="e.g. Lucknow" required />
@@ -262,7 +370,16 @@ const LocationStep = memo(({
 ))
 LocationStep.displayName = 'LocationStep'
 
-const CategoryStep = memo(({ businessType, setBusinessType, priceRange, setPriceRange, cuisine, setCuisine }: any) => (
+interface CategoryStepProps {
+  businessType: string;
+  setBusinessType: (val: string) => void;
+  priceRange: string;
+  setPriceRange: (val: string) => void;
+  cuisine: string;
+  setCuisine: (val: string) => void;
+}
+
+const CategoryStep = memo(({ businessType, setBusinessType, priceRange, setPriceRange, cuisine, setCuisine }: CategoryStepProps) => (
   <div className="space-y-10">
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       {categories.map((cat) => (
@@ -306,7 +423,14 @@ const CategoryStep = memo(({ businessType, setBusinessType, priceRange, setPrice
 ))
 CategoryStep.displayName = 'CategoryStep'
 
-const MenuStep = memo(({ signatureDish, setSignatureDish, highlightedDishes, setHighlightedDishes }: any) => (
+interface MenuStepProps {
+  signatureDish: string;
+  setSignatureDish: (val: string) => void;
+  highlightedDishes: string;
+  setHighlightedDishes: (val: string) => void;
+}
+
+const MenuStep = memo(({ signatureDish, setSignatureDish, highlightedDishes, setHighlightedDishes }: MenuStepProps) => (
   <div className="space-y-10">
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <motion.label 
@@ -321,25 +445,33 @@ const MenuStep = memo(({ signatureDish, setSignatureDish, highlightedDishes, set
       </motion.label>
       <div className="space-y-6">
         <InputField id="signatureDish" label="Signature Dish" value={signatureDish} onChange={setSignatureDish} placeholder="What are you famous for?" required hint="AI emphasizes this item in reviews." />
-        <div className="space-y-2">
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Highlights</span>
-          <textarea 
-            value={highlightedDishes} 
-            onChange={e => setHighlightedDishes(e.target.value)} 
-            placeholder="Top 3-5 items..." 
-            className="w-full bg-white/5 border border-white/10 p-4 rounded-2xl min-h-[120px] text-white outline-none focus:border-[#6C63FF] transition-all hover:border-white/20 focus:ring-4 focus:ring-[#6C63FF]/10" 
-          />
-        </div>
+        <TextAreaField 
+          id="highlights" 
+          label="Highlights" 
+          value={highlightedDishes} 
+          onChange={setHighlightedDishes} 
+          placeholder="Top 3-5 items..." 
+          hint="AI emphasizes these items during the scan experience."
+        />
       </div>
     </div>
   </div>
 ))
 MenuStep.displayName = 'MenuStep'
 
+interface ExperienceStepProps {
+  experienceType: string;
+  setExperienceType: (val: string) => void;
+  logoPreview: string | null;
+  setLogoPreview: (val: string | null) => void;
+  primaryColor: string;
+  setPrimaryColor: (val: string) => void;
+}
+
 const ExperienceStep = memo(({ 
   experienceType, setExperienceType, logoPreview, setLogoPreview, 
   primaryColor, setPrimaryColor 
-}: any) => (
+}: ExperienceStepProps) => (
   <div className="space-y-10">
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       <motion.button 
@@ -411,7 +543,16 @@ ExperienceStep.displayName = 'ExperienceStep'
 
 // --- Live Identity Preview Card ---
 
-const LivePreviewCard = memo(({ businessName, tagline, rating, primaryColor, logo, category }: any) => (
+interface LivePreviewCardProps {
+  businessName: string;
+  tagline: string;
+  rating: string;
+  primaryColor: string;
+  logo: string | null;
+  category: string;
+}
+
+const LivePreviewCard = memo(({ businessName, tagline, rating, primaryColor, logo, category }: LivePreviewCardProps) => (
   <motion.div 
     initial={{ opacity: 0, x: 20 }}
     animate={{ opacity: 1, x: 0 }}
@@ -515,21 +656,26 @@ export function OnboardingWizard() {
   const [businessType, setBusinessType] = useState('')
   const [priceRange, setPriceRange] = useState('₹200 – ₹500')
   const [cuisine, setCuisine] = useState('')
-  const [dietaryOptions, setDietaryOptions] = useState<string[]>([])
+  const [dietaryOptions] = useState<string[]>([])
   
   // Step 4: Menu
   const [signatureDish, setSignatureDish] = useState('')
   const [highlightedDishes, setHighlightedDishes] = useState('')
-  const [excludedDishes, setExcludedDishes] = useState('')
-  const [menuItems] = useState<any[]>([]) // Placeholder for complex menu state
+  const [excludedDishes] = useState('')
+  interface MenuItem {
+    id: string;
+    name: string;
+    emoji?: string;
+  }
+  const [menuItems] = useState<MenuItem[]>([]) // Placeholder for complex menu state
 
   // Step 5: Experience & Branding
   const [experienceType, setExperienceType] = useState('classic')
   const [primaryColor, setPrimaryColor] = useState('#6C63FF')
-  const [welcomeMessage, setWelcomeMessage] = useState('')
+  const [welcomeMessage] = useState('')
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
-  const [aiVariants, setAiVariants] = useState('3 variants (Premium)')
-  const [reviewLanguage, setReviewLanguage] = useState('English')
+  const [aiVariants] = useState('3 variants (Premium)')
+  const [reviewLanguage] = useState('English')
   
   // --- LocalStorage Persistence ---
   useEffect(() => {
@@ -647,7 +793,7 @@ export function OnboardingWizard() {
         setLoading(false)
       }
     }
-  }, [currentStep, businessName, tagline, primaryColor, googleReviewLink, phoneNumber, whatsappNumber, address, city, area, state, pincode, ownerEmail, placeId, googleRating, reviewCount, businessType, priceRange, cuisine, dietaryOptions, signatureDish, highlightedDishes, excludedDishes, experienceType, welcomeMessage, aiVariants, reviewLanguage, openingTime, closingTime, daysOpen, loading, router])
+  }, [currentStep, businessName, tagline, primaryColor, googleReviewLink, phoneNumber, whatsappNumber, address, city, area, state, pincode, ownerEmail, placeId, googleRating, reviewCount, businessType, priceRange, cuisine, dietaryOptions, signatureDish, highlightedDishes, excludedDishes, experienceType, welcomeMessage, aiVariants, reviewLanguage, openingTime, closingTime, daysOpen, router])
 
 
   const handleBack = useCallback(() => {
