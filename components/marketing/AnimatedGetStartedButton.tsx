@@ -30,7 +30,7 @@ export function AnimatedGetStartedButton({
   return (
     <motion.div className={`${wrap} ${className}`} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
       <Link
-        href="/sign-up"
+        href="/register"
         className={`get-started-qr-btn group relative flex items-center justify-center gap-2 overflow-hidden font-medium text-white ${sizeClass[size]} ${fullWidth ? 'w-full' : ''}`}
       >
         <span className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#3D261C] via-[#5C3D2E] to-[#3D261C] bg-[length:200%_100%] transition-all duration-500 group-hover:bg-[position:100%_0]" />

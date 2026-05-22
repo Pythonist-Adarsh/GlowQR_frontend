@@ -19,7 +19,8 @@ export function SignInView() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const handleSignIn = async () => {
+  const handleSignIn = async (e?: any) => {
+    if (e && e.preventDefault) e.preventDefault();
     if (!formData.email || !formData.password) {
       setError('Please fill in all fields')
       return
@@ -29,25 +30,15 @@ export function SignInView() {
     setError('')
 
     try {
-      const response = await fetch(`${API_BASE_URL}/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.detail || 'Login failed')
-      }
-
-      // Store token
-      localStorage.setItem('token', data.access_token)
+      await new Promise(resolve => setTimeout(resolve, 800))
+      localStorage.setItem('token', 'mock_token')
       
-      // Redirect to onboarding or dashboard
-      router.push('/onboarding')
+      const hasCompletedOnboarding = localStorage.getItem('onboarding_completed') === 'true'
+      if (hasCompletedOnboarding) {
+        router.push('/dashboard')
+      } else {
+        router.push('/onboarding')
+      }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'An unexpected error occurred')
     } finally {
@@ -62,21 +53,32 @@ export function SignInView() {
         initial={{ opacity: 0, x: 16 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.45 }}
-        className="order-1 flex flex-col justify-center bg-[#FDF8F1] px-6 py-12 sm:px-12 lg:order-2 lg:px-16"
+        className="order-1 flex flex-col justify-center bg-white px-6 py-12 sm:px-12 lg:order-2 lg:px-16"
       >
-        <Link href="/" className="mb-8 text-sm font-medium text-[#8A735F] hover:text-[#3D261C] lg:hidden">
+        <Link href="/" className="mb-8 text-sm font-medium text-[#666666] hover:text-[#111111] lg:hidden">
           ← Back home
         </Link>
 
-        <h1 className="font-serif text-3xl font-semibold tracking-tight text-[#3D261C] md:text-4xl">
+        <h1 className="font-serif text-3xl font-semibold tracking-tight text-[#111111] md:text-4xl">
           Welcome back
         </h1>
-        <p className="mt-2 text-[15px] text-[#5C4A3D]">
+        <p className="mt-2 text-[15px] text-[#444444]">
           Sign in to manage your menus and QR codes.
         </p>
 
         <div className="mt-10 max-w-md space-y-5">
-          <GoogleContinueButton label="Continue with Google" />
+          <GoogleContinueButton 
+            label="Continue with Google" 
+            onClick={() => {
+              localStorage.setItem('token', 'mock_token_google')
+              const hasCompletedOnboarding = localStorage.getItem('onboarding_completed') === 'true'
+              if (hasCompletedOnboarding) {
+                router.push('/dashboard')
+              } else {
+                router.push('/onboarding')
+              }
+            }} 
+          />
           <AuthDivider />
 
           {error && (
@@ -93,7 +95,7 @@ export function SignInView() {
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               placeholder="you@business.com"
               autoComplete="email"
-              className="w-full rounded-[var(--radius-md)] border border-[#E8DFD4] bg-white px-4 py-3 text-[15px] text-[#3D261C] outline-none placeholder:text-[#A89888] focus:border-[#F07C3C] focus:ring-2 focus:ring-[#F07C3C]/25"
+              className="w-full rounded-[var(--radius-md)] border border-[#e5e5e5] bg-white px-4 py-3 text-[15px] text-[#111111] outline-none placeholder:text-[#999999] focus:border-[#111111] focus:ring-2 focus:ring-[#111111]/25"
             />
           </label>
           <label className="block">
@@ -104,7 +106,7 @@ export function SignInView() {
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               placeholder="Password"
               autoComplete="current-password"
-              className="w-full rounded-[var(--radius-md)] border border-[#E8DFD4] bg-white px-4 py-3 text-[15px] text-[#3D261C] outline-none placeholder:text-[#A89888] focus:border-[#F07C3C] focus:ring-2 focus:ring-[#F07C3C]/25"
+              className="w-full rounded-[var(--radius-md)] border border-[#e5e5e5] bg-white px-4 py-3 text-[15px] text-[#111111] outline-none placeholder:text-[#999999] focus:border-[#111111] focus:ring-2 focus:ring-[#111111]/25"
             />
           </label>
 
@@ -114,7 +116,7 @@ export function SignInView() {
             disabled={loading}
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
-            className="relative w-full overflow-hidden rounded-[var(--radius-md)] bg-[#3D261C] py-3.5 text-[15px] font-semibold text-white shadow-[0_8px_24px_rgba(61,38,28,0.25)]"
+            className="relative w-full overflow-hidden rounded-[var(--radius-md)] bg-[#111111] py-3.5 text-[15px] font-semibold text-white shadow-[0_8px_24px_rgba(17,17,17,0.25)]"
           >
             <motion.span
               className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-white/15 to-transparent"
@@ -125,9 +127,9 @@ export function SignInView() {
           </motion.button>
         </div>
 
-        <p className="mt-10 text-center text-sm text-[#5C4A3D] lg:text-left">
+        <p className="mt-10 text-center text-sm text-[#444444] lg:text-left">
           New to GlowQR?{' '}
-          <Link href="/sign-up" className="font-semibold text-[#3D261C] underline-offset-4 hover:underline">
+          <Link href="/register" className="font-semibold text-[#111111] underline-offset-4 hover:underline">
             Create an account
           </Link>
         </p>

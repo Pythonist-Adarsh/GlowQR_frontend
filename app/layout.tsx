@@ -1,25 +1,6 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
-import { Syne, DM_Sans, Cormorant_Garamond } from 'next/font/google'
 import './globals.css'
-
-const syne = Syne({
-  subsets: ['latin'],
-  variable: '--font-display',
-  weight: ['400', '500', '600', '700', '800'],
-})
-
-const dmSans = DM_Sans({
-  subsets: ['latin'],
-  variable: '--font-body',
-  weight: ['300', '400', '500', '600'],
-})
-
-const cormorant = Cormorant_Garamond({
-  subsets: ['latin'],
-  variable: '--font-serif',
-  weight: ['400', '500', '600', '700'],
-})
 
 export const metadata: Metadata = {
   title: 'GlowQR — AI-Powered QR Review Platform',
@@ -34,8 +15,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Roboto:wght@400;500;700&display=swap" />
+      </head>
       <body
-        className={`${syne.variable} ${dmSans.variable} ${cormorant.variable} font-body antialiased`}
+        className="font-sans antialiased"
+        suppressHydrationWarning
       >
 
         <Script id="glowqr-theme-init" strategy="beforeInteractive">

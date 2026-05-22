@@ -1,5 +1,5 @@
-import ReviewFlow from "@/components/review/ReviewFlow";
 import { notFound } from "next/navigation";
+import { ClientReviewFlow } from "@/components/review/ClientReviewFlow";
 
 // This is a mock function to fetch business data
 // In a real application, this would fetch from a database or external API
@@ -34,7 +34,7 @@ export default async function BusinessReviewPage({ params }: { params: Promise<{
 
   return (
     <main className="min-h-screen">
-      <ReviewFlow initialData={businessData} />
+      <ClientReviewFlow initialData={businessData} />
     </main>
   );
 }

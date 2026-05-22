@@ -24,12 +24,6 @@ const cards = [
   },
 ]
 
-const checklist = [
-  'White-label flows & themes',
-  'Staff alerts on low ratings',
-  'Export-ready reporting',
-  'GDPR-minded data handling',
-]
 
 export function FeatureIntro() {
   return (
@@ -75,26 +69,6 @@ export function FeatureIntro() {
           ))}
         </motion.div>
 
-        <motion.ul
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={staggerContainer}
-          className="mx-auto mt-14 max-w-xl space-y-3"
-        >
-          {checklist.map((item) => (
-            <motion.li
-              key={item}
-              variants={fadeUp}
-              className="flex items-center gap-3 text-[var(--text-secondary)]"
-            >
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-primary/15 text-xs font-bold text-brand-primary">
-                ✓
-              </span>
-              {item}
-            </motion.li>
-          ))}
-        </motion.ul>
       </div>
     </section>
   )

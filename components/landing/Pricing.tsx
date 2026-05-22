@@ -6,34 +6,36 @@ import { Button } from '@/components/ui/Button'
 
 const tiers = [
   {
-    name: 'Starter',
-    price: '$29',
-    period: '/mo',
-    desc: 'Single location teams getting reviews on autopilot.',
-    features: ['1 active QR campaign', 'AI review drafts (2 variants)', 'Google + Yelp routing', 'Email summaries'],
+    name: 'Free',
+    price: '$0',
+    period: '',
+    desc: 'Up to 7 days with no dashboard access.',
+    features: ['7-day free trial', 'Basic QR Code generation', 'No dashboard access'],
     highlighted: false,
   },
   {
-    name: 'Pro',
-    price: '$79',
+    name: 'Basic',
+    price: '$299',
     period: '/mo',
-    desc: 'Growing brands that want Premium flows & analytics.',
+    desc: '3 fully SEO based reviews in selected language & basic analytics in dashboard.',
     features: [
-      'Everything in Starter',
-      'Premium theme unlock',
-      'Up to 5 AI variants',
-      'Advanced analytics',
-      'Priority chat support',
+      '3 fully SEO based reviews',
+      'Selected language support',
+      'Basic analytics in dashboard',
     ],
     highlighted: true,
-    badge: 'Best value',
+    badge: 'Popular',
   },
   {
-    name: 'Enterprise',
-    price: 'Custom',
-    period: '',
-    desc: 'Chains & franchises with governance needs.',
-    features: ['SSO / SAML', 'Dedicated success manager', 'SLA & audit logs', 'Custom integrations'],
+    name: 'Premium',
+    price: '$699',
+    period: '/mo',
+    desc: '5 SEO reviews based on user selected criteria, in selected language with advanced analytics.',
+    features: [
+      '5 SEO reviews based on criteria',
+      'Selected language support',
+      'Advanced analytics based on user reviews',
+    ],
     highlighted: false,
   },
 ]
@@ -98,6 +100,7 @@ export function Pricing() {
                 variant={t.highlighted ? 'premium' : 'primary'}
                 size="lg"
                 className="mt-10 w-full"
+                onClick={() => window.location.href = '/register'}
               >
                 Get started
               </Button>

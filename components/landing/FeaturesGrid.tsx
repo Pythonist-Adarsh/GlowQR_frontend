@@ -1,7 +1,6 @@
 'use client'
 
-import { motion, animate } from 'framer-motion'
-import { useEffect, useRef, useState } from 'react'
+import { motion } from 'framer-motion'
 import { fadeUp, staggerContainer } from '@/lib/animations'
 
 const features = [
@@ -37,117 +36,40 @@ const features = [
   },
 ]
 
-const stats = [
-  { label: 'Businesses', value: 10000, suffix: '+' },
-  { label: 'Reviews influenced', value: 5000000, suffix: '+' },
-  { label: 'Avg. uplift', value: 34, suffix: '%' },
-  { label: 'Countries', value: 42, suffix: '+' },
-]
-
-function AnimatedStat({
-  value,
-  suffix,
-}: {
-  value: number
-  suffix: string
-}) {
-  const [display, setDisplay] = useState(0)
-  const ref = useRef<HTMLDivElement>(null)
-  const played = useRef(false)
-
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    let controls: ReturnType<typeof animate> | undefined
-    const obs = new IntersectionObserver(
-      ([e]) => {
-        if (e?.isIntersecting && !played.current) {
-          played.current = true
-          controls = animate(0, value, {
-            duration: 1.5,
-            ease: 'easeOut',
-            onUpdate: (v) => setDisplay(Math.round(v)),
-          })
-        }
-      },
-      { threshold: 0.2 },
-    )
-    obs.observe(el)
-    return () => {
-      obs.disconnect()
-      controls?.stop()
-    }
-  }, [value])
-
-  const formatted =
-    display >= 1000 ? display.toLocaleString() : display.toString()
-
-  return (
-    <div ref={ref} className="text-center">
-      <div className="font-display text-3xl font-bold tabular-nums text-[var(--text-primary)] md:text-4xl">
-        <span>{formatted}</span>
-        <span className="text-brand-accent">{suffix}</span>
-      </div>
-    </div>
-  )
-}
-
 export function FeaturesGrid() {
   return (
-    <section className="border-b border-[var(--border-default)] py-20 md:py-28">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-80px' }}
-          variants={fadeUp}
-          className="mx-auto max-w-2xl text-center"
-        >
-          <h2 className="font-display text-3xl font-bold md:text-4xl">Full Features.</h2>
-          <p className="mt-4 text-[var(--text-secondary)] md:text-lg">
-            Everything you need to operationalize reviews — from QR to insights — without hiring an
-            agency.
-          </p>
-        </motion.div>
-
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-40px' }}
+    <section className="py-24 relative overflow-hidden bg-black/5">
+      <div className="container mx-auto px-6 relative z-10">
+        <motion.div 
           variants={staggerContainer}
-          className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
-        >
-          {features.map((f) => (
-            <motion.article
-              key={f.title}
-              variants={fadeUp}
-              whileHover={{ y: -4 }}
-              className="glass-card p-6 transition-shadow hover:shadow-md"
-            >
-              <span className="text-2xl">{f.icon}</span>
-              <h3 className="mt-3 font-display text-lg font-bold">{f.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-[var(--text-secondary)]">{f.desc}</p>
-            </motion.article>
-          ))}
-        </motion.div>
-
-        <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          variants={staggerContainer}
-          className="mt-16 grid grid-cols-2 gap-8 lg:grid-cols-4"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          {stats.map((s) => (
-            <motion.div key={s.label} variants={fadeUp}>
-              <AnimatedStat value={s.value} suffix={s.suffix} />
-              <p className="mt-2 text-center text-sm font-medium text-[var(--text-tertiary)]">
-                {s.label}
+          {features.map((feature, idx) => (
+            <motion.div
+              key={idx}
+              variants={fadeUp}
+              className="p-8 rounded-[var(--radius-xl)] bg-white border border-slate-100 hover:border-brand-accent/20 transition-all duration-300 group hover:shadow-brand hover:-translate-y-1"
+            >
+              <div className="w-14 h-14 rounded-[var(--radius-lg)] bg-brand-accent/10 flex items-center justify-center text-3xl mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                {feature.icon}
+              </div>
+              <h3 className="text-xl font-bold mb-3 text-slate-900 font-display">
+                {feature.title}
+              </h3>
+              <p className="text-slate-600 leading-relaxed font-body">
+                {feature.desc}
               </p>
             </motion.div>
           ))}
         </motion.div>
       </div>
+      
+      {/* Decorative background elements */}
+      <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-brand-accent/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
+      <div className="absolute bottom-0 left-0 w-1/4 h-1/4 bg-brand-gold/5 blur-[100px] rounded-full translate-y-1/2 -translate-x-1/2" />
     </section>
   )
 }

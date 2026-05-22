@@ -1,725 +1,1055 @@
-'use client'
+'use client';
 
-import { useState, lazy, useCallback, memo, useDeferredValue, useEffect, useMemo, useRef, Suspense } from 'react'
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
+import { useState, useCallback, useMemo, memo, useEffect, Suspense, lazy, useRef } from 'react'
+import { useRouter } from 'next/navigation'
+import { motion, AnimatePresence } from 'framer-motion'
 import { 
-  Camera, UploadCloud, ChevronRight, CheckCircle2, 
-  Download, ArrowRight, Sparkles, Star, Layers, Building2,
-  Utensils, Coffee, Croissant, Wine, Pizza, ChefHat, Truck, Package,
-  Hotel, Flower2, Scissors, ShoppingBag, Dumbbell, Stethoscope, GraduationCap,
-  Sparkle, Smartphone, Zap, Heart, LucideIcon, Plus, Layout, Palette,
-  MousePointer2, Search, Info, AlertTriangle, QrCode, Share2, Eye,
-  Wand2
+  Building2, 
+  MapPin, 
+  ChevronRight, 
+  UploadCloud, 
+  Sparkles, 
+  ArrowRight,
+  Info,
+  AlertTriangle,
+  CheckCircle2,
+  Utensils,
+  Coffee,
+  Croissant,
+  GlassWater,
+  ShoppingBag,
+  Hotel,
+  Dumbbell,
+  Stethoscope,
+  GraduationCap,
+  Layout,
+  QrCode,
+  Download,
+  Printer,
+  Link as LinkIcon,
+  Bell,
+  RefreshCw,
+  Search,
+  Camera,
+  Trash2,
+  X,
+  Plus
 } from 'lucide-react'
 import Image from 'next/image'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { QRCodeSVG } from 'qrcode.react'
+// qr-code-styling will be dynamically imported for client-side rendering
 
-// Lazy load ReviewFlow for simulation to keep initial bundle smaller
-const ReviewFlow = lazy(() => import('../review/ReviewFlow'))
+// Lazy load the simulation component
+const ReviewFlow = lazy(() => import('@/components/review/ReviewFlow'));
 
-// --- Constants & Types ---
+// --- Design System Tokens (CSS Variables) ---
+const STYLES = `
+  :root {
+    --color-bg-primary: #ffffff;
+    --color-bg-secondary: #f8fafc;
+    --color-brand-primary: #1a8a3c;
+    --color-brand-accent: #1D9E75;
+    --color-text-primary: #0f172a;
+    --color-text-secondary: #475569;
+    --color-text-tertiary: #94a3b8;
+    --color-border-default: #e2e8f0;
+    --color-card-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+    --color-success-bg: #e1f5ee;
+    --color-warning-bg: #fff7ed;
+    --color-info-bg: #eff6ff;
+  }
 
-const steps = [
-  { id: 'start', title: 'Magic Extraction', subtitle: 'Replace manual input with AI-powered brand analysis.' },
-  { id: 'analysis', title: 'AI Analysis', subtitle: 'Our AI is extracting your brand DNA and menu markers.' },
-  { id: 'identity', title: 'Refine Identity', subtitle: 'Polish the brand personality our AI discovered for you.' },
-  { id: 'design', title: 'Experience Style', subtitle: 'Choose how your customers interact with your brand.' },
-  { id: 'preview', title: 'Live Simulation', subtitle: 'Interact with your premium review flow before going live.' },
-  { id: 'success', title: 'Ready to Glow', subtitle: 'Your high-conversion QR experience is ready.' },
-]
+  [data-theme='dark'] {
+    --color-bg-primary: #0f172a;
+    --color-bg-secondary: #1e293b;
+    --color-text-primary: #f8fafc;
+    --color-text-secondary: #94a3b8;
+    --color-text-tertiary: #64748b;
+    --color-border-default: #334155;
+    --color-success-bg: rgba(29, 158, 117, 0.1);
+    --color-warning-bg: rgba(245, 158, 11, 0.1);
+    --color-info-bg: rgba(59, 130, 246, 0.1);
+  }
 
-const categories = [
-  { id: 'restaurant', name: 'Restaurant', icon: <Utensils className="w-5 h-5" /> },
-  { id: 'cafe', name: 'Café', icon: <Coffee className="w-5 h-5" /> },
-  { id: 'bakery', name: 'Bakery', icon: <Croissant className="w-5 h-5" /> },
-  { id: 'bar', name: 'Bar', icon: <Wine className="w-5 h-5" /> },
-  { id: 'salon', name: 'Salon', icon: <Scissors className="w-5 h-5" /> },
-  { id: 'other', name: 'Other', icon: <Sparkle className="w-5 h-5" /> },
-]
+  .glass-card {
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-border-default);
+    box-shadow: var(--color-card-shadow);
+  }
 
-// --- Helper Components ---
+  .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--color-border-default); border-radius: 10px; }
+`
 
-const Badge = memo(({ text, type }: { text: string, type: 'required' | 'optional' | 'premium' }) => {
+// --- UI Components ---
+
+const Badge = ({ children, type = 'required' }: { children: string, type?: 'required' | 'optional' | 'production' }) => {
   const styles = {
-    required: 'bg-rose-500/10 text-rose-400 border border-rose-500/20',
-    optional: 'bg-slate-500/10 text-slate-400 border border-slate-500/20',
-    premium: 'bg-[#6C63FF]/10 text-[#6C63FF] border border-[#6C63FF]/20'
+    required: 'bg-red-500 text-white',
+    optional: 'bg-slate-400 text-white',
+    production: 'bg-amber-500 text-white'
   }
   return (
-    <motion.span 
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md ${styles[type]}`}
-    >
-      {text}
-    </motion.span>
+    <span className={`ml-2 px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${styles[type]}`}>
+      {children}
+    </span>
   )
-})
-Badge.displayName = 'Badge'
-
-interface InputFieldProps {
-  id: string;
-  label: string;
-  type?: string;
-  value: string;
-  onChange: (val: string) => void;
-  placeholder?: string;
-  hint?: string;
-  required?: boolean;
-  optional?: boolean;
-  premium?: boolean;
-  className?: string;
 }
 
-const InputField = memo(({ id, label, type = 'text', value, onChange, placeholder, hint, required, optional, premium, className = '' }: InputFieldProps) => {
-  const [localValue, setLocalValue] = useState(value)
-  const timerRef = useRef<NodeJS.Timeout | null>(null)
-  
-  useEffect(() => {
-    setLocalValue(value)
-  }, [value])
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value
-    setLocalValue(val)
-    
-    if (timerRef.current) clearTimeout(timerRef.current)
-    timerRef.current = setTimeout(() => {
-      onChange(val)
-    }, 150)
-  }
-
-  return (
-    <div className={`space-y-2 ${className}`}>
-      <div className="flex items-center justify-between">
-        <label htmlFor={id} className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] cursor-pointer">
-          {label}
-        </label>
-        <div className="flex gap-1">
-          {required && <Badge text="Required" type="required" />}
-          {optional && <Badge text="Optional" type="optional" />}
-          {premium && <Badge text="Premium" type="premium" />}
-        </div>
-      </div>
-      <div className="relative group">
-        <input
-          id={id}
-          name={id}
-          type={type}
-          value={localValue}
-          onChange={handleChange}
-          placeholder={placeholder}
-          autoComplete="off"
-          className="w-full bg-white/[0.03] border border-white/10 px-6 py-4 rounded-2xl focus:border-[#F07C3C] focus:ring-4 focus:ring-[#F07C3C]/10 outline-none transition-all placeholder:text-slate-700 text-white group-hover:border-white/20 font-medium"
-        />
-        <div className="absolute inset-0 rounded-2xl bg-[#F07C3C]/5 opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none" />
-      </div>
-      {hint && <p className="text-[10px] text-slate-600 font-medium italic px-1">{hint}</p>}
-    </div>
-  )
-})
-InputField.displayName = 'InputField'
-
-const InfoBox = memo(({ icon: Icon, title, description, variant = 'violet' }: { icon: LucideIcon, title: string, description: string, variant?: 'violet' | 'amber' | 'emerald' }) => {
+const InfoBox = ({ icon: Icon, title, description, variant = 'info' }: { icon: any, title: string, description: string, variant?: 'info' | 'warning' | 'success' }) => {
   const styles = {
-    violet: 'bg-[#6C63FF]/10 border-[#6C63FF]/20 text-white',
-    amber: 'bg-amber-500/10 border-amber-500/20 text-amber-200',
-    emerald: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-200'
+    info: 'bg-[#eff6ff] text-blue-800 border-blue-100',
+    warning: 'bg-[#fff7ed] text-amber-800 border-amber-100',
+    success: 'bg-[#e1f5ee] text-emerald-800 border-emerald-100'
   }
-  const iconColors = {
-    violet: 'text-[#6C63FF]',
-    amber: 'text-amber-400',
-    emerald: 'text-emerald-400'
-  }
-
   return (
-    <motion.div 
-      whileHover={{ y: -2 }}
-      className={`p-5 rounded-3xl border ${styles[variant]} flex gap-4 backdrop-blur-md transition-colors`}
-    >
-      <div className={`w-12 h-12 rounded-2xl bg-black/20 flex items-center justify-center shrink-0 ${iconColors[variant]} border border-white/5`}>
-        <Icon className="w-5 h-5" />
-      </div>
+    <div className={`p-4 rounded-2xl border flex gap-3 mb-6 ${styles[variant]}`}>
+      <Icon className="w-5 h-5 shrink-0 mt-0.5" />
       <div>
-        <h4 className="font-black text-sm mb-1">{title}</h4>
-        <p className="text-[11px] opacity-70 leading-relaxed font-medium">{description}</p>
+        <p className="text-xs font-bold mb-0.5">{title}</p>
+        <p className="text-[11px] opacity-80 leading-relaxed">{description}</p>
       </div>
-    </motion.div>
-  )
-})
-InfoBox.displayName = 'InfoBox'
-
-// --- Step Components ---
-
-const MagicExtractionStep = memo(({ 
-  businessWebsite, setBusinessWebsite, setLogoPreview, onStart 
-}: { 
-  businessWebsite: string, 
-  setBusinessWebsite: (v: string) => void, 
-  setLogoPreview: (v: string | null) => void,
-  onStart: (source: 'upload' | 'website') => void 
-}) => (
-  <div className="space-y-12">
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <motion.label 
-        whileHover={{ y: -5, scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        className="group relative overflow-hidden bg-white/[0.02] border-2 border-dashed border-white/10 rounded-[3rem] p-10 flex flex-col items-center justify-center cursor-pointer transition-all hover:border-[#F07C3C]/50 hover:bg-[#F07C3C]/5 shadow-2xl"
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-[#F07C3C]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-        <div className="w-24 h-24 bg-black/40 rounded-[2.5rem] flex items-center justify-center mb-6 overflow-hidden border border-white/10 group-hover:border-[#F07C3C]/30 transition-all shadow-2xl relative z-10">
-          <div className="flex flex-col items-center">
-            <UploadCloud className="w-10 h-10 text-[#F07C3C] mb-2" />
-            <div className="flex gap-1">
-              <div className="w-1 h-1 bg-[#F07C3C] rounded-full animate-bounce [animation-delay:-0.3s]" />
-              <div className="w-1 h-1 bg-[#F07C3C] rounded-full animate-bounce [animation-delay:-0.15s]" />
-              <div className="w-1 h-1 bg-[#F07C3C] rounded-full animate-bounce" />
-            </div>
-          </div>
-        </div>
-        <span className="font-display text-2xl font-black text-white mb-2">Upload Logo</span>
-        <span className="text-[10px] text-slate-500 font-black uppercase tracking-[0.3em] text-center">AI extracts colors & style</span>
-        <input type="file" className="hidden" accept="image/*" onChange={e => {
-          if (e.target.files?.[0]) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-              setLogoPreview(event.target?.result as string);
-              onStart('upload');
-            };
-            reader.readAsDataURL(e.target.files[0]);
-          }
-        }} />
-      </motion.label>
-
-      <motion.div 
-        whileHover={{ y: -5, scale: 1.02 }}
-        className="group relative overflow-hidden bg-white/[0.02] border border-white/10 rounded-[3rem] p-10 flex flex-col justify-between transition-all hover:bg-white/[0.04] shadow-2xl"
-      >
-        <div className="space-y-6">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-[#6C63FF]/20 rounded-2xl flex items-center justify-center text-[#6C63FF] border border-[#6C63FF]/30">
-              <Sparkles className="w-6 h-6" />
-            </div>
-            <div>
-              <h4 className="text-xl font-black text-white">AI Web Crawler</h4>
-              <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.2em]">Extract brand DNA from URL</p>
-            </div>
-          </div>
-          <InputField 
-            id="website" 
-            label="Website URL" 
-            value={businessWebsite} 
-            onChange={setBusinessWebsite} 
-            placeholder="e.g. cafetoscana.com" 
-            className="!space-y-1"
-          />
-        </div>
-        <button 
-          onClick={() => onStart('website')}
-          disabled={!businessWebsite}
-          className="mt-10 group/btn w-full py-5 bg-[#F07C3C] text-white rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all hover:shadow-[0_0_40px_rgba(240,124,60,0.4)] active:scale-95 disabled:opacity-20"
-        >
-          Begin Magic Extraction <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-        </button>
-      </motion.div>
     </div>
+  )
+}
 
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <InfoBox icon={Zap} title="Skip Manual Input" description="Upload image or URL to skip 80% of manual setup steps." variant="emerald" />
-      <InfoBox icon={Layers} title="Brand Matching" description="The experience automatically syncs with your visual identity." variant="violet" />
-      <InfoBox icon={Heart} title="Premium Trust" description="Join elite brands using GlowQR for high-conversion reviews." variant="violet" />
+const InputField = ({ label, id, hint, badge, optional, ...props }: any) => (
+  <div className="space-y-1.5">
+    <div className="flex items-center justify-between">
+      <label htmlFor={id} className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+        {label} {badge && <Badge type={badge}>{badge}</Badge>}
+      </label>
+    </div>
+    <input 
+      id={id}
+      className="w-full bg-[var(--color-bg-secondary)] border border-[var(--color-border-default)] rounded-xl px-4 py-3 text-sm focus:border-[var(--color-brand-primary)] outline-none transition-all placeholder:text-slate-300"
+      {...props} 
+    />
+    {hint && <p className="text-[9px] text-slate-400 italic">{hint}</p>}
+  </div>
+)
+
+const SectionHeader = ({ children }: { children: string }) => (
+  <div className="flex items-center gap-4 py-6">
+    <span className="text-[10px] font-black text-[var(--color-brand-primary)] uppercase tracking-[0.2em] whitespace-nowrap">{children}</span>
+    <div className="h-px bg-[var(--color-border-default)] w-full" />
+  </div>
+)
+
+// --- Step Content Components ---
+
+const Step1 = ({ data, updateData }: any) => (
+  <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
+    <InfoBox 
+      icon={Info} 
+      title="Setup Overview" 
+      description="Fields marked Required are needed before your QR goes live. Optional fields improve AI review quality." 
+      variant="info"
+    />
+    <div className="space-y-6">
+      <InputField 
+        label="Business Name" 
+        badge="required"
+        value={data.name} 
+        onChange={(e: any) => updateData({ name: e.target.value })} 
+        placeholder="The Velvet Lounge"
+        hint="Appears on customer review page and inside AI-generated reviews"
+      />
+      <InputField 
+        label="Tagline / Welcome Message" 
+        badge="optional"
+        value={data.tagline} 
+        onChange={(e: any) => updateData({ tagline: e.target.value })} 
+        placeholder="Best brunch in Lucknow"
+        hint="Used by AI as a keyword"
+      />
+      <InputField 
+        label="Business Website" 
+        badge="optional"
+        value={data.website} 
+        onChange={(e: any) => updateData({ website: e.target.value })} 
+        placeholder="thevelvetlounge.com"
+      />
+
+      <SectionHeader>Google Review Setup</SectionHeader>
+      
+      <InputField 
+        label="Google Review Link" 
+        badge="required"
+        value={data.googleReviewUrl} 
+        onChange={(e: any) => updateData({ googleReviewUrl: e.target.value })} 
+        placeholder="https://g.page/r/..."
+        hint="Find this via Google Maps Share button"
+      />
+      <InputField 
+        label="Google Place ID" 
+        badge="production"
+        value={data.placeId} 
+        onChange={(e: any) => updateData({ placeId: e.target.value })} 
+        placeholder="ChIJ..."
+        hint="Links your business to the Places API"
+      />
+      <div className="grid grid-cols-2 gap-4">
+        <InputField 
+          label="Current Rating" 
+          badge="production"
+          type="number"
+          step="0.1"
+          value={data.currentRating} 
+          onChange={(e: any) => updateData({ currentRating: e.target.value })} 
+          hint="Baseline rating"
+        />
+        <InputField 
+          label="Review Count" 
+          badge="production"
+          type="number"
+          value={data.reviewCount} 
+          onChange={(e: any) => updateData({ reviewCount: e.target.value })} 
+          hint="Baseline count"
+        />
+      </div>
     </div>
   </div>
-))
-MagicExtractionStep.displayName = 'MagicExtractionStep'
+)
 
-const IdentityReviewStep = memo(({ 
-  businessName, setBusinessName, tagline, setTagline, 
-  city, setCity, businessType, setBusinessType, primaryColor, setPrimaryColor 
-}: any) => (
-  <div className="space-y-10">
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <InputField id="name" label="Business Name" value={businessName} onChange={setBusinessName} required />
-      <InputField id="tagline" label="Brand Tagline" value={tagline} onChange={setTagline} optional />
-      <InputField id="city" label="City" value={city} onChange={setCity} required />
+const Step2 = ({ data, updateData }: any) => (
+  <div className="space-y-6">
+    <InfoBox 
+      icon={AlertTriangle} 
+      title="SEO Optimization" 
+      description="City and area are included in every AI-generated review for local SEO boost." 
+      variant="warning"
+    />
+    <div className="grid grid-cols-2 gap-4">
+      <InputField label="City" badge="required" value={data.city} onChange={(e: any) => updateData({ city: e.target.value })} placeholder="Lucknow" hint="e.g. Hazratganj" />
+      <InputField label="Area/Locality" badge="optional" value={data.area} onChange={(e: any) => updateData({ area: e.target.value })} placeholder="Hazratganj" />
+    </div>
+    <InputField label="Full Address" badge="optional" value={data.address} onChange={(e: any) => updateData({ address: e.target.value })} placeholder="12/45, Hazratganj Cross Roads" />
+    
+    <SectionHeader>Contact Details</SectionHeader>
+    <div className="grid grid-cols-2 gap-4">
+      <InputField label="Phone Number" badge="production" value={data.phone} onChange={(e: any) => updateData({ phone: e.target.value })} />
+      <InputField label="WhatsApp Number" badge="production" value={data.whatsapp} onChange={(e: any) => updateData({ whatsapp: e.target.value })} hint="For 1-hour nudge" />
+    </div>
+    <InputField label="Manager Email" badge="required" type="email" value={data.email} onChange={(e: any) => updateData({ email: e.target.value })} hint="For alerts & billing" />
+
+    <SectionHeader>Business Hours</SectionHeader>
+    <div className="grid grid-cols-2 gap-4">
+      <InputField label="Opening Time" type="time" value={data.openTime || '09:00'} onChange={(e: any) => updateData({ openTime: e.target.value })} />
+      <InputField label="Closing Time" type="time" value={data.closeTime || '22:00'} onChange={(e: any) => updateData({ closeTime: e.target.value })} />
+    </div>
+    <div>
+      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 block">Days Open</label>
+      <div className="flex gap-2">
+        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
+          <button 
+            key={day}
+            onClick={() => {
+              const current = data.daysOpen || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+              const next = current.includes(day) ? current.filter((d: string) => d !== day) : [...current, day];
+              updateData({ daysOpen: next });
+            }}
+            className={`flex-1 py-2 rounded-lg text-[10px] font-bold border transition-all ${data.daysOpen?.includes(day) ? 'bg-[var(--color-brand-primary)] text-white border-[var(--color-brand-primary)]' : 'bg-white text-slate-400 border-slate-200'}`}
+          >
+            {day}
+          </button>
+        ))}
+      </div>
+    </div>
+    <SectionHeader>Branding</SectionHeader>
+    <div className="space-y-4">
+      <div>
+        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Business Logo</label>
+        <input type="file" accept="image/*" onChange={e => {
+            if (e.target.files?.[0]) {
+              const reader = new FileReader();
+              reader.onload = (event) => updateData({ logo: event.target?.result as string });
+              reader.readAsDataURL(e.target.files[0]);
+            }
+          }} className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100" />
+      </div>
+      <div>
+        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Brand Color</label>
+        <input type="color" value={data.primaryColor || '#1a8a3c'} onChange={e => updateData({ primaryColor: e.target.value })} className="h-10 w-20 cursor-pointer rounded border border-slate-200" />
+      </div>
+    </div>
+  </div>
+)
+
+const Step3 = ({ data, updateData }: any) => {
+  const categories = [
+    { id: 'restaurant', name: 'Restaurant', icon: '🍽️' },
+    { id: 'cafe', name: 'Café', icon: '☕' },
+    { id: 'bakery', name: 'Bakery', icon: '🥐' },
+    { id: 'bar', name: 'Bar', icon: '🍸' },
+    { id: 'fastfood', name: 'Fast Food', icon: '🍔' },
+    { id: 'finedining', name: 'Fine Dining', icon: '🥂' },
+    { id: 'foodtruck', name: 'Food Truck', icon: '🚚' },
+    { id: 'cloudkitchen', name: 'Cloud Kitchen', icon: '📦' },
+    { id: 'hotel', name: 'Hotel', icon: '🏨' },
+    { id: 'spa', name: 'Spa', icon: '💆' },
+    { id: 'salon', name: 'Salon', icon: '💇' },
+    { id: 'retail', name: 'Retail', icon: '🛍️' },
+    { id: 'gym', name: 'Gym', icon: '💪' },
+    { id: 'medical', name: 'Medical', icon: '🏥' },
+    { id: 'education', name: 'Education', icon: '🎓' },
+    { id: 'other', name: 'Other', icon: '✦' },
+  ];
+
+  return (
+    <div className="space-y-8">
+      <div className="grid grid-cols-4 gap-3">
+        {categories.map(cat => (
+          <button 
+            key={cat.id}
+            onClick={() => updateData({ category: cat.id })}
+            className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all ${data.category === cat.id ? 'border-[var(--color-brand-primary)] bg-[var(--color-success-bg)] text-[var(--color-brand-primary)]' : 'border-slate-100 bg-white text-slate-400 hover:border-slate-200'}`}
+          >
+            <span className="text-2xl mb-1">{cat.icon}</span>
+            <span className="text-[9px] font-black uppercase tracking-widest">{cat.name}</span>
+          </button>
+        ))}
+      </div>
+
+      <SectionHeader>Price Range</SectionHeader>
+      <div className="space-y-4">
+        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Average spend per person</label>
+        <select 
+          value={data.spendRange || ''}
+          onChange={e => updateData({ spendRange: e.target.value })}
+          className="w-full bg-[var(--color-bg-secondary)] border border-[var(--color-border-default)] rounded-xl px-4 py-3 text-sm outline-none"
+        >
+          <option value="">Select Range</option>
+          <option value="Under ₹200">Under ₹200</option>
+          <option value="₹200–₹500">₹200–₹500</option>
+          <option value="₹500–₹1000">₹500–₹1000</option>
+          <option value="₹1000–₹2000">₹1000–₹2000</option>
+          <option value="Above ₹2000">Above ₹2000</option>
+        </select>
+        <p className="text-[9px] text-slate-400 italic">Shown as a chip on customer review page</p>
+      </div>
+
+      <div className="space-y-6 mt-8">
+        <InputField label="Cuisine / Speciality" badge="optional" value={data.speciality} onChange={(e: any) => updateData({ speciality: e.target.value })} hint="AI includes cuisine in reviews" />
+        <div>
+          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 block">Dietary Options [Optional]</label>
+          <div className="flex flex-wrap gap-2">
+            {['Vegetarian', 'Vegan', 'Jain', 'Halal', 'Gluten-free'].map(opt => (
+              <button 
+                key={opt}
+                onClick={() => {
+                  const current = data.dietary || [];
+                  const next = current.includes(opt) ? current.filter((o: string) => o !== opt) : [...current, opt];
+                  updateData({ dietary: next });
+                }}
+                className={`px-4 py-2 rounded-full border text-xs font-bold transition-all ${data.dietary?.includes(opt) ? 'bg-[var(--color-success-bg)] text-[var(--color-brand-primary)] border-[var(--color-brand-primary)]' : 'bg-white text-slate-400 border-slate-200'}`}
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const Step4 = ({ data, updateData }: any) => {
+  const [parsing, setParsing] = useState(false);
+  const [parsed, setParsed] = useState(false);
+  const [fileDetails, setFileDetails] = useState<{ name: string; size: string; type: string } | null>(null);
+  
+  const pdfInputRef = useRef<HTMLInputElement | null>(null);
+  const photoInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handlePdfUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setFileDetails({
+      name: file.name,
+      size: (file.size / (1024 * 1024)).toFixed(2) + " MB",
+      type: "PDF Document"
+    });
+    setParsed(false);
+    setParsing(true);
+    setTimeout(() => {
+      setParsing(false);
+      setParsed(true);
+      
+      // AI Magic: Populate state based on typical restaurant menu
+      updateData({
+        highlightDishes: "Paneer Tikka\nButter Chicken\nGarlic Naan\nDal Makhani",
+        signatureDish: "Special Butter Chicken",
+        menuCategories: [
+          {
+            category: "Starters",
+            items: [
+              { id: 11, name: "Paneer Tikka", emoji: "🧀", price: "₹240" },
+              { id: 12, name: "Crispy Corn", emoji: "🌽", price: "₹180" },
+              { id: 13, name: "Veg Spring Rolls", emoji: "🌯", price: "₹160" }
+            ]
+          },
+          {
+            category: "Mains",
+            items: [
+              { id: 14, name: "Special Butter Chicken", emoji: "🍗", price: "₹380" },
+              { id: 15, name: "Dal Makhani Premium", emoji: "🍲", price: "₹290" },
+              { id: 16, name: "Garlic Butter Naan", emoji: "🫓", price: "₹80" }
+            ]
+          },
+          {
+            category: "Desserts",
+            items: [
+              { id: 17, name: "Royal Gulab Jamun", emoji: "🧁", price: "₹120" },
+              { id: 18, name: "Mango Kulfi", emoji: "🍧", price: "₹140" }
+            ]
+          }
+        ],
+        menuItems: [
+          { id: 11, name: "Paneer Tikka", emoji: "🧀" },
+          { id: 12, name: "Butter Chicken", emoji: "🍗" }
+        ]
+      });
+    }, 2000);
+  };
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setFileDetails({
+      name: file.name,
+      size: (file.size / (1024 * 1024)).toFixed(2) + " MB",
+      type: "Menu Image"
+    });
+    setParsed(false);
+    setParsing(true);
+    setTimeout(() => {
+      setParsing(false);
+      setParsed(true);
+      
+      // AI Magic: Populate state based on typical cafe menu
+      updateData({
+        highlightDishes: "Avocado Toast\nEggs Benedict\nAcai Bowl\nFlat White Coffee",
+        signatureDish: "Truffle Eggs Benedict",
+        menuCategories: [
+          {
+            category: "Breakfast & Brunch",
+            items: [
+              { id: 21, name: "Avocado Toast", emoji: "🥑", price: "₹280" },
+              { id: 22, name: "Eggs Benedict", emoji: "🥚", price: "₹320" },
+              { id: 23, name: "Acai Bowl", emoji: "🍓", price: "₹350" }
+            ]
+          },
+          {
+            category: "Beverages",
+            items: [
+              { id: 24, name: "Flat White Coffee", emoji: "☕", price: "₹180" },
+              { id: 25, name: "Cold Brew", emoji: "🧊", price: "₹200" },
+              { id: 26, name: "Orange Juice", emoji: "🍊", price: "₹150" }
+            ]
+          }
+        ],
+        menuItems: [
+          { id: 21, name: "Avocado Toast", emoji: "🥑" },
+          { id: 22, name: "Eggs Benedict", emoji: "🥚" }
+        ]
+      });
+    }, 2000);
+  };
+
+  const resetUpload = () => {
+    setFileDetails(null);
+    setParsed(false);
+    setParsing(false);
+  };
+
+  return (
+    <div className="space-y-6">
+      <InfoBox 
+        icon={CheckCircle2} 
+        title="AI Magic Enabled" 
+        description="Upload once — AI extracts all dish names, prices, and categories automatically." 
+        variant="success"
+      />
+
+      {/* Hidden File Inputs */}
+      <input 
+        type="file" 
+        ref={pdfInputRef} 
+        accept="application/pdf" 
+        className="hidden" 
+        onChange={handlePdfUpload} 
+      />
+      <input 
+        type="file" 
+        ref={photoInputRef} 
+        accept="image/*" 
+        className="hidden" 
+        onChange={handlePhotoUpload} 
+      />
+
+      <div className="grid grid-cols-2 gap-4">
+        <button 
+          type="button"
+          onClick={() => pdfInputRef.current?.click()}
+          className="p-8 border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center gap-3 hover:border-[var(--color-brand-primary)] hover:bg-[var(--color-success-bg)] transition-all group"
+        >
+          <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center group-hover:bg-white transition-colors">
+            <Layout className="w-6 h-6 text-slate-400 group-hover:text-[var(--color-brand-primary)]" />
+          </div>
+          <span className="text-xs font-bold text-slate-600">Upload PDF menu</span>
+          <span className="text-[9px] text-slate-400">AI reads all pages · Max 10MB</span>
+        </button>
+        
+        <button 
+          type="button"
+          onClick={() => photoInputRef.current?.click()}
+          className="p-8 border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center gap-3 hover:border-[var(--color-brand-primary)] hover:bg-[var(--color-success-bg)] transition-all group"
+        >
+          <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center group-hover:bg-white transition-colors">
+            <Camera className="w-6 h-6 text-slate-400 group-hover:text-[var(--color-brand-primary)]" />
+          </div>
+          <span className="text-xs font-bold text-slate-600">Upload photo</span>
+          <span className="text-[9px] text-slate-400">Works with handwritten menus too</span>
+        </button>
+      </div>
+
+      <AnimatePresence>
+        {parsing && (
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }} 
+            animate={{ opacity: 1, y: 0 }}
+            className="p-8 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col items-center gap-4 text-center"
+          >
+            <RefreshCw className="w-8 h-8 text-[var(--color-brand-primary)] animate-spin" />
+            <div>
+              <p className="text-sm font-bold text-slate-900">AI is reading your menu...</p>
+              <p className="text-[10px] text-slate-400">Reading: {fileDetails?.name} ({fileDetails?.size})</p>
+            </div>
+          </motion.div>
+        )}
+        
+        {parsed && !parsing && (
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }} 
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-4"
+          >
+            <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center border border-emerald-100">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                </div>
+                <div className="text-left">
+                  <p className="text-xs font-bold text-slate-950 truncate max-w-[200px]">{fileDetails?.name}</p>
+                  <p className="text-[9px] text-slate-400">{fileDetails?.type} · {fileDetails?.size}</p>
+                </div>
+              </div>
+              <button 
+                type="button" 
+                onClick={resetUpload}
+                className="text-[9px] font-black uppercase tracking-widest text-red-500 hover:text-red-600 px-3 py-1 rounded-lg hover:bg-red-50"
+              >
+                Clear
+              </button>
+            </div>
+
+            <InfoBox 
+              icon={CheckCircle2} 
+              title="AI Extraction Success!" 
+              description="Extracted and populated menu items and signature options dynamically. Your customer review suggestions are now fully personalized!" 
+              variant="success"
+            />
+            
+            {data.menuCategories && (
+              <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm mt-4">
+                <div className="bg-slate-50 px-4 py-3 border-b border-slate-200">
+                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Extracted Menu Structure</p>
+                </div>
+                <div className="p-4 space-y-6 max-h-64 overflow-y-auto custom-scrollbar">
+                  {data.menuCategories.map((cat: any, idx: number) => (
+                    <div key={idx}>
+                      <h4 className="text-xs font-black text-[var(--color-brand-primary)] uppercase tracking-wider mb-3 flex items-center gap-2">
+                        {cat.category}
+                        <div className="h-px bg-slate-100 flex-1" />
+                      </h4>
+                      <div className="space-y-2">
+                        {cat.items.map((item: any) => (
+                          <div key={item.id} className="flex items-center justify-between group">
+                            <div className="flex items-center gap-2">
+                              <span className="w-6 h-6 flex items-center justify-center bg-slate-50 rounded text-xs">{item.emoji}</span>
+                              <span className="text-sm font-medium text-slate-700">{item.name}</span>
+                            </div>
+                            <span className="text-xs font-bold text-slate-400 group-hover:text-slate-600 transition-colors">{item.price}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <SectionHeader>Manual Additions</SectionHeader>
+      <InputField label="Signature dish / Hero item" badge="production" value={data.signatureDish || ''} onChange={(e: any) => updateData({ signatureDish: e.target.value })} hint="AI mentions it prominently." />
+      <div className="space-y-1.5">
+        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Dishes to highlight [Optional]</label>
+        <textarea 
+          className="w-full bg-[var(--color-bg-secondary)] border border-[var(--color-border-default)] rounded-xl px-4 py-3 text-sm focus:border-[var(--color-brand-primary)] outline-none transition-all h-24"
+          placeholder="Butter Chicken&#10;Garlic Naan"
+          value={data.highlightDishes || ''}
+          onChange={e => updateData({ highlightDishes: e.target.value })}
+        />
+        <p className="text-[9px] text-slate-400 italic">One per line. AI includes them more often.</p>
+      </div>
+      <div className="space-y-1.5">
+        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Dishes to never mention [Production]</label>
+        <textarea 
+          className="w-full bg-[var(--color-bg-secondary)] border border-[var(--color-border-default)] rounded-xl px-4 py-3 text-sm focus:border-[var(--color-brand-primary)] outline-none transition-all h-24"
+          placeholder="Old Item 1"
+          value={data.blockDishes || ''}
+          onChange={e => updateData({ blockDishes: e.target.value })}
+        />
+        <p className="text-[9px] text-slate-400 italic">AI will never include these. For discontinued items.</p>
+      </div>
+    </div>
+  )
+}
+
+const Step5 = ({ data, updateData }: any) => {
+  const user = { plan: 'basic' }; // Mocked user plan for plan gate
+  const themes = [
+    { id: 'free', name: 'Glow & Float', price: '₹0 / mo', desc: 'Clean profile + gentle floating bubbles', bg: '#ffffff' },
+    { id: 'classic', name: 'Classic', price: '₹299 / mo', desc: 'Logo glow + smooth drag trails & bursts', bg: '#0a0a1a' },
+    { id: 'premium', name: 'Premium', price: '₹799 / mo', desc: '3D floating + typewriter note & mouse ripples', bg: '#06060F', badge: 'Popular' },
+  ]
+
+  const colors = ['#6C63FF', '#1a8a3c', '#E8474F', '#F59E0B', '#0EA5E9', '#EC4899', '#111111'];
+
+  return (
+    <div className="space-y-8 pb-12">
+      <div className="grid grid-cols-3 gap-4">
+        {themes.map(theme => {
+          const isLocked = false; // Unlocked for now so users can select any theme
+          return (
+          <button 
+            key={theme.id}
+            onClick={() => { if (!isLocked) updateData({ theme: theme.id }) }}
+            className={`relative p-1 rounded-3xl border-2 transition-all ${data.theme === theme.id ? 'border-[var(--color-brand-primary)] bg-[var(--color-success-bg)]' : 'border-slate-100 bg-white hover:border-slate-200'} ${isLocked ? 'cursor-not-allowed opacity-80' : ''}`}
+          >
+            {isLocked && (
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/60 backdrop-blur-sm rounded-3xl">
+                <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest px-3 py-1.5 bg-white rounded-full shadow-sm border border-slate-200">Upgrade to Premium</span>
+              </div>
+            )}
+            <div className="relative h-32 rounded-[1.25rem] overflow-hidden mb-4 border border-slate-100" style={{ backgroundColor: theme.bg }}>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className={`w-12 h-12 rounded-xl border ${theme.id === 'premium' ? 'bg-white/10 border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.3)]' : theme.id === 'free' ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-white/10 border-white/20'}`} />
+              </div>
+              {theme.badge && <span className="absolute top-3 right-3 px-2 py-0.5 bg-amber-400 text-white text-[8px] font-black rounded-full uppercase tracking-widest">{theme.badge}</span>}
+            </div>
+            <div className="px-4 pb-4 text-left">
+              <p className="text-xs font-black text-slate-900 mb-0.5">{theme.name}</p>
+              <p className="text-[9px] font-bold text-[var(--color-brand-primary)] mb-2">{theme.price}</p>
+              <p className="text-[8px] text-slate-400 leading-tight">{theme.desc}</p>
+            </div>
+          </button>
+        )})}
+      </div>
+
+      <SectionHeader>Branding</SectionHeader>
+      
       <div className="space-y-3">
-        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Industry Category</label>
-        <div className="grid grid-cols-2 gap-3">
-          {categories.map(cat => (
+        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Business Logo [Required]</label>
+        <label className="group p-6 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-[var(--color-brand-primary)] hover:bg-slate-50 transition-all">
+          {data.logo ? (
+            <div className="relative w-16 h-16 rounded-lg overflow-hidden">
+              <img src={data.logo} alt="Logo" className="w-full h-full object-contain" />
+              <button onClick={(e) => { e.preventDefault(); updateData({ logo: null }); }} className="absolute -top-1 -right-1 p-1 bg-red-500 text-white rounded-full"><X className="w-3 h-3" /></button>
+            </div>
+          ) : (
+            <>
+              <UploadCloud className="w-6 h-6 text-slate-300 group-hover:text-[var(--color-brand-primary)]" />
+              <span className="text-[10px] font-bold text-slate-400">PNG or SVG, square preferred</span>
+            </>
+          )}
+          <input type="file" className="hidden" accept="image/*" onChange={e => {
+            if (e.target.files?.[0]) {
+              const reader = new FileReader();
+              reader.onload = (event) => updateData({ logo: event.target?.result as string });
+              reader.readAsDataURL(e.target.files[0]);
+            }
+          }} />
+        </label>
+        <p className="text-[9px] text-slate-400 italic">Shown in QR center and on review page</p>
+      </div>
+
+      {data.theme !== 'classic' && data.theme !== 'premium' && (
+        <div className="space-y-4">
+          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Brand Color [Optional]</label>
+          <div className="flex gap-4">
+            {colors.map(c => (
+              <button 
+                key={c}
+                onClick={() => updateData({ primaryColor: c })}
+                className={`w-8 h-8 rounded-full border-2 transition-all ${data.primaryColor === c ? 'scale-125 border-slate-900 shadow-lg' : 'border-transparent shadow-sm'}`}
+                style={{ backgroundColor: c }}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      <InputField label="Welcome message" badge="optional" value={data.welcomeMsg} onChange={(e: any) => updateData({ welcomeMsg: e.target.value })} hint="Animated text on Premium plan only" />
+
+      <SectionHeader>Review Settings</SectionHeader>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-1.5">
+          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">AI review variants</label>
+          <select value={data.variants || '3 variants'} onChange={e => updateData({ variants: e.target.value })} className="w-full bg-[var(--color-bg-secondary)] border border-[var(--color-border-default)] rounded-xl px-4 py-3 text-sm outline-none">
+            <option value="2 variants">2 variants (Classic)</option>
+            <option value="3 variants">3 variants (Premium)</option>
+            <option value="4 variants">4 variants (Premium)</option>
+            <option value="5 variants">5 variants (Premium)</option>
+          </select>
+        </div>
+        <div className="space-y-1.5">
+          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Review language</label>
+          <select value={data.language || 'English'} onChange={e => updateData({ language: e.target.value })} className="w-full bg-[var(--color-bg-secondary)] border border-[var(--color-border-default)] rounded-xl px-4 py-3 text-sm outline-none">
+            <option value="English">English</option>
+            <option value="Hindi">Hindi</option>
+            <option value="Hinglish">Hinglish</option>
+            <option value="Regional">Regional</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const Step6 = ({ data, onPreview }: { data: any, onPreview: () => void }) => {
+  const [copiedLink, setCopiedLink] = useState(false);
+  const reviewUrl = `https://glowqr.in/r/${data.name?.toLowerCase().replace(/\s+/g, '-') || 'business'}`;
+  const qrRef = useRef<HTMLDivElement>(null);
+  const qrCode = useRef<any>(null);
+
+  useEffect(() => {
+    import('qr-code-styling').then(({ default: QRCodeStyling }) => {
+      if (!qrCode.current) {
+        qrCode.current = new QRCodeStyling({
+          width: 180,
+          height: 180,
+          data: reviewUrl,
+          image: data.logo || undefined,
+          dotsOptions: { color: "#000000", type: "rounded" },
+          cornersSquareOptions: { type: "extra-rounded" },
+          imageOptions: { crossOrigin: "anonymous", margin: 5 }
+        });
+        if (qrRef.current) {
+          qrCode.current.append(qrRef.current);
+        }
+      } else {
+        qrCode.current.update({ data: reviewUrl, image: data.logo || undefined });
+      }
+    });
+  }, [reviewUrl, data.logo]);
+
+  const handleDownloadPng = () => {
+    if (qrCode.current) {
+      qrCode.current.download({ name: `${data.name || 'GlowQR'}_QR`, extension: "png" });
+    }
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(reviewUrl);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
+  };
+
+  return (
+  <div className="space-y-8 text-center">
+    <InfoBox 
+      icon={CheckCircle2} 
+      title="Setup complete!" 
+      description={`Your review page is live at ${reviewUrl}`} 
+      variant="success"
+    />
+
+    <div className="flex flex-col items-center">
+      <div className="relative bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-sm group cursor-pointer" onClick={onPreview}>
+        <div className="relative text-[#6C63FF] overflow-hidden rounded-xl border border-slate-100 flex items-center justify-center min-h-[180px] min-w-[180px]">
+           <div ref={qrRef} />
+        </div>
+        <div className="absolute inset-0 bg-[var(--color-brand-primary)]/0 group-hover:bg-[var(--color-brand-primary)]/5 transition-colors rounded-[2.5rem] flex items-center justify-center opacity-0 group-hover:opacity-100">
+           <Search className="w-10 h-10 text-[var(--color-brand-primary)]" />
+        </div>
+      </div>
+      <p className="mt-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Scan to preview your customer experience</p>
+    </div>
+
+    <div className="flex justify-center gap-3">
+      <button onClick={handleDownloadPng} className="px-5 py-3 border border-slate-200 rounded-xl flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-all"><Download className="w-4 h-4" /> PNG</button>
+      <button className="px-5 py-3 border border-slate-200 rounded-xl flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-all opacity-50 cursor-not-allowed"><Layout className="w-4 h-4" /> SVG</button>
+      <button className="px-5 py-3 border border-slate-200 rounded-xl flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-all opacity-50 cursor-not-allowed"><Printer className="w-4 h-4" /> Print</button>
+      <button onClick={handleCopyLink} className="px-5 py-3 border border-slate-200 rounded-xl flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-all relative">
+        <LinkIcon className="w-4 h-4" /> {copiedLink ? 'Copied' : 'Link'}
+      </button>
+    </div>
+
+    <SectionHeader>What happens next</SectionHeader>
+    <div className="space-y-3">
+      {[
+        { icon: Layout, text: "Dashboard is now live. Every QR scan, rating, and Google redirect is tracked in real time." },
+        { icon: QrCode, text: "We'll fetch your Google rating weekly via Places API. Before/after growth chart visible within 7 days." },
+        { icon: Bell, text: "You'll get an email alert when a customer gives 1–2 stars so you can respond before it hits Google." },
+        { icon: RefreshCw, text: "Update menu, theme, or welcome message anytime — QR code URL stays the same." }
+      ].map((item, i) => (
+        <div key={i} className="flex gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 text-left items-center">
+          <item.icon className="w-5 h-5 text-slate-400 shrink-0" />
+          <p className="text-[11px] font-bold text-slate-500 leading-relaxed">{item.text}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+  );
+}
+
+const StepPlan = ({ data, updateData }: any) => {
+  return (
+    <div className="space-y-6 text-left">
+      <div className="flex items-center gap-4">
+        <div className="w-12 h-12 rounded-2xl bg-[#111111]/10 flex items-center justify-center text-[#111111]">
+          <Sparkles className="w-6 h-6" />
+        </div>
+        <div>
+          <h3 className="text-xl font-black text-slate-900">Choose your Plan</h3>
+          <p className="text-xs font-bold text-slate-400">Select the tier that fits your business needs.</p>
+        </div>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <button
+          onClick={() => updateData({ plan: 'basic' })}
+          className={`p-6 rounded-2xl border-2 text-left transition-all ${data.plan === 'basic' ? 'border-[#111111] bg-[#111111]/5' : 'border-slate-200 hover:border-[#111111]/50'}`}
+        >
+          <h4 className="text-lg font-black text-slate-900">Basic</h4>
+          <p className="text-xs text-slate-500 mt-2 mb-4">Essential features for single locations.</p>
+          <div className="text-2xl font-black text-slate-900 mb-4">$29<span className="text-sm text-slate-400 font-normal">/mo</span></div>
+        </button>
+        <button
+          onClick={() => updateData({ plan: 'premium' })}
+          className={`p-6 rounded-2xl border-2 text-left transition-all relative overflow-hidden ${data.plan === 'premium' ? 'border-[#F07C3C] bg-[#F07C3C]/5 shadow-sm' : 'border-slate-200 hover:border-[#F07C3C]/50'}`}
+        >
+          <div className="absolute top-3 right-3 bg-[#F07C3C] text-white text-[10px] font-black uppercase px-2 py-1 rounded-full">Recommended</div>
+          <h4 className="text-lg font-black text-slate-900">Premium</h4>
+          <p className="text-xs text-slate-500 mt-2 mb-4">Advanced analytics and premium flows.</p>
+          <div className="text-2xl font-black text-slate-900 mb-4">$79<span className="text-sm text-slate-400 font-normal">/mo</span></div>
+        </button>
+      </div>
+    </div>
+  )
+}
+
+
+// --- Main Wizard Component ---
+
+export default function OnboardingWizard() {
+  const router = useRouter()
+  const [currentStep, setCurrentStep] = useState(0)
+  const [loading, setLoading] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
+  
+  const [data, setData] = useState<any>({
+    name: '', tagline: '', website: '', googleReviewUrl: '', placeId: '',
+    currentRating: 4.5, reviewCount: 120,
+    city: '', area: '', address: '', phone: '', whatsapp: '', email: '',
+    openTime: '09:00', closeTime: '22:00', daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+    category: 'restaurant', spendRange: '₹500–₹1000', speciality: '', dietary: [],
+    theme: 'free', primaryColor: '#6C63FF', variants: '3 variants', language: 'English',
+    logo: null,
+    plan: 'basic',
+    menuItems: [
+      { id: 1, name: "Signature Dish", emoji: "⭐" },
+      { id: 2, name: "Popular Choice", emoji: "🔥" },
+      { id: 3, name: "Chef Special", emoji: "👨‍🍳" },
+      { id: 4, name: "House Favorite", emoji: "❤️" },
+    ]
+  })
+
+  const updateData = (newData: any) => setData((prev: any) => ({ ...prev, ...newData }))
+
+  const steps = [
+    { id: 'business', name: 'Business' },
+    { id: 'location', name: 'Location' },
+    { id: 'category', name: 'Category' },
+    { id: 'menu', name: 'Menu' },
+    { id: 'theme', name: 'Theme' },
+    { id: 'qr', name: 'QR Code' }
+  ]
+
+  const handleNext = () => {
+    if (currentStep < 5) setCurrentStep(s => s + 1)
+    else {
+      setLoading(true)
+      localStorage.setItem('onboarding_completed', 'true')
+      localStorage.setItem('glowqr_business_data', JSON.stringify(data))
+      setTimeout(() => router.push('/dashboard'), 1500)
+    }
+  }
+
+  const handleBack = () => {
+    if (currentStep > 0) setCurrentStep(s => s - 1)
+  }
+
+  const progress = ((currentStep + 1) / 6) * 100
+
+  return (
+    <div className="min-h-screen bg-[var(--color-bg-secondary)] flex flex-col items-center py-12 px-4 font-sans" suppressHydrationWarning>
+      <style>{STYLES}</style>
+
+      {/* Top Navigation Bar */}
+      <div className="w-full max-w-[600px] flex items-center justify-between mb-8 px-2">
+        <h1 className="text-sm font-black text-slate-900 uppercase tracking-[0.25em]">GlowQR Setup</h1>
+        <div className="flex gap-2">
+          {steps.map((step, idx) => (
             <button 
-              key={cat.id}
-              onClick={() => setBusinessType(cat.id)}
-              className={`flex items-center gap-3 p-4 rounded-2xl border-2 transition-all ${businessType === cat.id ? 'border-[#F07C3C] bg-[#F07C3C]/10 text-white' : 'border-white/5 bg-white/[0.02] text-slate-500'}`}
+              key={step.id} 
+              onClick={() => setCurrentStep(idx)}
+              className={`w-8 h-8 rounded-full border-2 text-[10px] font-black transition-all flex items-center justify-center ${idx < currentStep ? 'bg-slate-400 border-slate-400 text-white' : idx === currentStep ? 'bg-[var(--color-brand-primary)] border-[var(--color-brand-primary)] text-white' : 'border-slate-200 text-slate-300 bg-white'}`}
             >
-              <div className={businessType === cat.id ? 'text-[#F07C3C]' : 'text-slate-600'}>{cat.icon}</div>
-              <span className="text-xs font-black uppercase tracking-widest">{cat.name}</span>
+              {idx + 1}
             </button>
           ))}
         </div>
       </div>
-    </div>
-    <div className="pt-8 border-t border-white/5">
-      <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 block">Primary Brand Accent</label>
-      <div className="flex flex-wrap gap-4">
-        {['#F07C3C', '#6C63FF', '#10b981', '#3b82f6', '#f43f5e', '#f59e0b', '#06b6d4'].map(c => (
-          <motion.button 
-            key={c}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setPrimaryColor(c)}
-            className={`w-12 h-12 rounded-2xl border-4 transition-all ${primaryColor === c ? 'border-white shadow-[0_0_30px_rgba(255,255,255,0.2)]' : 'border-transparent'}`}
-            style={{ backgroundColor: c }}
+
+      {/* Main Wizard Card */}
+      <div className="w-full max-w-[600px] glass-card rounded-[2.5rem] flex flex-col overflow-hidden relative">
+        {/* Progress Bar */}
+        <div className="absolute top-0 left-0 right-0 h-[3px] bg-slate-100 z-10">
+          <motion.div 
+            className="h-full bg-[var(--color-brand-primary)] shadow-[0_0_10px_rgba(26,138,60,0.5)]"
+            animate={{ width: `${progress}%` }}
+            transition={{ type: "spring", stiffness: 50 }}
           />
-        ))}
-      </div>
-    </div>
-  </div>
-))
-IdentityReviewStep.displayName = 'IdentityReviewStep'
-
-const ExperienceDesignStep = memo(({ experienceType, setExperienceType }: any) => (
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-    <motion.button
-      whileHover={{ y: -5 }}
-      onClick={() => setExperienceType('classic')}
-      className={`relative p-10 rounded-[3.5rem] border-2 text-left transition-all ${experienceType === 'classic' ? 'border-white bg-white/5' : 'border-white/5 bg-white/[0.02]'}`}
-    >
-      <div className="w-16 h-16 bg-slate-800 rounded-3xl flex items-center justify-center mb-8 border border-white/10">
-        <Layout className="w-8 h-8 text-slate-400" />
-      </div>
-      <h4 className="text-2xl font-black text-white mb-2">Classic Flow</h4>
-      <p className="text-sm text-slate-500 font-medium leading-relaxed">Clean, minimal interface optimized for maximum conversion speed.</p>
-      {experienceType === 'classic' && <div className="absolute top-6 right-6 w-8 h-8 bg-white text-black rounded-full flex items-center justify-center"><CheckCircle2 className="w-5 h-5" /></div>}
-    </motion.button>
-
-    <motion.button
-      whileHover={{ y: -5 }}
-      onClick={() => setExperienceType('premium')}
-      className={`relative p-10 rounded-[3.5rem] border-2 text-left transition-all overflow-hidden ${experienceType === 'premium' ? 'border-[#F07C3C] bg-[#F07C3C]/5' : 'border-white/5 bg-white/[0.02]'}`}
-    >
-      <div className="absolute inset-0 bg-gradient-to-br from-[#F07C3C]/10 to-transparent pointer-events-none" />
-      <div className="w-16 h-16 bg-[#F07C3C]/20 rounded-3xl flex items-center justify-center mb-8 border border-[#F07C3C]/30">
-        <Sparkles className="w-8 h-8 text-[#F07C3C]" />
-      </div>
-      <div className="flex items-center gap-3 mb-2">
-        <h4 className="text-2xl font-black text-white">Premium Glow</h4>
-        <Badge text="Recommended" type="premium" />
-      </div>
-      <p className="text-sm text-slate-500 font-medium leading-relaxed">Immersive dark-glass aesthetic with animated brand highlights.</p>
-      {experienceType === 'premium' && <div className="absolute top-6 right-6 w-8 h-8 bg-[#F07C3C] text-white rounded-full flex items-center justify-center"><CheckCircle2 className="w-5 h-5" /></div>}
-    </motion.button>
-  </div>
-))
-ExperienceDesignStep.displayName = 'ExperienceDesignStep'
-
-// --- Main Component ---
-
-export function OnboardingWizard() {
-  const router = useRouter()
-  const [currentStep, setCurrentStep] = useState(0)
-  const [loading, setLoading] = useState(false)
-  const [showSuccess, setShowSuccess] = useState(false)
-  const [showFinalQR, setShowFinalQR] = useState(false)
-  const [analysisText, setAnalysisText] = useState('Extracting Brand Markers...')
-
-  // --- Brand State ---
-  const [businessName, setBusinessName] = useState('')
-  const [tagline, setTagline] = useState('')
-  const [businessWebsite, setBusinessWebsite] = useState('')
-  const [city, setCity] = useState('')
-  const [ownerEmail, setOwnerEmail] = useState('')
-  const [businessType, setBusinessType] = useState('restaurant')
-  const [primaryColor, setPrimaryColor] = useState('#F07C3C')
-  const [logoPreview, setLogoPreview] = useState<string | null>(null)
-  const [experienceType, setExperienceType] = useState('premium')
-
-  // --- Persistence ---
-  useEffect(() => {
-    const saved = localStorage.getItem('onboarding_v4')
-    if (saved) {
-      try {
-        const data = JSON.parse(saved)
-        if (data.businessName) setBusinessName(data.businessName)
-        if (data.tagline) setTagline(data.tagline)
-        if (data.businessWebsite) setBusinessWebsite(data.businessWebsite)
-        if (data.city) setCity(data.city)
-        if (data.ownerEmail) setOwnerEmail(data.ownerEmail)
-        if (data.businessType) setBusinessType(data.businessType)
-        if (data.primaryColor) setPrimaryColor(data.primaryColor)
-        if (data.experienceType) setExperienceType(data.experienceType)
-        if (data.logoPreview) setLogoPreview(data.logoPreview)
-      } catch (e) { console.error(e) }
-    }
-  }, [])
-
-  const persistTimer = useRef<NodeJS.Timeout | null>(null)
-  useEffect(() => {
-    if (persistTimer.current) clearTimeout(persistTimer.current)
-    persistTimer.current = setTimeout(() => {
-      const data = { businessName, tagline, businessWebsite, city, ownerEmail, businessType, primaryColor, experienceType, logoPreview }
-      localStorage.setItem('onboarding_v4', JSON.stringify(data))
-    }, 1000) // Debounce persistence to 1s to ensure no lag during typing
-  }, [businessName, tagline, businessWebsite, city, ownerEmail, businessType, primaryColor, experienceType, logoPreview])
-
-  // --- Handlers ---
-  const handleStartExtraction = useCallback((source: 'upload' | 'website') => {
-    setCurrentStep(1) // Go to analysis step
-    setLoading(true)
-    
-    const messages = source === 'upload' ? [
-      'Scanning logo geometry...',
-      'Extracting primary palette...',
-      'Identifying brand font family...',
-      'Optimizing QR embed assets...'
-    ] : [
-      'Crawling digital assets...',
-      'Detecting color palette...',
-      'Extracting brand personality...',
-      'Generating immersive experience...'
-    ]
-    
-    let msgIndex = 0
-    const interval = setInterval(() => {
-      msgIndex++
-      if (msgIndex < messages.length) setAnalysisText(messages[msgIndex])
-    }, 1000)
-
-    setTimeout(() => {
-      clearInterval(interval)
-      // Simulate extraction results
-      if (!businessName) setBusinessName(source === 'upload' ? "New Brand" : "The Velvet Lounge")
-      if (!tagline) setTagline(source === 'upload' ? "Extracted from Identity" : "Exclusive Culinary Experiences")
-      if (!city) setCity("New York")
-      setOwnerEmail("hello@brand.com")
-      setBusinessType("restaurant")
-      setLoading(false)
-      
-      // MAGIC SKIP: If user uploaded a logo, we've done the "Magic" - skip manual inputs straight to preview
-      if (source === 'upload') {
-        setCurrentStep(4) // Skip to Preview
-      } else {
-        setCurrentStep(2) // Move to review identity
-      }
-    }, 4500)
-  }, [businessName, tagline, city])
-
-  const handleNext = useCallback(async () => {
-    if (currentStep < 4) {
-      setCurrentStep(s => s + 1)
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-    } else if (currentStep === 4) {
-      setLoading(true)
-      // Simulate API call to save business
-      await new Promise(r => setTimeout(r, 2000))
-      setLoading(false)
-      setShowSuccess(true)
-      setTimeout(() => setShowFinalQR(true), 3000)
-    }
-  }, [currentStep])
-
-  const handleBack = useCallback(() => {
-    if (currentStep > 0) setCurrentStep(s => s - 1)
-    else router.push('/')
-  }, [currentStep, router])
-
-  const getReviewUrl = useCallback(() => {
-    const data = { name: businessName, tagline, primaryColor, logo: logoPreview, experienceType }
-    const encoded = btoa(encodeURIComponent(JSON.stringify(data)))
-    return `${window.location.origin}/review?data=${encoded}`
-  }, [businessName, tagline, primaryColor, logoPreview, experienceType])
-
-  const deferredSimulationData = useDeferredValue({ 
-    name: businessName, 
-    tagline, 
-    primaryColor, 
-    logo: logoPreview,
-    experienceType 
-  })
-
-  return (
-    <div className="min-h-screen bg-[#0A0A0F] text-slate-200 flex flex-col font-sans selection:bg-[#F07C3C]/30 overflow-x-hidden">
-      {/* Background Orbs */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-[#6C63FF]/10 blur-[180px] rounded-full animate-pulse" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-[#F07C3C]/10 blur-[180px] rounded-full animate-pulse [animation-delay:1s]" />
-        <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-[#F07C3C]/5 blur-[120px] rounded-full" />
-      </div>
-
-      {/* Nav */}
-      <nav className="flex items-center justify-between px-8 py-6 lg:px-20 border-b border-white/5 bg-[#0A0A0F]/60 backdrop-blur-3xl sticky top-0 z-[100]">
-        <Link href="/" className="font-display text-3xl font-black tracking-tighter flex items-center gap-3 group">
-          <div className="w-11 h-11 bg-[#F07C3C] rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(240,124,60,0.4)] group-hover:scale-110 transition-transform">
-            <QrCode className="w-6 h-6 text-white" />
-          </div>
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-white/40">GlowQR</span>
-        </Link>
-        
-        {/* Step Indicator */}
-        <div className="hidden lg:flex items-center gap-4">
-          {steps.map((step, i) => (
-            <div key={step.id} className="flex items-center gap-4">
-              <div className="flex flex-col items-center">
-                <motion.div 
-                  animate={{ 
-                    width: i === currentStep ? 40 : 10,
-                    backgroundColor: i <= currentStep ? (i === currentStep ? '#F07C3C' : '#10b981') : 'rgba(255,255,255,0.1)'
-                  }}
-                  className={`h-1.5 rounded-full transition-all duration-500 ${i === currentStep ? 'shadow-[0_0_20px_#F07C3C]' : ''}`}
-                />
-              </div>
-              {i < steps.length - 1 && <div className="w-4 h-[1px] bg-white/5" />}
-            </div>
-          ))}
         </div>
 
-        <Link href="/dashboard" className="text-xs font-black uppercase tracking-widest text-slate-500 hover:text-white transition-colors">
-          Exit Wizard
-        </Link>
-      </nav>
+        {/* Card Header */}
+        <div className="p-10 pb-0">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="px-3 py-1 bg-slate-100 text-slate-400 text-[10px] font-black uppercase tracking-widest rounded-full">Step {currentStep + 1}</span>
+            <span className="text-[10px] font-bold text-slate-300 uppercase tracking-[0.3em]">/ {steps[currentStep]?.name || steps[steps.length - 1].name}</span>
+          </div>
+          <h2 className="text-3xl font-black text-slate-900 leading-tight">
+            {currentStep === 0 && "Tell us about your brand"}
+            {currentStep === 1 && "Where are you located?"}
+            {currentStep === 2 && "What's your specialty?"}
+            {currentStep === 3 && "Setup your digital menu"}
+            {currentStep === 4 && "Experience Design"}
+            {currentStep === 5 && "Your QR is ready to glow!"}
+          </h2>
+          <p className="text-sm text-slate-400 mt-2">
+            {currentStep === 0 && "Information used to personalize your review experience"}
+            {currentStep === 1 && "Included in reviews to help your local SEO ranking"}
+            {currentStep === 2 && "Helps AI understand your price point and audience"}
+            {currentStep === 3 && "Dishes will be suggested to customers as chips"}
+            {currentStep === 4 && "Choose how your brand feels to customers"}
+            {currentStep === 5 && "Download your QR code and start collecting stars"}
+          </p>
+        </div>
 
-      <main className="flex-1 w-full max-w-7xl mx-auto p-8 md:p-20 relative">
-        <AnimatePresence mode="wait">
-          {!showSuccess ? (
-            <motion.div 
-              key="wizard"
+        {/* Card Body */}
+        <div className="p-10 max-h-[65vh] overflow-y-auto custom-scrollbar">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentStep}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, filter: 'blur(10px)' }}
-              className="w-full max-w-4xl"
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.25 }}
             >
-              <div className="mb-16">
-                <div className="flex items-center gap-4 mb-4">
-                  <span className="px-4 py-1.5 bg-[#F07C3C]/10 text-[#F07C3C] text-[10px] font-black uppercase tracking-[0.2em] rounded-full border border-[#F07C3C]/20">
-                    Phase {currentStep + 1}
-                  </span>
-                  <div className="h-[1px] flex-1 bg-white/5" />
-                </div>
-                <h2 className="text-6xl md:text-8xl font-display font-black text-white tracking-tight mb-4 leading-none">
-                  {steps[currentStep].title}
-                </h2>
-                <p className="text-xl text-slate-400 font-medium max-w-2xl leading-relaxed mt-4">
-                  {steps[currentStep].subtitle}
-                </p>
-              </div>
-
-              <div className="glass-card p-10 md:p-16 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-80 h-80 bg-[#F07C3C]/5 blur-[120px] -mr-40 -mt-40 pointer-events-none" />
-                
-                <AnimatePresence mode="wait">
-                  {currentStep === 0 && <MagicExtractionStep businessWebsite={businessWebsite} setBusinessWebsite={setBusinessWebsite} setLogoPreview={setLogoPreview} onStart={handleStartExtraction} />}
-                  
-                  {currentStep === 1 && (
-                    <div className="flex flex-col items-center justify-center py-20 text-center">
-                      <div className="relative w-56 h-56 mb-12">
-                        <div className="absolute inset-0 border-4 border-white/10 rounded-[3.5rem] overflow-hidden bg-black/20">
-                          <motion.div 
-                            animate={{ top: ['0%', '100%', '0%'] }}
-                            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                            className="absolute left-0 right-0 h-1 bg-[#F07C3C] shadow-[0_0_40px_#F07C3C] z-10"
-                          />
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            {logoPreview ? (
-                              <div className="relative w-32 h-32">
-                                <Image src={logoPreview} alt="Logo" fill className="object-contain animate-pulse" />
-                              </div>
-                            ) : (
-                              <Search className="w-20 h-20 text-[#F07C3C]/20 animate-pulse" />
-                            )}
-                          </div>
-                        </div>
-                        <div className="absolute -inset-4 border border-[#F07C3C]/20 rounded-[4rem] animate-spin-slow pointer-events-none" />
-                      </div>
-                      <h3 className="text-3xl font-display font-black text-white mb-4">{analysisText}</h3>
-                      <p className="text-slate-400 max-w-xs font-medium">Analyzing colors, typography, and hospitality markers from your digital footprint...</p>
-                    </div>
-                  )}
-
-                  {currentStep === 2 && <IdentityReviewStep businessName={businessName} setBusinessName={setBusinessName} tagline={tagline} setTagline={setTagline} city={city} setCity={setCity} businessType={businessType} setBusinessType={setBusinessType} primaryColor={primaryColor} setPrimaryColor={setPrimaryColor} />}
-                  
-                  {currentStep === 3 && <ExperienceDesignStep experienceType={experienceType} setExperienceType={setExperienceType} />}
-
-                  {currentStep === 4 && (
-                    <div className="flex flex-col items-center text-center">
-                      <div className="relative w-full max-w-[340px] h-[680px] bg-[#0C0C0C] rounded-[4rem] border-[12px] border-[#222] shadow-[0_0_80px_rgba(0,0,0,0.5)] overflow-hidden mb-12 group/phone">
-                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-[#222] rounded-b-2xl z-50" />
-                        <div className="h-full scale-[0.98] origin-top bg-white">
-                          <Suspense fallback={
-                            <div className="h-full flex flex-col items-center justify-center bg-[#0A0A0F] text-white">
-                              <Sparkles className="w-12 h-12 text-[#F07C3C] animate-spin-slow mb-4" />
-                              <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">Synchronizing Brand...</p>
-                            </div>
-                          }>
-                            <ReviewFlow simulationData={deferredSimulationData} />
-                          </Suspense>
-                        </div>
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
-                      </div>
-                      <InfoBox icon={MousePointer2} title="Interactive Test" description="This is exactly what your customers will see. Tap buttons and scroll to test the flow." variant="emerald" />
-                    </div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* Action Bar */}
-              <div className="mt-16 flex items-center justify-between">
-                <button onClick={handleBack} className="px-10 py-5 bg-white/5 border border-white/10 text-slate-400 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-white/10 hover:text-white transition-all active:scale-95">
-                  Back
-                </button>
-                {currentStep > 1 && (
-                  <button 
-                    onClick={handleNext} 
-                    disabled={loading || (currentStep === 2 && !businessName)}
-                    className="group px-12 py-5 bg-[#F07C3C] text-white rounded-2xl font-black text-lg transition-all hover:shadow-[0_0_40px_rgba(240,124,60,0.4)] active:scale-95 flex items-center gap-3"
-                  >
-                    {loading ? <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : (
-                      <>
-                        {currentStep === 4 ? 'Deploy Brand' : 'Next Phase'}
-                        <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                      </>
-                    )}
-                  </button>
-                )}
-              </div>
+              {currentStep === 0 && <Step1 data={data} updateData={updateData} />}
+              {currentStep === 1 && <Step2 data={data} updateData={updateData} />}
+              {currentStep === 2 && <Step3 data={data} updateData={updateData} />}
+              {currentStep === 3 && <Step4 data={data} updateData={updateData} />}
+              {currentStep === 4 && <Step5 data={data} updateData={updateData} />}
+              {currentStep === 5 && <Step6 data={data} onPreview={() => setShowPreview(true)} />}
             </motion.div>
-          ) : (
-            <motion.div 
-              key="success-container"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="w-full flex flex-col items-center"
+          </AnimatePresence>
+        </div>
+
+        {/* Card Footer */}
+        <div className="p-6 border-t border-slate-50 flex items-center justify-between sticky bottom-0 bg-white/80 backdrop-blur-md">
+          <div className="flex-1">
+            {currentStep > 0 && (
+              <button 
+                onClick={handleBack}
+                className="px-5 py-2.5 bg-slate-50 text-slate-400 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-slate-100 transition-all"
+              >
+                Back
+              </button>
+            )}
+          </div>
+          
+          <div className="flex-1 flex justify-center">
+            <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Step {currentStep + 1} of 6</span>
+          </div>
+          
+          <div className="flex-1 flex justify-end">
+            <button 
+              onClick={handleNext}
+              disabled={loading}
+              className={`group px-5 py-2.5 border-2 border-[var(--color-brand-primary)] text-[var(--color-brand-primary)] rounded-lg font-bold text-xs uppercase tracking-wider transition-all hover:bg-[var(--color-brand-primary)] hover:text-white flex items-center gap-2 whitespace-nowrap ${loading ? 'opacity-50 pointer-events-none' : ''}`}
             >
-              {!showFinalQR ? (
-                <div className="flex flex-col items-center text-center py-24">
-                  <div className="relative w-64 h-64 mb-16">
-                    <motion.div 
-                      initial={{ scale: 0, opacity: 0 }}
-                      animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.2, 0.5] }}
-                      transition={{ duration: 4, repeat: Infinity }}
-                      className="absolute -inset-20 bg-[#F07C3C]/20 blur-[100px] rounded-full"
-                    />
-                    <motion.div 
-                      animate={{ top: ['0%', '100%', '0%'] }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                      className="absolute left-[-20%] right-[-20%] h-1.5 bg-gradient-to-r from-transparent via-[#F07C3C] to-transparent shadow-[0_0_50px_#F07C3C] z-20"
-                    />
-                    <div className="absolute inset-0 border-4 border-white/10 rounded-[3.5rem] p-12 flex items-center justify-center bg-black/40 backdrop-blur-xl ring-1 ring-white/20">
-                      <QRCodeSVG value="baking..." size={140} className="opacity-10 grayscale invert" />
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <Wand2 className="w-16 h-16 text-[#F07C3C] animate-pulse" />
-                      </div>
-                    </div>
-                  </div>
-                  <h2 className="text-7xl font-display font-black text-white mb-6">Magic Complete</h2>
-                  <p className="text-xl text-slate-400 max-w-md font-medium">Your brand DNA has been successfully synthesized into a premium QR experience.</p>
-                </div>
+              {loading ? (
+                <RefreshCw className="w-4 h-4 animate-spin" />
               ) : (
-                <div className="w-full max-w-6xl flex flex-col md:flex-row gap-12 items-start">
-                  {/* Left: Brand Identity Card */}
-                  <motion.div 
-                    initial={{ opacity: 0, x: -30 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="flex-1 w-full glass-card p-12 relative overflow-hidden"
-                  >
-                    <div className="absolute top-0 right-0 w-40 h-40 bg-[#F07C3C]/10 blur-[80px] -mr-20 -mt-20" />
-                    <div className="flex items-center gap-6 mb-12">
-                      <div className="w-20 h-20 bg-black/40 rounded-[1.5rem] flex items-center justify-center overflow-hidden border border-white/10">
-                        {logoPreview ? (
-                          <div className="relative w-full h-full p-3">
-                            <Image src={logoPreview} alt="Logo" fill className="object-contain" />
-                          </div>
-                        ) : (
-                          <Building2 className="w-10 h-10 text-white/20" />
-                        )}
-                      </div>
-                      <div>
-                        <h3 className="text-3xl font-display font-black text-white">{businessName}</h3>
-                        <p className="text-slate-500 text-xs font-black uppercase tracking-widest">{tagline || 'Brand Identity Deployed'}</p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-8">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl">
-                          <p className="text-[10px] text-slate-600 font-black uppercase tracking-widest mb-1">Brand Color</p>
-                          <div className="flex items-center gap-2">
-                            <div className="w-4 h-4 rounded-full" style={{ backgroundColor: primaryColor }} />
-                            <span className="text-xs font-mono text-white">{primaryColor}</span>
-                          </div>
-                        </div>
-                        <div className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl">
-                          <p className="text-[10px] text-slate-600 font-black uppercase tracking-widest mb-1">Status</p>
-                          <span className="text-xs text-emerald-400 font-black">ACTIVE</span>
-                        </div>
-                      </div>
-
-                      <div className="p-6 bg-[#F07C3C]/5 border border-[#F07C3C]/20 rounded-3xl">
-                        <div className="flex items-center gap-3 mb-3">
-                          <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                          <h4 className="text-sm font-black text-white uppercase tracking-widest">Premium Active</h4>
-                        </div>
-                        <p className="text-xs text-slate-400 leading-relaxed">Your customers will now experience the {experienceType} flow with {primaryColor} accents and AI review assistance.</p>
-                      </div>
-                    </div>
-
-                    <button onClick={() => router.push('/dashboard')} className="mt-12 w-full py-5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-white font-black uppercase tracking-[0.3em] text-[10px] transition-all group flex items-center justify-center gap-3">
-                      Access Brand Dashboard <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
-                    </button>
-                  </motion.div>
-
-                  {/* Right: QR Code centerpiece */}
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="w-full md:w-[400px] flex flex-col items-center"
-                  >
-                    <div className="relative group mb-12">
-                      <div className="absolute -inset-20 bg-[#F07C3C]/20 blur-[140px] rounded-full opacity-40 animate-pulse pointer-events-none" />
-                      <div className="bg-white p-10 rounded-[4.5rem] relative shadow-[0_0_80px_rgba(255,255,255,0.1)] group-hover:scale-[1.02] transition-transform duration-700">
-                        <QRCodeSVG 
-                          id="qr-svg" 
-                          value={getReviewUrl()} 
-                          size={280} 
-                          level="H" 
-                          imageSettings={logoPreview ? {
-                            src: logoPreview,
-                            height: 60,
-                            width: 60,
-                            excavate: true,
-                          } : undefined}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="w-full space-y-4">
-                      <button className="w-full group flex items-center justify-center gap-4 bg-[#F07C3C] hover:bg-[#d96a2b] text-white py-6 rounded-3xl font-black text-xl shadow-[0_0_50px_rgba(240,124,60,0.3)] transition-all active:scale-95">
-                        <Download className="w-7 h-7 group-hover:-translate-y-1 transition-transform" /> PNG Poster
-                      </button>
-                      <div className="grid grid-cols-2 gap-4">
-                        <button className="flex items-center justify-center gap-2 bg-white/5 border border-white/10 hover:bg-white/10 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all">
-                          <Share2 className="w-4 h-4" /> Share
-                        </button>
-                        <button className="flex items-center justify-center gap-2 bg-white/5 border border-white/10 hover:bg-white/10 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all">
-                          <Eye className="w-4 h-4" /> Preview
-                        </button>
-                      </div>
-                    </div>
-                  </motion.div>
-                </div>
+                <>
+                  {currentStep === 5 ? 'Go to Dashboard' : 'Next Step'}
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </>
               )}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </main>
-      
-      {/* Visual Accents */}
-      <div className="fixed bottom-10 left-10 opacity-20 pointer-events-none">
-        <Sparkles className="w-12 h-12 text-[#F07C3C]" />
+            </button>
+          </div>
+        </div>
       </div>
-      <div className="fixed top-40 right-10 opacity-10 pointer-events-none">
-        <Building2 className="w-32 h-32 text-white" />
-      </div>
+
+      {/* Simulation Preview Modal */}
+      <AnimatePresence>
+        {showPreview && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4">
+             <motion.div 
+               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+               className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"
+               onClick={() => setShowPreview(false)}
+             />
+             <motion.div 
+               initial={{ opacity: 0, scale: 0.9, y: 20 }} 
+               animate={{ opacity: 1, scale: 1, y: 0 }} 
+               exit={{ opacity: 0, scale: 0.9, y: 20 }}
+               className="relative z-10 w-full h-full sm:max-w-[320px] sm:h-[640px] bg-white sm:rounded-[3rem] overflow-hidden shadow-2xl"
+             >
+                <button onClick={() => setShowPreview(false)} className="absolute top-8 right-8 z-[110] w-10 h-10 bg-slate-900/50 text-white rounded-full flex items-center justify-center hover:bg-slate-900/80 transition-all">
+                  <X className="w-5 h-5" />
+                </button>
+                
+                {/* Notch */}
+                <div className="hidden sm:block absolute top-0 left-1/2 -translate-x-1/2 w-28 h-6 bg-[#0C0C0C] rounded-b-2xl z-50" />
+                
+                <Suspense fallback={
+                  <div className="h-full flex items-center justify-center bg-slate-50">
+                    <RefreshCw className="w-8 h-8 text-[var(--color-brand-primary)] animate-spin" />
+                  </div>
+                }>
+                  <ReviewFlow simulationData={{ ...data, logo: data.logo || null }} onStepChange={() => {}} />
+                </Suspense>
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

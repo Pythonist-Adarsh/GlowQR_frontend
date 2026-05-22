@@ -6,15 +6,16 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        display: ['var(--font-display)', 'Syne', 'sans-serif'],
-        body: ['var(--font-body)', 'DM Sans', 'sans-serif'],
+        sans: ["'Google Sans'", "'Plus Jakarta Sans'", 'Roboto', 'sans-serif'],
+        display: ["'Google Sans'", "'Plus Jakarta Sans'", 'Roboto', 'sans-serif'],
+        body: ["'Google Sans'", "'Plus Jakarta Sans'", 'Roboto', 'sans-serif'],
       },
       colors: {
         brand: {
-          primary: '#3D261C',
-          light: '#5C3D2E',
-          dark: '#2D1B14',
-          accent: '#F07C3C',
+          primary: '#111111',
+          light: '#333333',
+          dark: '#000000',
+          accent: '#111111',
           gold: '#E8A051',
           coral: '#D94848',
         },
