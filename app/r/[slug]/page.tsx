@@ -4,25 +4,48 @@ import { ReviewPageOrchestrator } from "@/components/review/ReviewPageOrchestrat
 // This is a mock function to fetch business data
 // In a real application, this would fetch from a database or external API
 async function getBusinessData(slug: string) {
-  // Simulating a DB lookup
-  // For demonstration, we'll return a dynamic object based on the slug
   if (!slug) return null;
 
-  return {
-    name: slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
-    tagline: "Experience the excellence with us",
-    location: "Downtown Area",
-    primaryColor: "#1D9E75", // Updated default color to brand green
-    googleReviewUrl: "https://search.google.com/local/writereview?placeid=ChIJN1t_tDeuEmsRUsoyG83fYSh", // Example Place ID
-    plan: "premium", // Mock plan
-    menuItems: [
-      { id: "1", name: "Signature Coffee", icon: "Coffee" },
-      { id: "2", name: "Avocado Toast", icon: "Utensils" },
-      { id: "3", name: "Fresh Croissant", icon: "Croissant" },
-      { id: "4", name: "Garden Salad", icon: "Utensils" },
-      { id: "5", name: "Fruit Bowl", icon: "Heart" }
-    ]
-  };
+  try {
+    // Determine the API URL depending on the environment
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+    const res = await fetch(`${apiUrl}/api/qr/${slug}`, { cache: 'no-store' });
+    
+    if (!res.ok) {
+      console.error(`Failed to fetch QR data: ${res.status}`);
+      return null;
+    }
+    
+    const data = await res.json();
+    
+    return {
+      name: data.business_name,
+      tagline: data.tagline || "Experience the excellence with us",
+      location: data.city || "Downtown Area",
+      primaryColor: data.brand_color || "#1D9E75",
+      logoUrl: data.logo_url,
+      googleReviewUrl: data.google_review_url || "https://search.google.com/local/writereview?placeid=ChIJN1t_tDeuEmsRUsoyG83fYSh",
+      plan: data.plan || "trial",
+      animationStyle: data.animation_style,
+      welcomeMessage: data.welcome_message,
+      particleIntensity: data.particle_intensity,
+      seasonalTheme: data.seasonal_theme,
+      negativeFilterEnabled: data.negative_filter_enabled,
+      menuItems: data.menu_items && data.menu_items.length > 0 
+        ? data.menu_items.map((item: string, idx: number) => ({
+            id: String(idx + 1),
+            name: item,
+            icon: "Utensils"
+          }))
+        : [
+            { id: "1", name: "Signature Coffee", icon: "Coffee" },
+            { id: "2", name: "Avocado Toast", icon: "Utensils" }
+          ]
+    };
+  } catch (error) {
+    console.error("Error fetching business data:", error);
+    return null;
+  }
 }
 
 export default async function BusinessReviewPage({ params }: { params: Promise<{ slug: string }> }) {
