@@ -168,6 +168,7 @@ export default function ReviewFlow({
   onStepChange?: (step: number) => void 
 }) {
   const [step, setStep] = useState(STEPS.INTRO);
+  const [showNextBtn, setShowNextBtn] = useState(false);
   const data = simulationData || initialData || {};
   
   const business = {
@@ -291,6 +292,48 @@ export default function ReviewFlow({
 
   const nextStep = () => setStep(s => Math.min(s + 1, STEPS.COPIED));
   const prevStep = () => setStep(s => Math.max(s - 1, STEPS.WELCOME));
+
+  const handlePostReview = async () => {
+    // 1. Copy text to clipboard
+    try {
+      await navigator.clipboard.writeText(editedText);
+    } catch(e) {}
+
+    // 2. Open Google Review URL in new tab
+    if (business.googleReviewUrl && business.googleReviewUrl !== '#') {
+      window.open(business.googleReviewUrl, '_blank');
+    }
+
+    // 3. Record scan in database for analytics
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+      await fetch(`${apiUrl}/api/scan/record`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          qr_slug: data.qr_slug || window.location.pathname.split('/').pop() || '',
+          stage: 'completed',
+          device_type: 'mobile',
+          overall_rating: ratings.overall,
+          food_rating: ratings.food,
+          service_rating: ratings.service,
+          atmosphere_rating: ratings.atmosphere,
+          selected_items: selectedDishes.map(String),
+          meal_type: mealType,
+          price_range: spendRange,
+          seating_type: seatingType,
+          wait_time: waitTime,
+          review_variant: selectedReviewIdx,
+          was_negative: false
+        })
+      });
+    } catch (e) {
+      console.error(e);
+    }
+
+    // 4. Move to COPIED step
+    setStep(STEPS.COPIED);
+  };
 
   // Canvas resizing setup
   useEffect(() => {
@@ -615,13 +658,8 @@ export default function ReviewFlow({
         }
       }
 
-      // Auto-advance thresholds based on plan
-      const maxT = business.plan === 'premium' ? 900 : business.plan === 'basic' ? 600 : 300;
-      if (t >= maxT) {
-        handleAdvance();
-      } else {
-        animationFrameId = requestAnimationFrame(loop);
-      }
+      // Animation continues infinitely so the AR doesn't freeze
+      animationFrameId = requestAnimationFrame(loop);
     };
 
     animationFrameId = requestAnimationFrame(loop);
@@ -636,6 +674,14 @@ export default function ReviewFlow({
       }
     };
   }, [step, business.plan, business.primaryColor, business.name]);
+
+  useEffect(() => {
+    if (step === STEPS.INTRO) {
+      const maxT = business.plan === 'premium' ? 900 : business.plan === 'basic' ? 600 : 300;
+      const timeout = setTimeout(() => setShowNextBtn(true), (maxT / 60) * 1000);
+      return () => clearTimeout(timeout);
+    }
+  }, [step, business.plan]);
 
   const pageVariants = {
     initial: { opacity: 0, x: 20 },
@@ -849,6 +895,22 @@ export default function ReviewFlow({
                 className="text-xs font-medium tracking-wide leading-relaxed transition-all duration-300 min-h-[3rem] px-4"
                 style={{ color: business.plan === 'free' ? '#475569' : getLightenedBrandColor(business.primaryColor, 25) }}
               />
+
+              {/* NEXT BUTTON replacing auto-advance */}
+              {showNextBtn && (
+                <motion.button 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  onClick={handleAdvance}
+                  className="absolute bottom-10 px-8 py-3 rounded-full font-bold shadow-xl flex items-center gap-2 z-50 pointer-events-auto cursor-pointer"
+                  style={{
+                    backgroundColor: business.plan === 'free' ? '#1D9E75' : business.primaryColor,
+                    color: '#FFFFFF'
+                  }}
+                >
+                  Continue to Review <ArrowRight className="w-5 h-5" />
+                </motion.button>
+              )}
             </div>
 
             {/* Custom UI Actions depending on tier */}
@@ -1182,7 +1244,7 @@ export default function ReviewFlow({
             </div>
 
             <button 
-              onClick={nextStep}
+              onClick={handlePostReview}
               className="w-full py-4 bg-[#1a8a3c] text-white rounded-xl font-bold text-lg shadow-lg flex items-center justify-center gap-2 mt-auto"
             >
               📋 Copy & Post Review <ExternalLink className="w-5 h-5" />
