@@ -14,8 +14,40 @@ import {
   Utensils,
   UserCheck,
   Building,
-  Edit3
+  Edit3,
+  Coffee,
+  Croissant,
+  GlassWater,
+  ShoppingBag,
+  Hotel,
+  Dumbbell,
+  Stethoscope,
+  GraduationCap,
+  Flame,
+  ChefHat,
+  Heart,
+  Layout
 } from 'lucide-react';
+
+const IconByName = ({ name, className }: { name: string, className?: string }) => {
+  switch (name) {
+    case 'Utensils': return <Utensils className={className} />;
+    case 'Coffee': return <Coffee className={className} />;
+    case 'Croissant': return <Croissant className={className} />;
+    case 'GlassWater': return <GlassWater className={className} />;
+    case 'ShoppingBag': return <ShoppingBag className={className} />;
+    case 'Hotel': return <Hotel className={className} />;
+    case 'Dumbbell': return <Dumbbell className={className} />;
+    case 'Stethoscope': return <Stethoscope className={className} />;
+    case 'GraduationCap': return <GraduationCap className={className} />;
+    case 'Sparkles': return <Sparkles className={className} />;
+    case 'Star': return <Star className={className} />;
+    case 'Flame': return <Flame className={className} />;
+    case 'ChefHat': return <ChefHat className={className} />;
+    case 'Heart': return <Heart className={className} />;
+    default: return <Utensils className={className} />;
+  }
+}
 
 const STEPS = {
   INTRO: 0,
@@ -29,7 +61,8 @@ const STEPS = {
 type MenuItem = {
   id: number | string;
   name: string;
-  emoji: string;
+  emoji?: string;
+  icon?: string;
 };
 
 type ReviewFlowData = {
@@ -151,10 +184,10 @@ export default function ReviewFlow({
   };
 
   const menuItems = useMemo(() => data.menuItems || [
-    { id: 1, name: "Signature Pizza", emoji: "🍕" },
-    { id: 2, name: "Pasta Carbonara", emoji: "🍝" },
-    { id: 3, name: "Fresh Salad", emoji: "🥗" },
-    { id: 4, name: "Iced Tea", emoji: "🍹" },
+    { id: 1, name: "Signature Pizza", icon: "Utensils" },
+    { id: 2, name: "Pasta Carbonara", icon: "Utensils" },
+    { id: 3, name: "Fresh Salad", icon: "Utensils" },
+    { id: 4, name: "Iced Tea", icon: "GlassWater" },
   ], [data.menuItems]);
 
   // Canvas and DOM Refs for high-performance direct animations (avoid state lags)
@@ -903,9 +936,9 @@ export default function ReviewFlow({
                       <button 
                         key={item.id}
                         onClick={() => setSelectedDishes(prev => isSelected ? prev.filter(id => id !== item.id) : [...prev, item.id])}
-                        className={`px-4 py-2 rounded-full border text-xs font-medium transition-all ${isSelected ? 'border-[#1D9E75] bg-[#e1f5ee] text-[#085041]' : 'border-slate-200 bg-white text-slate-600'}`}
+                        className={`px-4 py-2 rounded-full border text-xs font-medium transition-all flex items-center gap-1.5 ${isSelected ? 'border-[#1D9E75] bg-[#e1f5ee] text-[#085041]' : 'border-slate-200 bg-white text-slate-600'}`}
                       >
-                        {item.emoji} {item.name}
+                        <IconByName name={item.icon || 'Utensils'} className="w-3.5 h-3.5 text-current opacity-70" /> {item.name}
                       </button>
                     )
                   })}

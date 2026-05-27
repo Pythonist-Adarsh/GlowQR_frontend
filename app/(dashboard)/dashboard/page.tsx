@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { QRCodeCanvas } from 'qrcode.react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { UpgradeModal } from '@/components/dashboard/UpgradeModal';
 import { 
   LayoutDashboard, 
   QrCode, 
@@ -55,7 +56,18 @@ export default function DashboardPage() {
     logo: null
   };
 
-  const user = { plan: b?.plan || 'basic' }; 
+  const user = { 
+    plan: b?.plan || 'basic', 
+    trialEndsAt: b?.trialEndsAt || new Date(Date.now() + 7 * 86400000).toISOString() 
+  }; 
+
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
+  const [upgradePlan, setUpgradePlan] = useState<'basic' | 'premium'>('basic');
+
+  const openUpgradeModal = (plan: 'basic' | 'premium') => {
+    setUpgradePlan(plan);
+    setUpgradeModalOpen(true);
+  };
 
   const reviewUrl = typeof window !== 'undefined' 
     ? `${window.location.origin}/r/${(b.name || 'business').toLowerCase().replace(/\s+/g, '-')}`
@@ -63,25 +75,27 @@ export default function DashboardPage() {
 
   useEffect(() => {
     import('qr-code-styling').then(({ default: QRCodeStyling }) => {
+      const qrConfig = {
+        width: 160,
+        height: 160,
+        data: reviewUrl || 'https://glowqr.in',
+        image: user.plan === 'expired' ? undefined : (b.logo || undefined),
+        dotsOptions: { color: b.primaryColor || '#1D9E75', type: "rounded" as any },
+        cornersSquareOptions: { color: b.primaryColor || '#1D9E75', type: "extra-rounded" as any },
+        imageOptions: { crossOrigin: "anonymous", margin: 6, imageSize: 0.35 },
+        backgroundOptions: { color: '#ffffff' }
+      };
       if (!qrCode.current) {
-        qrCode.current = new QRCodeStyling({
-          width: 160,
-          height: 160,
-          data: reviewUrl || 'https://glowqr.in',
-          image: b.logo || undefined,
-          dotsOptions: { color: b.primaryColor || '#111111', type: "rounded" },
-          cornersSquareOptions: { type: "extra-rounded" },
-          imageOptions: { crossOrigin: "anonymous", margin: 5 }
-        });
+        qrCode.current = new QRCodeStyling(qrConfig);
         if (qrRef.current) {
           qrCode.current.append(qrRef.current);
         }
       } else {
-        qrCode.current.update({ data: reviewUrl || 'https://glowqr.in', image: b.logo || undefined, dotsOptions: { color: b.primaryColor || '#111111' } });
+        qrCode.current.update(qrConfig);
       }
       setQrCodeLoaded(true);
     });
-  }, [reviewUrl, b.logo, b.primaryColor]);
+  }, [reviewUrl, b.logo, b.primaryColor, user.plan]);
 
   const handleDownloadPng = () => {
     if (qrCode.current) {
@@ -150,18 +164,53 @@ export default function DashboardPage() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-10 overflow-y-auto">
-        {user.plan === 'trial' && (
-          <div className="mb-8 p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-center justify-between shadow-sm">
-            <div className="flex items-center gap-3">
-              <Star className="w-5 h-5 text-amber-500" />
-              <p className="text-sm font-bold text-amber-900">7 days left in your free trial</p>
+      <main className="flex-1 p-10 overflow-y-auto relative">
+        <UpgradeModal isOpen={upgradeModalOpen} onClose={() => setUpgradeModalOpen(false)} defaultPlan={upgradePlan} />
+        
+        {user.plan === 'expired' && (
+          <div className="absolute inset-0 z-40 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center pt-20 pb-20">
+            <div className="bg-white p-8 rounded-[2.5rem] shadow-2xl border border-slate-200 max-w-md text-center">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6 text-red-600">
+                <Lock className="w-8 h-8" />
+              </div>
+              <h2 className="text-2xl font-black text-slate-900 mb-2">Your plan has expired</h2>
+              <p className="text-slate-600 mb-8">Upgrade to continue accessing your dashboard</p>
+              
+              <div className="space-y-3 mb-6">
+                <button onClick={() => openUpgradeModal('basic')} className="w-full py-4 border-2 border-slate-200 rounded-xl font-bold text-slate-900 hover:border-slate-900 transition-all">
+                  Upgrade to Basic ₹299/month
+                </button>
+                <button onClick={() => openUpgradeModal('premium')} className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-all">
+                  Upgrade to Premium ₹699/month
+                </button>
+              </div>
+              <p className="text-xs text-slate-500 font-medium">Your QR code still works for customers (Basic scan)</p>
             </div>
-            <button className="px-4 py-2 bg-amber-500 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-amber-600 transition-all">
-              Upgrade now
-            </button>
           </div>
         )}
+
+        {user.plan === 'trial' && (() => {
+          const daysLeft = Math.ceil((new Date(user.trialEndsAt).getTime() - new Date().getTime()) / 86400000);
+          const isUrgent = daysLeft <= 2;
+          return (
+            <div className={`mb-8 p-4 border rounded-2xl flex items-center justify-between shadow-sm ${isUrgent ? 'bg-red-50 border-red-200' : 'bg-amber-50 border-amber-200'}`}>
+              <div className="flex items-center gap-3">
+                <Star className={`w-5 h-5 ${isUrgent ? 'text-red-500' : 'text-amber-500'}`} />
+                <p className={`text-sm font-bold ${isUrgent ? 'text-red-900' : 'text-amber-900'}`}>
+                  ⏰ Your free trial ends in {daysLeft} days
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <button onClick={() => openUpgradeModal('basic')} className="px-4 py-2 border border-amber-300 text-amber-800 bg-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-amber-100 transition-all">
+                  Upgrade to Basic ₹299
+                </button>
+                <button onClick={() => openUpgradeModal('premium')} className={`px-4 py-2 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all ${isUrgent ? 'bg-red-500 hover:bg-red-600' : 'bg-amber-500 hover:bg-amber-600'}`}>
+                  Upgrade to Premium ₹699
+                </button>
+              </div>
+            </div>
+          );
+        })()}
 
         <header className="flex items-center justify-between mb-10">
           <div>
@@ -367,21 +416,31 @@ export default function DashboardPage() {
         </div>
 
         {/* Locked Premium Sections */}
-        {user.plan === 'basic' && (
-          <div className="grid grid-cols-3 gap-8 mt-8">
-            {['Heatmap Analytics', 'Conversion Funnel Chart', 'Negative Alerts'].map(title => (
-              <div key={title} className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm relative overflow-hidden h-48 flex flex-col items-center justify-center group">
-                <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 flex flex-col items-center justify-center transition-all group-hover:bg-white/40">
+        <div className="grid grid-cols-3 gap-8 mt-8">
+          {['Heatmap Analytics', 'Conversion Funnel Chart', 'Negative Alerts'].map(title => (
+            <div key={title} className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm relative overflow-hidden h-48 flex flex-col items-center justify-center group">
+              
+              {user.plan === 'basic' && (
+                <div className="absolute inset-0 bg-white/40 backdrop-blur-[6px] z-10 flex flex-col items-center justify-center transition-all group-hover:bg-white/30">
                   <div className="w-12 h-12 bg-white rounded-2xl shadow-sm border border-slate-200 flex items-center justify-center mb-3">
                     <Lock className="w-6 h-6 text-slate-400" />
                   </div>
-                  <p className="text-xs font-black text-slate-900 uppercase tracking-widest px-4 py-2 bg-white rounded-full shadow-sm border border-slate-200">Upgrade to Premium</p>
+                  <p className="text-xs font-bold text-slate-900 mb-3">Available in Premium ₹699/month</p>
+                  <button onClick={() => openUpgradeModal('premium')} className="text-xs font-black text-white bg-slate-900 uppercase tracking-widest px-4 py-2 rounded-xl shadow-sm hover:bg-slate-800 pointer-events-auto">
+                    Upgrade
+                  </button>
                 </div>
-                <p className="text-sm font-bold text-slate-400">{title}</p>
+              )}
+              
+              <div className={`${user.plan === 'basic' ? 'pointer-events-none' : ''} text-center`}>
+                <p className="text-sm font-bold text-slate-400 mb-2">{title}</p>
+                <div className="w-full h-20 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-center">
+                  <BarChart3 className="w-6 h-6 text-slate-300" />
+                </div>
               </div>
-            ))}
-          </div>
-        )}
+            </div>
+          ))}
+        </div>
       </main>
     </div>
   );

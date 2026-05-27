@@ -29,11 +29,32 @@ export function SignUpView() {
     setError('')
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 800))
-      localStorage.setItem('token', 'mock_token')
-      localStorage.setItem('onboarding_completed', 'false')
+      const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          full_name: formData.name,
+        })
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.detail || 'Failed to register');
+      }
+
+      const data = await res.json();
+      localStorage.setItem('token', data.access_token)
+      localStorage.setItem('onboarding_completed', data.onboarding_completed ? 'true' : 'false')
       
-      router.push('/onboarding')
+      if (data.onboarding_completed) {
+        router.push('/dashboard')
+      } else {
+        router.push('/onboarding')
+      }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'An unexpected error occurred')
     } finally {
@@ -60,8 +81,14 @@ export function SignUpView() {
           Start collecting reviews in under 5 minutes.
         </p>
 
-        <form onSubmit={handleSignUp} className="mt-10 max-w-md space-y-5">
-          <GoogleContinueButton label="Continue with Google" onClick={handleSignUp} />
+        <div className="mt-6 mb-2 max-w-md">
+          <p className="text-center text-sm font-medium text-emerald-700 bg-emerald-50 py-2 px-4 rounded-md border border-emerald-200">
+            ✨ Start free — 7 days full Premium access. No card needed.
+          </p>
+        </div>
+
+        <form onSubmit={handleSignUp} className="mt-6 max-w-md space-y-5">
+          <GoogleContinueButton label="Continue with Google" />
           <AuthDivider chipBgClass="bg-white" />
 
           {error && (
@@ -121,8 +148,8 @@ export function SignUpView() {
               )}
               {loading ? 'Creating account...' : 'Create account'}
             </motion.button>
-            <p className="text-center text-xs font-medium text-emerald-600 bg-emerald-50 py-1.5 rounded-md border border-emerald-100">
-              Start free — 7 days Premium, no card needed
+            <p className="text-center text-xs text-[#666666]">
+              By signing up, you agree to our Terms. Your 7-day trial starts immediately.
             </p>
           </div>
         </form>

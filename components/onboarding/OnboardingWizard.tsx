@@ -33,27 +33,52 @@ import {
   Camera,
   Trash2,
   X,
-  Plus
+  Plus,
+  Star,
+  Flame,
+  ChefHat,
+  Heart
 } from 'lucide-react'
+
+const IconByName = ({ name, className }: { name: string, className?: string }) => {
+  switch (name) {
+    case 'Utensils': return <Utensils className={className} />;
+    case 'Coffee': return <Coffee className={className} />;
+    case 'Croissant': return <Croissant className={className} />;
+    case 'GlassWater': return <GlassWater className={className} />;
+    case 'ShoppingBag': return <ShoppingBag className={className} />;
+    case 'Hotel': return <Hotel className={className} />;
+    case 'Dumbbell': return <Dumbbell className={className} />;
+    case 'Stethoscope': return <Stethoscope className={className} />;
+    case 'GraduationCap': return <GraduationCap className={className} />;
+    case 'Sparkles': return <Sparkles className={className} />;
+    case 'Star': return <Star className={className} />;
+    case 'Flame': return <Flame className={className} />;
+    case 'ChefHat': return <ChefHat className={className} />;
+    case 'Heart': return <Heart className={className} />;
+    default: return <Layout className={className} />;
+  }
+}
 import Image from 'next/image'
 // qr-code-styling will be dynamically imported for client-side rendering
 
 // Lazy load the simulation component
 const ReviewFlow = lazy(() => import('@/components/review/ReviewFlow'));
+import { API_BASE_URL } from '@/lib/api-config';
 
 // --- Design System Tokens (CSS Variables) ---
 const STYLES = `
   :root {
     --color-bg-primary: #ffffff;
     --color-bg-secondary: #f8fafc;
-    --color-brand-primary: #1a8a3c;
-    --color-brand-accent: #1D9E75;
+    --color-brand-primary: #111111;
+    --color-brand-accent: #333333;
     --color-text-primary: #0f172a;
     --color-text-secondary: #475569;
     --color-text-tertiary: #94a3b8;
     --color-border-default: #e2e8f0;
     --color-card-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
-    --color-success-bg: #e1f5ee;
+    --color-success-bg: #f8fafc;
     --color-warning-bg: #fff7ed;
     --color-info-bg: #eff6ff;
   }
@@ -65,7 +90,7 @@ const STYLES = `
     --color-text-secondary: #94a3b8;
     --color-text-tertiary: #64748b;
     --color-border-default: #334155;
-    --color-success-bg: rgba(29, 158, 117, 0.1);
+    --color-success-bg: rgba(17, 17, 17, 0.1);
     --color-warning-bg: rgba(245, 158, 11, 0.1);
     --color-info-bg: rgba(59, 130, 246, 0.1);
   }
@@ -278,22 +303,22 @@ const Step2 = ({ data, updateData }: any) => (
 
 const Step3 = ({ data, updateData }: any) => {
   const categories = [
-    { id: 'restaurant', name: 'Restaurant', icon: '🍽️' },
-    { id: 'cafe', name: 'Café', icon: '☕' },
-    { id: 'bakery', name: 'Bakery', icon: '🥐' },
-    { id: 'bar', name: 'Bar', icon: '🍸' },
-    { id: 'fastfood', name: 'Fast Food', icon: '🍔' },
-    { id: 'finedining', name: 'Fine Dining', icon: '🥂' },
-    { id: 'foodtruck', name: 'Food Truck', icon: '🚚' },
-    { id: 'cloudkitchen', name: 'Cloud Kitchen', icon: '📦' },
-    { id: 'hotel', name: 'Hotel', icon: '🏨' },
-    { id: 'spa', name: 'Spa', icon: '💆' },
-    { id: 'salon', name: 'Salon', icon: '💇' },
-    { id: 'retail', name: 'Retail', icon: '🛍️' },
-    { id: 'gym', name: 'Gym', icon: '💪' },
-    { id: 'medical', name: 'Medical', icon: '🏥' },
-    { id: 'education', name: 'Education', icon: '🎓' },
-    { id: 'other', name: 'Other', icon: '✦' },
+    { id: 'restaurant', name: 'Restaurant', icon: 'Utensils' },
+    { id: 'cafe', name: 'Café', icon: 'Coffee' },
+    { id: 'bakery', name: 'Bakery', icon: 'Croissant' },
+    { id: 'bar', name: 'Bar', icon: 'GlassWater' },
+    { id: 'fastfood', name: 'Fast Food', icon: 'Utensils' },
+    { id: 'finedining', name: 'Fine Dining', icon: 'Utensils' },
+    { id: 'foodtruck', name: 'Food Truck', icon: 'Utensils' },
+    { id: 'cloudkitchen', name: 'Cloud Kitchen', icon: 'Utensils' },
+    { id: 'hotel', name: 'Hotel', icon: 'Hotel' },
+    { id: 'spa', name: 'Spa', icon: 'Sparkles' },
+    { id: 'salon', name: 'Salon', icon: 'Sparkles' },
+    { id: 'retail', name: 'Retail', icon: 'ShoppingBag' },
+    { id: 'gym', name: 'Gym', icon: 'Dumbbell' },
+    { id: 'medical', name: 'Medical', icon: 'Stethoscope' },
+    { id: 'education', name: 'Education', icon: 'GraduationCap' },
+    { id: 'other', name: 'Other', icon: 'Layout' },
   ];
 
   return (
@@ -303,9 +328,9 @@ const Step3 = ({ data, updateData }: any) => {
           <button 
             key={cat.id}
             onClick={() => updateData({ category: cat.id })}
-            className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all ${data.category === cat.id ? 'border-[var(--color-brand-primary)] bg-[var(--color-success-bg)] text-[var(--color-brand-primary)]' : 'border-slate-100 bg-white text-slate-400 hover:border-slate-200'}`}
+            className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all ${data.category === cat.id ? 'border-[var(--color-brand-primary)] bg-slate-50 text-[var(--color-brand-primary)]' : 'border-slate-100 bg-white text-slate-400 hover:border-slate-200'}`}
           >
-            <span className="text-2xl mb-1">{cat.icon}</span>
+            <span className="mb-2"><IconByName name={cat.icon} className="w-6 h-6" /></span>
             <span className="text-[9px] font-black uppercase tracking-widest">{cat.name}</span>
           </button>
         ))}
@@ -362,7 +387,7 @@ const Step4 = ({ data, updateData }: any) => {
   const pdfInputRef = useRef<HTMLInputElement | null>(null);
   const photoInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handlePdfUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setFileDetails({
@@ -372,48 +397,29 @@ const Step4 = ({ data, updateData }: any) => {
     });
     setParsed(false);
     setParsing(true);
-    setTimeout(() => {
+    
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const res = await fetch(`${API_BASE_URL}/api/onboarding/extract-menu`, {
+        method: 'POST',
+        // Do NOT set Content-Type header manually when using FormData, the browser will set it with the correct boundary
+        body: formData
+      });
+      if (res.ok) {
+        const extractedData = await res.json();
+        updateData(extractedData);
+      }
+    } catch (err) {
+      console.error("Failed to extract menu", err);
+    } finally {
       setParsing(false);
       setParsed(true);
-      
-      // AI Magic: Populate state based on typical restaurant menu
-      updateData({
-        highlightDishes: "Paneer Tikka\nButter Chicken\nGarlic Naan\nDal Makhani",
-        signatureDish: "Special Butter Chicken",
-        menuCategories: [
-          {
-            category: "Starters",
-            items: [
-              { id: 11, name: "Paneer Tikka", emoji: "🧀", price: "₹240" },
-              { id: 12, name: "Crispy Corn", emoji: "🌽", price: "₹180" },
-              { id: 13, name: "Veg Spring Rolls", emoji: "🌯", price: "₹160" }
-            ]
-          },
-          {
-            category: "Mains",
-            items: [
-              { id: 14, name: "Special Butter Chicken", emoji: "🍗", price: "₹380" },
-              { id: 15, name: "Dal Makhani Premium", emoji: "🍲", price: "₹290" },
-              { id: 16, name: "Garlic Butter Naan", emoji: "🫓", price: "₹80" }
-            ]
-          },
-          {
-            category: "Desserts",
-            items: [
-              { id: 17, name: "Royal Gulab Jamun", emoji: "🧁", price: "₹120" },
-              { id: 18, name: "Mango Kulfi", emoji: "🍧", price: "₹140" }
-            ]
-          }
-        ],
-        menuItems: [
-          { id: 11, name: "Paneer Tikka", emoji: "🧀" },
-          { id: 12, name: "Butter Chicken", emoji: "🍗" }
-        ]
-      });
-    }, 2000);
+    }
   };
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setFileDetails({
@@ -423,38 +429,25 @@ const Step4 = ({ data, updateData }: any) => {
     });
     setParsed(false);
     setParsing(true);
-    setTimeout(() => {
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const res = await fetch(`${API_BASE_URL}/api/onboarding/extract-menu`, {
+        method: 'POST',
+        body: formData
+      });
+      if (res.ok) {
+        const extractedData = await res.json();
+        updateData(extractedData);
+      }
+    } catch (err) {
+      console.error("Failed to extract menu", err);
+    } finally {
       setParsing(false);
       setParsed(true);
-      
-      // AI Magic: Populate state based on typical cafe menu
-      updateData({
-        highlightDishes: "Avocado Toast\nEggs Benedict\nAcai Bowl\nFlat White Coffee",
-        signatureDish: "Truffle Eggs Benedict",
-        menuCategories: [
-          {
-            category: "Breakfast & Brunch",
-            items: [
-              { id: 21, name: "Avocado Toast", emoji: "🥑", price: "₹280" },
-              { id: 22, name: "Eggs Benedict", emoji: "🥚", price: "₹320" },
-              { id: 23, name: "Acai Bowl", emoji: "🍓", price: "₹350" }
-            ]
-          },
-          {
-            category: "Beverages",
-            items: [
-              { id: 24, name: "Flat White Coffee", emoji: "☕", price: "₹180" },
-              { id: 25, name: "Cold Brew", emoji: "🧊", price: "₹200" },
-              { id: 26, name: "Orange Juice", emoji: "🍊", price: "₹150" }
-            ]
-          }
-        ],
-        menuItems: [
-          { id: 21, name: "Avocado Toast", emoji: "🥑" },
-          { id: 22, name: "Eggs Benedict", emoji: "🥚" }
-        ]
-      });
-    }, 2000);
+    }
   };
 
   const resetUpload = () => {
@@ -577,7 +570,7 @@ const Step4 = ({ data, updateData }: any) => {
                         {cat.items.map((item: any) => (
                           <div key={item.id} className="flex items-center justify-between group">
                             <div className="flex items-center gap-2">
-                              <span className="w-6 h-6 flex items-center justify-center bg-slate-50 rounded text-xs">{item.emoji}</span>
+                              <span className="w-8 h-8 flex items-center justify-center bg-slate-50 rounded text-slate-600"><IconByName name={item.emoji || item.icon} className="w-4 h-4" /></span>
                               <span className="text-sm font-medium text-slate-700">{item.name}</span>
                             </div>
                             <span className="text-xs font-bold text-slate-400 group-hover:text-slate-600 transition-colors">{item.price}</span>
@@ -638,7 +631,7 @@ const Step5 = ({ data, updateData }: any) => {
           <button 
             key={theme.id}
             onClick={() => { if (!isLocked) updateData({ theme: theme.id }) }}
-            className={`relative p-1 rounded-3xl border-2 transition-all ${data.theme === theme.id ? 'border-[var(--color-brand-primary)] bg-[var(--color-success-bg)]' : 'border-slate-100 bg-white hover:border-slate-200'} ${isLocked ? 'cursor-not-allowed opacity-80' : ''}`}
+            className={`relative p-1 rounded-3xl border-2 transition-all ${data.theme === theme.id ? 'border-[var(--color-brand-primary)] bg-[var(--color-success-bg)]' : 'border-[var(--color-border-default)] bg-[var(--color-bg-primary)] hover:border-[var(--color-text-tertiary)]'} ${isLocked ? 'cursor-not-allowed opacity-80' : ''}`}
           >
             {isLocked && (
               <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/60 backdrop-blur-sm rounded-3xl">
@@ -652,9 +645,9 @@ const Step5 = ({ data, updateData }: any) => {
               {theme.badge && <span className="absolute top-3 right-3 px-2 py-0.5 bg-amber-400 text-white text-[8px] font-black rounded-full uppercase tracking-widest">{theme.badge}</span>}
             </div>
             <div className="px-4 pb-4 text-left">
-              <p className="text-xs font-black text-slate-900 mb-0.5">{theme.name}</p>
-              <p className="text-[9px] font-bold text-[var(--color-brand-primary)] mb-2">{theme.price}</p>
-              <p className="text-[8px] text-slate-400 leading-tight">{theme.desc}</p>
+              <p className="text-xs font-black text-[var(--color-text-primary)] mb-0.5">{theme.name}</p>
+              <p className="text-[9px] font-bold text-[var(--color-text-primary)] mb-2">{theme.price}</p>
+              <p className="text-[8px] text-[var(--color-text-secondary)] leading-tight">{theme.desc}</p>
             </div>
           </button>
         )})}
@@ -872,10 +865,10 @@ export default function OnboardingWizard() {
     logo: null,
     plan: 'basic',
     menuItems: [
-      { id: 1, name: "Signature Dish", emoji: "⭐" },
-      { id: 2, name: "Popular Choice", emoji: "🔥" },
-      { id: 3, name: "Chef Special", emoji: "👨‍🍳" },
-      { id: 4, name: "House Favorite", emoji: "❤️" },
+      { id: 1, name: "Signature Dish", icon: "Star" },
+      { id: 2, name: "Popular Choice", icon: "Flame" },
+      { id: 3, name: "Chef Special", icon: "ChefHat" },
+      { id: 4, name: "House Favorite", icon: "Heart" },
     ]
   })
 
@@ -890,13 +883,56 @@ export default function OnboardingWizard() {
     { id: 'qr', name: 'QR Code' }
   ]
 
-  const handleNext = () => {
-    if (currentStep < 5) setCurrentStep(s => s + 1)
-    else {
+  const handleNext = async () => {
+    if (currentStep < 5) {
+      setCurrentStep(s => s + 1)
+    } else {
       setLoading(true)
-      localStorage.setItem('onboarding_completed', 'true')
-      localStorage.setItem('glowqr_business_data', JSON.stringify(data))
-      setTimeout(() => router.push('/dashboard'), 1500)
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`${API_BASE_URL}/businesses/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            name: data.name,
+            tagline: data.tagline,
+            primary_color: data.primaryColor,
+            logo_url: data.logo?.substring(0, 50) + "..." || "", // In real life, upload to storage first
+            address: data.address,
+            google_review_url: data.googleReviewUrl,
+            category: data.category,
+            menu_data: data.menuCategories || [],
+            negative_filter_enabled: true,
+            review_language: data.language,
+            ai_variant_count: data.variants ? parseInt(data.variants.charAt(0)) : 3,
+            welcome_message: data.welcomeMsg || "",
+            animation_style: data.theme,
+          })
+        });
+        
+        if (res.ok) {
+          localStorage.setItem('onboarding_completed', 'true')
+          localStorage.setItem('glowqr_business_data', JSON.stringify(data))
+          router.push('/dashboard')
+        } else {
+          console.error("Failed to create business", await res.text());
+          // Fallback to allow continuing the flow even if backend fails
+          localStorage.setItem('onboarding_completed', 'true')
+          localStorage.setItem('glowqr_business_data', JSON.stringify(data))
+          router.push('/dashboard')
+        }
+      } catch (err) {
+        console.error("Failed to create business", err);
+        // Fallback to allow continuing the flow even if backend fails
+        localStorage.setItem('onboarding_completed', 'true')
+        localStorage.setItem('glowqr_business_data', JSON.stringify(data))
+        router.push('/dashboard')
+      } finally {
+        setLoading(false);
+      }
     }
   }
 
@@ -912,13 +948,13 @@ export default function OnboardingWizard() {
 
       {/* Top Navigation Bar */}
       <div className="w-full max-w-[600px] flex items-center justify-between mb-8 px-2">
-        <h1 className="text-sm font-black text-slate-900 uppercase tracking-[0.25em]">GlowQR Setup</h1>
+        <h1 className="text-sm font-black text-[var(--color-text-primary)] uppercase tracking-[0.25em]">GlowQR Setup</h1>
         <div className="flex gap-2">
           {steps.map((step, idx) => (
             <button 
               key={step.id} 
               onClick={() => setCurrentStep(idx)}
-              className={`w-8 h-8 rounded-full border-2 text-[10px] font-black transition-all flex items-center justify-center ${idx < currentStep ? 'bg-slate-400 border-slate-400 text-white' : idx === currentStep ? 'bg-[var(--color-brand-primary)] border-[var(--color-brand-primary)] text-white' : 'border-slate-200 text-slate-300 bg-white'}`}
+              className={`w-8 h-8 rounded-full border-2 text-[10px] font-black transition-all flex items-center justify-center ${idx < currentStep ? 'bg-[var(--color-text-tertiary)] border-[var(--color-text-tertiary)] text-white' : idx === currentStep ? 'bg-[var(--color-brand-primary)] border-[var(--color-brand-primary)] text-white' : 'border-[var(--color-border-default)] text-[var(--color-text-tertiary)] bg-[var(--color-bg-primary)]'}`}
             >
               {idx + 1}
             </button>

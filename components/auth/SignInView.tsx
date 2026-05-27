@@ -30,11 +30,27 @@ export function SignInView() {
     setError('')
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 800))
-      localStorage.setItem('token', 'mock_token')
+      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        })
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.detail || 'Failed to sign in');
+      }
+
+      const data = await res.json();
+      localStorage.setItem('token', data.access_token)
+      localStorage.setItem('onboarding_completed', data.onboarding_completed ? 'true' : 'false')
       
-      const hasCompletedOnboarding = localStorage.getItem('onboarding_completed') === 'true'
-      if (hasCompletedOnboarding) {
+      if (data.onboarding_completed) {
         router.push('/dashboard')
       } else {
         router.push('/onboarding')
@@ -67,18 +83,7 @@ export function SignInView() {
         </p>
 
         <div className="mt-10 max-w-md space-y-5">
-          <GoogleContinueButton 
-            label="Continue with Google" 
-            onClick={() => {
-              localStorage.setItem('token', 'mock_token_google')
-              const hasCompletedOnboarding = localStorage.getItem('onboarding_completed') === 'true'
-              if (hasCompletedOnboarding) {
-                router.push('/dashboard')
-              } else {
-                router.push('/onboarding')
-              }
-            }} 
-          />
+          <GoogleContinueButton label="Continue with Google" />
           <AuthDivider />
 
           {error && (

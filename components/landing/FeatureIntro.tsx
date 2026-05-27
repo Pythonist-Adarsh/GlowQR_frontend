@@ -2,25 +2,26 @@
 
 import { motion } from 'framer-motion'
 import { fadeUp, staggerContainer } from '@/lib/animations'
+import { Sparkles, QrCode, BarChart3 } from 'lucide-react'
 
 const cards = [
   {
-    icon: '✨',
+    icon: <Sparkles className="w-8 h-8 text-slate-800" />,
     title: 'AI review drafts',
     desc: 'Instant, on-brand suggestions customers can paste in one tap.',
-    accent: 'from-orange-400/15 to-amber-900/10',
+    accent: 'from-slate-100 to-white',
   },
   {
-    icon: '🔗',
+    icon: <QrCode className="w-8 h-8 text-slate-800" />,
     title: 'One smart QR',
     desc: 'Route happy guests to Google, Yelp, Facebook — your rules.',
-    accent: 'from-amber-600/15 to-orange-300/10',
+    accent: 'from-slate-100 to-white',
   },
   {
-    icon: '📊',
+    icon: <BarChart3 className="w-8 h-8 text-slate-800" />,
     title: 'Proof in analytics',
     desc: 'Scans, conversions, and sentiment trends in a glass dashboard.',
-    accent: 'from-red-950/10 to-orange-400/15',
+    accent: 'from-slate-100 to-white',
   },
 ]
 
@@ -62,7 +63,7 @@ export function FeatureIntro() {
               whileHover={{ y: -4 }}
               className={`glass-card bg-gradient-to-br ${c.accent} p-8`}
             >
-              <span className="text-3xl">{c.icon}</span>
+              <div className="text-3xl flex items-center justify-center w-14 h-14 bg-white rounded-2xl shadow-sm border border-slate-100">{c.icon}</div>
               <h3 className="mt-4 font-display text-xl font-bold">{c.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-[var(--text-secondary)]">{c.desc}</p>
             </motion.div>

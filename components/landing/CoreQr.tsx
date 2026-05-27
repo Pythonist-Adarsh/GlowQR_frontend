@@ -4,11 +4,11 @@ import { motion } from 'framer-motion'
 import { fadeUp } from '@/lib/animations'
 
 const platforms = [
-  { label: 'G', color: '#4285F4' },
-  { label: 'Y', color: '#FF1A1A' },
-  { label: 'f', color: '#1877F2' },
-  { label: '★', color: '#FFB347' },
-  { label: 'T', color: '#00AF87' },
+  { label: 'G', color: '#FFFFFF' },
+  { label: 'Y', color: '#FFFFFF' },
+  { label: 'f', color: '#FFFFFF' },
+  { label: '★', color: '#FFFFFF' },
+  { label: 'T', color: '#FFFFFF' },
 ]
 
 export function CoreQr() {
@@ -64,8 +64,8 @@ export function CoreQr() {
               />
               <defs>
                 <linearGradient id="glowqrGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#F07C3C" />
-                  <stop offset="100%" stopColor="#E8A051" />
+                  <stop offset="0%" stopColor="#FFFFFF" />
+                  <stop offset="100%" stopColor="#999999" />
                 </linearGradient>
               </defs>
             </svg>
@@ -98,9 +98,9 @@ export function CoreQr() {
                 className="rounded-2xl bg-white p-4 shadow-2xl sm:p-5"
                 animate={{
                   boxShadow: [
-                    '0 0 0 0 rgba(240,124,60,0)',
-                    '0 0 40px 8px rgba(240,124,60,0.4)',
-                    '0 0 0 0 rgba(240,124,60,0)',
+                    '0 0 0 0 rgba(255,255,255,0)',
+                    '0 0 40px 8px rgba(255,255,255,0.2)',
+                    '0 0 0 0 rgba(255,255,255,0)',
                   ],
                 }}
                 transition={{ duration: 3, repeat: Infinity }}

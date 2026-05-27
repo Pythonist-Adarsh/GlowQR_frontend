@@ -2,20 +2,21 @@
 
 import { motion } from 'framer-motion'
 import { staggerContainer, fadeUp } from '@/lib/animations'
+import { Utensils, ShoppingBag, Hotel, Coffee, Scissors, Stethoscope, Dumbbell, Truck, Ticket, Wrench, GraduationCap, Sparkles } from 'lucide-react'
 
 const cases = [
-  { icon: '🍽️', label: 'Restaurants' },
-  { icon: '🛍️', label: 'Retail' },
-  { icon: '🏨', label: 'Hotels' },
-  { icon: '☕', label: 'Cafés' },
-  { icon: '💇', label: 'Salons' },
-  { icon: '🏥', label: 'Clinics' },
-  { icon: '💪', label: 'Gyms' },
-  { icon: '🚚', label: 'Food trucks' },
-  { icon: '🎭', label: 'Experiences' },
-  { icon: '🛠️', label: 'Home services' },
-  { icon: '🎓', label: 'Studios & schools' },
-  { icon: '✦', label: 'Anything local' },
+  { icon: <Utensils className="w-5 h-5 text-slate-800" />, label: 'Restaurants' },
+  { icon: <ShoppingBag className="w-5 h-5 text-slate-800" />, label: 'Retail' },
+  { icon: <Hotel className="w-5 h-5 text-slate-800" />, label: 'Hotels' },
+  { icon: <Coffee className="w-5 h-5 text-slate-800" />, label: 'Cafés' },
+  { icon: <Scissors className="w-5 h-5 text-slate-800" />, label: 'Salons' },
+  { icon: <Stethoscope className="w-5 h-5 text-slate-800" />, label: 'Clinics' },
+  { icon: <Dumbbell className="w-5 h-5 text-slate-800" />, label: 'Gyms' },
+  { icon: <Truck className="w-5 h-5 text-slate-800" />, label: 'Food trucks' },
+  { icon: <Ticket className="w-5 h-5 text-slate-800" />, label: 'Experiences' },
+  { icon: <Wrench className="w-5 h-5 text-slate-800" />, label: 'Home services' },
+  { icon: <GraduationCap className="w-5 h-5 text-slate-800" />, label: 'Studios & schools' },
+  { icon: <Sparkles className="w-5 h-5 text-slate-800" />, label: 'Anything local' },
 ]
 
 export function UseCases() {
@@ -51,7 +52,7 @@ export function UseCases() {
               whileHover={{ scale: 1.03, y: -2 }}
               className="glass-card flex cursor-default flex-col items-center gap-2 border-[var(--border-card)] bg-[var(--bg-card)] p-4 text-center"
             >
-              <span className="text-xl">{c.icon}</span>
+              <div className="flex items-center justify-center w-10 h-10 bg-slate-50 rounded-lg border border-slate-100">{c.icon}</div>
               <span className="text-xs font-semibold text-[var(--text-primary)]">{c.label}</span>
             </motion.div>
           ))}

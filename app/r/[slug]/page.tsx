@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { ClientReviewFlow } from "@/components/review/ClientReviewFlow";
+import { ReviewPageOrchestrator } from "@/components/review/ReviewPageOrchestrator";
 
 // This is a mock function to fetch business data
 // In a real application, this would fetch from a database or external API
@@ -12,14 +12,15 @@ async function getBusinessData(slug: string) {
     name: slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
     tagline: "Experience the excellence with us",
     location: "Downtown Area",
-    primaryColor: "#F07C3C",
+    primaryColor: "#1D9E75", // Updated default color to brand green
     googleReviewUrl: "https://search.google.com/local/writereview?placeid=ChIJN1t_tDeuEmsRUsoyG83fYSh", // Example Place ID
+    plan: "premium", // Mock plan
     menuItems: [
-      { id: "1", name: "Signature Coffee", emoji: "☕" },
-      { id: "2", name: "Avocado Toast", emoji: "🥑" },
-      { id: "3", name: "Fresh Croissant", emoji: "🥐" },
-      { id: "4", name: "Garden Salad", emoji: "🥗" },
-      { id: "5", name: "Fruit Bowl", emoji: "🍓" }
+      { id: "1", name: "Signature Coffee", icon: "Coffee" },
+      { id: "2", name: "Avocado Toast", icon: "Utensils" },
+      { id: "3", name: "Fresh Croissant", icon: "Croissant" },
+      { id: "4", name: "Garden Salad", icon: "Utensils" },
+      { id: "5", name: "Fruit Bowl", icon: "Heart" }
     ]
   };
 }
@@ -33,8 +34,8 @@ export default async function BusinessReviewPage({ params }: { params: Promise<{
   }
 
   return (
-    <main className="min-h-screen">
-      <ClientReviewFlow initialData={businessData} />
+    <main className="min-h-screen relative">
+      <ReviewPageOrchestrator initialData={businessData} />
     </main>
   );
 }

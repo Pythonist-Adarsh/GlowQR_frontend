@@ -2,25 +2,26 @@
 
 import { motion } from 'framer-motion'
 import { fadeUp, staggerContainer } from '@/lib/animations'
+import { Zap, Image, TrendingUp } from 'lucide-react'
 
 const steps = [
   {
     step: '01',
-    title: 'Generate',
+    title: 'Setup your business in 5 minutes',
     desc: 'Create your branded QR and AI prompts in minutes.',
-    icon: '⚡',
+    icon: <Zap className="w-8 h-8 text-slate-800" />,
   },
   {
     step: '02',
-    title: 'Display',
+    title: 'Place QR at your counter or table',
     desc: 'Place codes on tables, receipts, packaging, or NFC stands.',
-    icon: '🖼️',
+    icon: <Image className="w-8 h-8 text-slate-800" />,
   },
   {
     step: '03',
-    title: 'Analyze',
+    title: 'Watch reviews grow on Google',
     desc: 'Watch scans convert into reviews and actionable insights.',
-    icon: '📈',
+    icon: <TrendingUp className="w-8 h-8 text-slate-800" />,
   },
 ]
 
@@ -59,7 +60,7 @@ export function HowItWorks() {
               {i < steps.length - 1 && (
                 <div className="absolute right-0 top-1/2 hidden h-px w-12 translate-x-full -translate-y-1/2 bg-gradient-to-r from-brand-primary/40 to-transparent md:block" />
               )}
-              <span className="text-2xl">{s.icon}</span>
+              <div className="w-14 h-14 bg-slate-50 flex items-center justify-center rounded-xl border border-slate-100">{s.icon}</div>
               <p className="mt-4 text-xs font-bold uppercase tracking-widest text-brand-primary">
                 Step {s.step}
               </p>

@@ -11,12 +11,18 @@ function AuthSuccessHandler() {
 
   useEffect(() => {
     const token = searchParams.get('token');
+    const onboardingCompletedParam = searchParams.get('onboarding_completed');
+
     if (token) {
       // Store token in localStorage
       localStorage.setItem('token', token);
 
       // Check if user has completed onboarding before
-      const hasCompletedOnboarding = localStorage.getItem('onboarding_completed') === 'true';
+      let hasCompletedOnboarding = localStorage.getItem('onboarding_completed') === 'true';
+      if (onboardingCompletedParam !== null) {
+        hasCompletedOnboarding = onboardingCompletedParam === 'true';
+        localStorage.setItem('onboarding_completed', onboardingCompletedParam);
+      }
 
       // Route accordingly
       if (hasCompletedOnboarding) {

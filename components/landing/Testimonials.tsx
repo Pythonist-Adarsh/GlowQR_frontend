@@ -40,7 +40,7 @@ export function Testimonials() {
         >
           <h2 className="font-display text-3xl font-bold md:text-4xl">Still not convinced?</h2>
           <p className="mt-4 text-[var(--text-secondary)] md:text-lg">
-            Operators worldwide use GlowQR to stack proof where shoppers actually look.
+            Operators use GlowQR to stack proof where shoppers actually look.
           </p>
         </motion.div>
 

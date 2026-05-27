@@ -40,7 +40,7 @@ export function Hero() {
             variants={fadeUp}
             className="mt-6 text-lg text-neutral-400 md:text-xl"
           >
-            Turn every scan into glowing reviews across Google, Yelp, and more —
+            Turn every scan into glowing reviews across Google Reviews —
             with AI-crafted copy your customers can post in seconds.
           </motion.p>
           <motion.div
@@ -56,6 +56,12 @@ export function Hero() {
               View demo
             </Button>
           </motion.div>
+          <motion.p
+            variants={fadeUp}
+            className="mt-8 text-sm font-medium text-neutral-500"
+          >
+            Trusted by restaurants, salons & clinics in Lucknow
+          </motion.p>
         </motion.div>
 
         <motion.div
