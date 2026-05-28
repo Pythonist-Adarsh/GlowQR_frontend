@@ -62,8 +62,7 @@ const IconByName = ({ name, className }: { name: string, className?: string }) =
 import Image from 'next/image'
 // qr-code-styling will be dynamically imported for client-side rendering
 
-// Lazy load the simulation component
-const ReviewFlow = lazy(() => import('@/components/review/ReviewFlow'));
+const ReviewPageOrchestrator = lazy(() => import('@/components/review/ReviewPageOrchestrator').then(mod => ({ default: mod.ReviewPageOrchestrator })));
 import { API_BASE_URL } from '@/lib/api-config';
 
 // --- Design System Tokens (CSS Variables) ---
@@ -725,7 +724,7 @@ const Step5 = ({ data, updateData }: any) => {
 
 const Step6 = ({ data, onPreview }: { data: any, onPreview: () => void }) => {
   const [copiedLink, setCopiedLink] = useState(false);
-  const reviewUrl = `https://glowqr.in/r/${data.name?.toLowerCase().replace(/\s+/g, '-') || 'business'}`;
+  const reviewUrl = typeof window !== 'undefined' ? `${window.location.origin}/r/${data.name?.toLowerCase().replace(/\s+/g, '-') || 'business'}` : `https://glow-qr-frontend.vercel.app/r/${data.name?.toLowerCase().replace(/\s+/g, '-') || 'business'}`;
   const qrRef = useRef<HTMLDivElement>(null);
   const qrCode = useRef<any>(null);
 
@@ -1080,7 +1079,7 @@ export default function OnboardingWizard() {
                     <RefreshCw className="w-8 h-8 text-[var(--color-brand-primary)] animate-spin" />
                   </div>
                 }>
-                  <ReviewFlow simulationData={{ ...data, logo: data.logo || null }} onStepChange={() => {}} />
+                  <ReviewPageOrchestrator initialData={{ ...data, logo: data.logo || null, plan: data.plan || 'premium' }} />
                 </Suspense>
              </motion.div>
           </div>

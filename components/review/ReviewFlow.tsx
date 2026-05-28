@@ -89,7 +89,7 @@ export default function ReviewFlow({ initialData }: { initialData?: any }) {
     setIsGenerating(true);
     
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://glowqr.onrender.com';
       const res = await fetch(`${apiUrl}/api/scan/generate-review`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -143,7 +143,7 @@ export default function ReviewFlow({ initialData }: { initialData?: any }) {
     }
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://glowqr.onrender.com';
       await fetch(`${apiUrl}/api/scan/record`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

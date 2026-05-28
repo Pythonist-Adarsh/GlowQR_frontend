@@ -8,7 +8,7 @@ async function getBusinessData(slug: string) {
 
   try {
     // Determine the API URL depending on the environment
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://glowqr.onrender.com';
     console.log(`[DEBUG] Fetching QR Data for slug: ${slug} from ${apiUrl}/api/qr/${slug}`);
     
     const res = await fetch(`${apiUrl}/api/qr/${slug}`, { cache: 'no-store' });

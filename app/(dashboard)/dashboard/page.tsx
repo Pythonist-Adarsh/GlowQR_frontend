@@ -71,14 +71,14 @@ export default function DashboardPage() {
 
   const reviewUrl = typeof window !== 'undefined' 
     ? `${window.location.origin}/r/${(b.name || 'business').toLowerCase().replace(/\s+/g, '-')}`
-    : `https://glowqr.in/r/${(b.name || 'business').toLowerCase().replace(/\s+/g, '-')}`;
+    : `https://glow-qr-frontend.vercel.app/r/${(b.name || 'business').toLowerCase().replace(/\s+/g, '-')}`;
 
   useEffect(() => {
     import('qr-code-styling').then(({ default: QRCodeStyling }) => {
       const qrConfig = {
         width: 160,
         height: 160,
-        data: reviewUrl || 'https://glowqr.in',
+        data: reviewUrl || 'https://glow-qr-frontend.vercel.app',
         image: user.plan === 'expired' ? undefined : (b.logo || undefined),
         dotsOptions: { color: b.primaryColor || '#1D9E75', type: "rounded" as any },
         cornersSquareOptions: { color: b.primaryColor || '#1D9E75', type: "extra-rounded" as any },

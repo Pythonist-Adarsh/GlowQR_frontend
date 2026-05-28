@@ -70,14 +70,14 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    let width = window.innerWidth;
-    let height = window.innerHeight;
+    let width = canvas.parentElement?.clientWidth || window.innerWidth;
+    let height = canvas.parentElement?.clientHeight || window.innerHeight;
     canvas.width = width;
     canvas.height = height;
 
     const handleResize = () => {
-      width = window.innerWidth;
-      height = window.innerHeight;
+      width = canvas.parentElement?.clientWidth || window.innerWidth;
+      height = canvas.parentElement?.clientHeight || window.innerHeight;
       canvas.width = width;
       canvas.height = height;
     };
@@ -166,7 +166,7 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden"
+      className="absolute inset-0 z-50 flex flex-col items-center justify-center overflow-hidden"
       style={{ backgroundColor: `${brandColor}15` }}
     >
       <div className="absolute inset-0 bg-slate-900/95 mix-blend-multiply" />
