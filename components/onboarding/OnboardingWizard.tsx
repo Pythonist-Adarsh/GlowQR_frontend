@@ -1079,7 +1079,7 @@ export default function OnboardingWizard() {
                     <RefreshCw className="w-8 h-8 text-[var(--color-brand-primary)] animate-spin" />
                   </div>
                 }>
-                  <ReviewPageOrchestrator initialData={{ ...data, logo: data.logo || null, plan: data.plan || 'premium' }} />
+                  <ReviewPageOrchestrator isEmbedded={true} initialData={{ ...data, logo: data.logo || null, plan: data.plan || 'premium' }} />
                 </Suspense>
              </motion.div>
           </div>

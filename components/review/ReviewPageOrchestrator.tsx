@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { ARExperience } from './ARExperience';
 import { ClientReviewFlow } from './ClientReviewFlow';
 
-export function ReviewPageOrchestrator({ initialData }: { initialData: any }) {
+export function ReviewPageOrchestrator({ initialData, isEmbedded = false }: { initialData: any, isEmbedded?: boolean }) {
   const [showAR, setShowAR] = useState(true);
 
   if (showAR) {
@@ -15,6 +15,10 @@ export function ReviewPageOrchestrator({ initialData }: { initialData: any }) {
         onComplete={() => setShowAR(false)} 
       />
     );
+  }
+
+  if (isEmbedded) {
+    return <ClientReviewFlow initialData={initialData} />;
   }
 
   return (
