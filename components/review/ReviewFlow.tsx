@@ -38,7 +38,7 @@ function getLightenedBrandColor(hex: string, percent: number): string {
   return `hsl(${Math.round(h * 360)}, ${Math.round(s * 100)}%, ${targetL}%)`;
 }
 
-export default function ReviewFlow({ initialData }: { initialData?: any }) {
+export default function ReviewFlow({ initialData, isPreview = false }: { initialData?: any, isPreview?: boolean }) {
   const [step, setStep] = useState(STEPS.WELCOME);
   const data = initialData || {};
   
@@ -476,7 +476,7 @@ export default function ReviewFlow({ initialData }: { initialData?: any }) {
               </div>
 
               {/* Upgrade Nudges */}
-              {business.plan === 'free' && (
+              {isPreview && business.plan === 'free' && (
                 <div className={`w-full rounded-2xl p-5 mb-6 border border-amber-500/30 bg-amber-500/10`}>
                   <p className="text-[10px] font-bold text-amber-600 dark:text-amber-400 mb-2">💡 These reviews could be much better.</p>
                   <p className={`text-xs mb-3 ${textMuted}`}>Basic plan unlocks:</p>
@@ -492,7 +492,7 @@ export default function ReviewFlow({ initialData }: { initialData?: any }) {
                 </div>
               )}
 
-              {business.plan === 'basic' && (
+              {isPreview && business.plan === 'basic' && (
                 <div className={`w-full rounded-2xl p-5 mb-6 border border-indigo-500/30 bg-indigo-500/10`}>
                   <p className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 mb-2">🔒 Premium unlocks 5 variants including:</p>
                   <ul className={`text-[10px] space-y-1.5 mb-4 ${textMuted}`}>

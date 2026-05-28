@@ -18,13 +18,13 @@ export function ReviewPageOrchestrator({ initialData, isEmbedded = false }: { in
   }
 
   if (isEmbedded) {
-    return <ClientReviewFlow initialData={initialData} />;
+    return <ClientReviewFlow initialData={initialData} isPreview={true} />;
   }
 
   return (
     <div className="min-h-[100dvh] bg-slate-900 flex items-center justify-center p-0 sm:p-4 md:p-8">
       <div className="w-full h-[100dvh] sm:h-[850px] sm:max-h-[90vh] sm:max-w-[400px] bg-slate-900 sm:rounded-[2.5rem] sm:overflow-hidden relative shadow-2xl flex flex-col">
-        <ClientReviewFlow initialData={initialData} />
+        <ClientReviewFlow initialData={initialData} isPreview={false} />
       </div>
     </div>
   );
