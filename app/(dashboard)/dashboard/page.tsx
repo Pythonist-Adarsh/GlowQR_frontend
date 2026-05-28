@@ -26,6 +26,7 @@ import {
   Sparkles,
   Lock
 } from 'lucide-react';
+import { API_BASE_URL } from '@/lib/api-config';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -34,13 +35,37 @@ export default function DashboardPage() {
   const [linkCopied, setLinkCopied] = useState(false);
 
   useEffect(() => {
-    const data = localStorage.getItem('glowqr_business_data');
-    if (data) {
-      setBusinessData(JSON.parse(data));
-    } else {
-      router.push('/onboarding');
-    }
-    setLoading(false);
+    const fetchDashboardData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          router.push('/login');
+          return;
+        }
+        const res = await fetch(`${API_BASE_URL}/api/onboarding/status`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.status === 401) {
+          localStorage.removeItem('token');
+          router.push('/login');
+          return;
+        }
+        if (!res.ok) throw new Error('Failed to fetch dashboard data');
+        
+        const data = await res.json();
+        if (data.is_onboarded && data.business) {
+          setBusinessData(data.business);
+          localStorage.setItem('glowqr_business_data', JSON.stringify(data.business));
+        } else {
+          router.push('/onboarding');
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDashboardData();
   }, [router]);
 
   const [qrCodeLoaded, setQrCodeLoaded] = useState(false);
