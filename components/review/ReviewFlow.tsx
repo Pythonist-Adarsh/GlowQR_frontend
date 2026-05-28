@@ -475,37 +475,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                 ))}
               </div>
 
-              {/* Upgrade Nudges */}
-              {isPreview && business.plan === 'free' && (
-                <div className={`w-full rounded-2xl p-5 mb-6 border border-amber-500/30 bg-amber-500/10`}>
-                  <p className="text-[10px] font-bold text-amber-600 dark:text-amber-400 mb-2">💡 These reviews could be much better.</p>
-                  <p className={`text-xs mb-3 ${textMuted}`}>Basic plan unlocks:</p>
-                  <ul className={`text-[10px] space-y-1.5 mb-4 ${textMuted}`}>
-                    <li>✓ Hinglish reviews (3x more likely to be posted)</li>
-                    <li>✓ Your area name naturally included (local SEO)</li>
-                    <li>✓ Reviews based on ALL your dishes, not just 2</li>
-                    <li>✓ Negative reviews intercepted before they hit Google</li>
-                  </ul>
-                  <button className="w-full py-2 rounded-lg bg-amber-500 text-white text-[10px] font-bold uppercase tracking-wider">
-                    Upgrade to Basic — ₹299/month
-                  </button>
-                </div>
-              )}
-
-              {isPreview && business.plan === 'basic' && (
-                <div className={`w-full rounded-2xl p-5 mb-6 border border-indigo-500/30 bg-indigo-500/10`}>
-                  <p className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 mb-2">🔒 Premium unlocks 5 variants including:</p>
-                  <ul className={`text-[10px] space-y-1.5 mb-4 ${textMuted}`}>
-                    <li>✓ Regional language (e.g. Awadhi/UP flavor)</li>
-                    <li>✓ SEO-optimized for "[your area] + [your category]" searches</li>
-                    <li>✓ AI rotates vocabulary so no two reviews ever sound alike</li>
-                    <li>✓ Sentiment calibrated to each sub-rating</li>
-                  </ul>
-                  <button className="w-full py-2 rounded-lg bg-indigo-500 text-white text-[10px] font-bold uppercase tracking-wider">
-                    Upgrade to Premium — ₹699/month
-                  </button>
-                </div>
-              )}
+              {/* Upgrade Nudges removed from here. They belong on the dashboard outside the simulation. */}
             </div>
 
             <div className={`p-6 pt-4 shrink-0 border-t ${borderClass} ${isDark ? 'bg-[#111827]' : 'bg-white'}`}>

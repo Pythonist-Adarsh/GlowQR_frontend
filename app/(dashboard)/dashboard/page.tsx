@@ -69,9 +69,10 @@ export default function DashboardPage() {
     setUpgradeModalOpen(true);
   };
 
+  const fallbackSlug = (b.name || 'business').toLowerCase().replace(/\s+/g, '-');
   const reviewUrl = typeof window !== 'undefined' 
-    ? `${window.location.origin}/r/${(b.name || 'business').toLowerCase().replace(/\s+/g, '-')}`
-    : `https://glow-qr-frontend.vercel.app/r/${(b.name || 'business').toLowerCase().replace(/\s+/g, '-')}`;
+    ? `${window.location.origin}/r/${b.slug || b.qr_slug || fallbackSlug}`
+    : `https://glow-qr-frontend.vercel.app/r/${b.slug || b.qr_slug || fallbackSlug}`;
 
   useEffect(() => {
     import('qr-code-styling').then(({ default: QRCodeStyling }) => {
