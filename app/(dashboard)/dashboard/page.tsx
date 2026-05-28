@@ -34,6 +34,8 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [linkCopied, setLinkCopied] = useState(false);
 
+  const [qrCodes, setQrCodes] = useState<any[]>([]);
+  
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
@@ -56,6 +58,15 @@ export default function DashboardPage() {
         if (data.is_onboarded && data.business) {
           setBusinessData(data.business);
           localStorage.setItem('glowqr_business_data', JSON.stringify(data.business));
+          
+          // Fetch QR codes
+          const qrRes = await fetch(`${API_BASE_URL}/api/business/qr-codes`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (qrRes.ok) {
+            const qrData = await qrRes.json();
+            setQrCodes(qrData.qr_codes || []);
+          }
         } else {
           router.push('/onboarding');
         }
@@ -244,8 +255,11 @@ export default function DashboardPage() {
             <p className="text-slate-500 text-sm mt-1 font-medium">{b.tagline}</p>
           </div>
           <div className="flex gap-4">
+            <button onClick={() => router.push('/onboarding')} className="px-6 py-3 bg-white border border-slate-200 rounded-xl text-xs font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-all shadow-sm">
+              Edit Setup
+            </button>
             <button onClick={() => window.open(reviewUrl, '_blank')} className="px-6 py-3 bg-white border border-slate-200 rounded-xl text-xs font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-all shadow-sm">
-              View Live Page
+              Test Simulation
             </button>
             <button onClick={handleDownloadPng} className="px-6 py-3 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-md hover:bg-slate-800 transition-all">
               Download QR
@@ -353,8 +367,12 @@ export default function DashboardPage() {
                        animation: 'laserScan 2.5s infinite ease-in-out'
                      }} />
                      
-                     <div className="w-[160px] h-[160px] flex items-center justify-center">
-                       <div ref={qrRef} />
+                     <div className="w-[160px] h-[160px] flex items-center justify-center relative bg-white">
+                       {qrCodes.length > 0 && qrCodes[0].qr_image_url ? (
+                         <img src={qrCodes[0].qr_image_url} alt="Active QR" className="w-full h-full object-contain" />
+                       ) : (
+                         <div ref={qrRef} />
+                       )}
                      </div>
                   </div>
                   <h4 className="text-xl font-black text-slate-900 mb-1">Your Active QR</h4>
