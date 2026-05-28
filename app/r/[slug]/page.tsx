@@ -9,10 +9,14 @@ async function getBusinessData(slug: string) {
   try {
     // Determine the API URL depending on the environment
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+    console.log(`[DEBUG] Fetching QR Data for slug: ${slug} from ${apiUrl}/api/qr/${slug}`);
+    
     const res = await fetch(`${apiUrl}/api/qr/${slug}`, { cache: 'no-store' });
     
     if (!res.ok) {
-      console.error(`Failed to fetch QR data: ${res.status}`);
+      console.error(`[DEBUG] Failed to fetch QR data: ${res.status} ${res.statusText}`);
+      const text = await res.text();
+      console.error(`[DEBUG] Response body:`, text);
       return null;
     }
     
