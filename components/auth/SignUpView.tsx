@@ -88,7 +88,7 @@ export function SignUpView() {
         </div>
 
         <form onSubmit={handleSignUp} className="mt-6 max-w-md space-y-5">
-          <GoogleContinueButton label="Continue with Google" />
+          <GoogleContinueButton />
           <AuthDivider chipBgClass="bg-white" />
 
           {error && (

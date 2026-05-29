@@ -83,7 +83,7 @@ export function SignInView() {
         </p>
 
         <div className="mt-10 max-w-md space-y-5">
-          <GoogleContinueButton label="Continue with Google" />
+          <GoogleContinueButton />
           <AuthDivider />
 
           {error && (
