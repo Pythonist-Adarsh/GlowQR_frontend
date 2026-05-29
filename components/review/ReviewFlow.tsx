@@ -6,6 +6,7 @@ import {
   Star, ChevronLeft, Check, MapPin, ExternalLink, ArrowRight,
   RefreshCw, Utensils, X, Loader2, Sparkles, ChevronRight
 } from 'lucide-react';
+import { API_BASE_URL } from '@/lib/api-config';
 
 const STEPS = {
   WELCOME: 1, // "Share Your Review"
@@ -89,8 +90,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
     setIsGenerating(true);
     
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://glowqr.onrender.com';
-      const res = await fetch(`${apiUrl}/api/scan/generate-review`, {
+      const res = await fetch(`${API_BASE_URL}/api/scan/generate-review`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -143,8 +143,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
     }
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://glowqr.onrender.com';
-      await fetch(`${apiUrl}/api/scan/record`, {
+      await fetch(`${API_BASE_URL}/api/scan/record`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

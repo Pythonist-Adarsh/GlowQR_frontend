@@ -763,13 +763,17 @@ const Step6 = ({ data, onPreview }: { data: any, onPreview: () => void }) => {
   };
 
   return (
-  <div className="space-y-8 text-center">
-    <InfoBox 
-      icon={CheckCircle2} 
-      title="Setup complete!" 
-      description={`Your review page is live at ${reviewUrl}`} 
-      variant="success"
-    />
+  <div className="space-y-8 text-center w-full">
+    <div className="flex gap-4 p-4 bg-emerald-50 text-emerald-700 rounded-2xl border border-emerald-100 text-left items-start">
+      <CheckCircle2 className="w-6 h-6 shrink-0 mt-0.5 text-emerald-500" />
+      <div>
+        <h3 className="font-bold mb-1">Setup complete!</h3>
+        <p className="text-sm opacity-90 mb-2">Your review page is live at:</p>
+        <a href={reviewUrl} target="_blank" rel="noopener noreferrer" className="text-sm font-medium underline break-all hover:text-emerald-900 transition-colors">
+          {reviewUrl}
+        </a>
+      </div>
+    </div>
 
     <div className="flex flex-col items-center">
       <div className="relative bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-sm group cursor-pointer" onClick={onPreview}>
@@ -902,12 +906,16 @@ export default function OnboardingWizard() {
       setLoading(true)
       try {
         const token = localStorage.getItem('token');
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 6000);
+        
         const res = await fetch(`${API_BASE_URL}/api/business/`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
+          signal: controller.signal,
           body: JSON.stringify({
             name: data.name,
             tagline: data.tagline,
@@ -924,6 +932,7 @@ export default function OnboardingWizard() {
             animation_style: data.theme,
           })
         });
+        clearTimeout(timeoutId);
         
         if (res.ok) {
           localStorage.setItem('onboarding_completed', 'true')
@@ -984,9 +993,12 @@ export default function OnboardingWizard() {
         </div>
       </header>
 
-      {/* Main Wizard Card */}
-      <div className="w-full max-w-[600px] glass-card rounded-[2.5rem] flex flex-col overflow-hidden relative">
-        {/* Progress Bar */}
+      {/* Main Wizard Layout */}
+      <main className="flex-1 flex items-center justify-center p-4 lg:p-12 w-full max-w-7xl mx-auto">
+        
+        {/* Centered Wizard Card */}
+        <div className="w-full max-w-[700px] glass-card rounded-[2.5rem] flex flex-col overflow-hidden relative shadow-2xl mx-auto">
+          {/* Progress Bar */}
         <div className="absolute top-0 left-0 right-0 h-[3px] bg-slate-100 z-10">
           <motion.div 
             className="h-full bg-[var(--color-brand-primary)] shadow-[0_0_10px_rgba(26,138,60,0.5)]"
@@ -1073,11 +1085,12 @@ export default function OnboardingWizard() {
             </button>
           </div>
         </div>
-      </div>
+        </div>
+      </main>
 
-      {/* Simulation Preview Modal */}
+      {/* Simulation Preview Modal (Always Modal now) */}
       <AnimatePresence>
-        {showPreview && (
+        {showPreview && currentStep === 5 && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4">
              <motion.div 
                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -1088,14 +1101,14 @@ export default function OnboardingWizard() {
                initial={{ opacity: 0, scale: 0.9, y: 20 }} 
                animate={{ opacity: 1, scale: 1, y: 0 }} 
                exit={{ opacity: 0, scale: 0.9, y: 20 }}
-               className="relative z-10 w-full h-full sm:max-w-[320px] sm:h-[640px] bg-white sm:rounded-[3rem] overflow-hidden shadow-2xl"
+               className="relative z-10 w-full h-full sm:max-w-[360px] sm:h-[720px] bg-white sm:rounded-[3rem] overflow-hidden shadow-2xl border-[10px] border-[#0C0C0C]"
              >
                 <button onClick={() => setShowPreview(false)} className="absolute top-8 right-8 z-[110] w-10 h-10 bg-slate-900/50 text-white rounded-full flex items-center justify-center hover:bg-slate-900/80 transition-all">
                   <X className="w-5 h-5" />
                 </button>
                 
                 {/* Notch */}
-                <div className="hidden sm:block absolute top-0 left-1/2 -translate-x-1/2 w-28 h-6 bg-[#0C0C0C] rounded-b-2xl z-50" />
+                <div className="hidden sm:block absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-[#0C0C0C] rounded-b-2xl z-50" />
                 
                 <Suspense fallback={
                   <div className="h-full flex items-center justify-center bg-slate-50">
