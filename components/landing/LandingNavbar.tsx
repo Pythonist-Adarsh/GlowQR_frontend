@@ -14,7 +14,7 @@ const links = [
   { href: '/contact', label: 'Contact Us' },
 ]
 
-export function LandingNavbar() {
+export function LandingNavbar({ forceScrolled = false }: { forceScrolled?: boolean }) {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -25,7 +25,7 @@ export function LandingNavbar() {
     return () => window.removeEventListener('scroll', handler)
   }, [])
 
-  const onHero = !scrolled
+  const onHero = !scrolled && !forceScrolled
 
   return (
     <motion.header

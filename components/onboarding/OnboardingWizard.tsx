@@ -60,6 +60,7 @@ const IconByName = ({ name, className }: { name: string, className?: string }) =
   }
 }
 import Image from 'next/image'
+import { GlowLogo } from '@/components/GlowLogo'
 // qr-code-styling will be dynamically imported for client-side rendering
 
 const ReviewPageOrchestrator = lazy(() => import('@/components/review/ReviewPageOrchestrator').then(mod => ({ default: mod.ReviewPageOrchestrator })));
@@ -954,24 +955,34 @@ export default function OnboardingWizard() {
   const progress = ((currentStep + 1) / 6) * 100
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg-secondary)] flex flex-col items-center py-12 px-4 font-sans" suppressHydrationWarning>
+    <div className="min-h-screen bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] font-sans antialiased onboarding-root flex flex-col" suppressHydrationWarning>
       <style>{STYLES}</style>
 
-      {/* Top Navigation Bar */}
-      <div className="w-full max-w-[600px] flex items-center justify-between mb-8 px-2">
-        <h1 className="text-sm font-black text-[var(--color-text-primary)] uppercase tracking-[0.25em]">GlowQR Setup</h1>
-        <div className="flex gap-2">
-          {steps.map((step, idx) => (
-            <button 
-              key={step.id} 
-              onClick={() => setCurrentStep(idx)}
-              className={`w-8 h-8 rounded-full border-2 text-[10px] font-black transition-all flex items-center justify-center ${idx < currentStep ? 'bg-[var(--color-text-tertiary)] border-[var(--color-text-tertiary)] text-white' : idx === currentStep ? 'bg-[var(--color-brand-primary)] border-[var(--color-brand-primary)] text-white' : 'border-[var(--color-border-default)] text-[var(--color-text-tertiary)] bg-[var(--color-bg-primary)]'}`}
-            >
-              {idx + 1}
+      {/* Modern Header with Logo */}
+      <header className="sticky top-0 z-50 bg-[var(--color-bg-primary)]/80 backdrop-blur-md border-b border-[var(--color-border-default)]">
+        <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-[var(--color-brand-primary)]">
+            <GlowLogo size={32} />
+            <span className="font-display text-sm font-black tracking-tight">GlowQR</span>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:flex items-center gap-2">
+              {steps.map((s, idx) => (
+                <div 
+                  key={s.id} 
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${currentStep === idx ? 'bg-[var(--color-brand-primary)] text-white shadow-md' : currentStep > idx ? 'bg-[var(--color-brand-accent)] text-white/90' : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-tertiary)] border border-[var(--color-border-default)]'}`}
+                >
+                  {idx + 1}
+                </div>
+              ))}
+            </div>
+            <button onClick={() => router.push('/dashboard')} className="ml-4 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-[var(--color-brand-primary)] transition-colors">
+              Exit Setup
             </button>
-          ))}
+          </div>
         </div>
-      </div>
+      </header>
 
       {/* Main Wizard Card */}
       <div className="w-full max-w-[600px] glass-card rounded-[2.5rem] flex flex-col overflow-hidden relative">

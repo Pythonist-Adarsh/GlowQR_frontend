@@ -17,14 +17,16 @@ function AuthSuccessHandler() {
       // Store token in localStorage
       localStorage.setItem('token', token);
 
-      // Check if user has completed onboarding before
-      let hasCompletedOnboarding = localStorage.getItem('onboarding_completed') === 'true';
+      // Prefer the URL parameter (which comes directly from backend authentication)
+      let hasCompletedOnboarding = false;
       if (onboardingCompletedParam !== null) {
         hasCompletedOnboarding = onboardingCompletedParam === 'true';
         localStorage.setItem('onboarding_completed', onboardingCompletedParam);
+      } else {
+        hasCompletedOnboarding = localStorage.getItem('onboarding_completed') === 'true';
       }
 
-      // Route accordingly
+      // Route accordingly based strictly on the flag
       if (hasCompletedOnboarding) {
         router.push('/dashboard');
       } else {

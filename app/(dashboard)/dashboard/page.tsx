@@ -152,6 +152,14 @@ export default function DashboardPage() {
     router.push('/login');
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center dashboard-root">
+        <div className="w-12 h-12 rounded-full border-4 border-slate-200 border-t-slate-900 animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex font-sans dashboard-root" suppressHydrationWarning>
       <style>{`
@@ -176,13 +184,14 @@ export default function DashboardPage() {
           {[
             { icon: LayoutDashboard, label: 'Overview', active: true },
             { icon: QrCode, label: 'My QR Code' },
+            { icon: Settings, label: 'Onboarding Setup', action: () => router.push('/onboarding') },
             { icon: BarChart3, label: 'Analytics' },
             { icon: MessageSquare, label: 'Reviews' },
             { icon: Palette, label: 'Theme Design' },
-            { icon: Settings, label: 'Settings' },
           ].map((item) => (
             <button 
               key={item.label}
+              onClick={item.action}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${item.active ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}
             >
               <item.icon className="w-5 h-5" />
@@ -340,12 +349,12 @@ export default function DashboardPage() {
                   <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-emerald-500" /> AI Review Generation
                   </h3>
-                  <button className="text-[10px] font-black text-[var(--brand-primary, #1a8a3c)] uppercase tracking-widest hover:underline">Test Simulation</button>
+                  <button onClick={() => window.open(reviewUrl, '_blank')} className="text-[10px] font-black text-[var(--brand-primary, #1a8a3c)] uppercase tracking-widest hover:underline">Test Simulation</button>
                </div>
                <div className="space-y-4">
                   {[
-                    "I had a fantastic dinner at " + b.name + ". The food was outstanding and the service was top-notch!",
-                    "Great experience! The atmosphere was perfect and the staff made us feel very welcome."
+                    `I had a fantastic time at ${b.name || 'this place'}. The atmosphere was perfect, and the ${b.signatureDish || 'food'} was absolutely outstanding! Highly recommend visiting if you are near ${b.area || b.city || 'town'}.`,
+                    `Great experience! The staff made us feel very welcome, and everything was handled with care. 5 stars for ${b.name || 'this business'}!`
                   ].map((rev, i) => (
                     <div key={i} className="p-5 rounded-2xl bg-[#F0F7F0] border border-emerald-100 shadow-sm">
                        <p className="text-sm text-[#085041] leading-relaxed italic font-medium">&quot;{rev}&quot;</p>
