@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { ReviewPageOrchestrator } from "@/components/review/ReviewPageOrchestrator";
+import { API_BASE_URL } from "@/lib/api-config";
 
 // This is a mock function to fetch business data
 // In a real application, this would fetch from a database or external API
@@ -8,7 +9,7 @@ async function getBusinessData(slug: string) {
 
   try {
     // Determine the API URL depending on the environment
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://glowqr.onrender.com';
+    const apiUrl = API_BASE_URL;
     console.log(`[DEBUG] Fetching QR Data for slug: ${slug} from ${apiUrl}/api/qr/${slug}`);
     
     const res = await fetch(`${apiUrl}/api/qr/${slug}`, { cache: 'no-store' });
