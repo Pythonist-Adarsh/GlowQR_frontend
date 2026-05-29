@@ -63,14 +63,6 @@ export function LandingNavbar() {
         </nav>
 
         <div className="flex items-center gap-4 sm:gap-5">
-          <Link 
-            href="/login" 
-            className={`hidden sm:block text-sm font-bold transition-colors ${
-              onHero ? 'text-white hover:text-white/80' : 'text-[var(--text-primary)] hover:text-[var(--brand-primary)]'
-            }`}
-          >
-            Sign in
-          </Link>
           <ThemeToggle />
           <AnimatedGetStartedButton
             size="sm"

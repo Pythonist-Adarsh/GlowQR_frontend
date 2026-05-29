@@ -33,11 +33,11 @@ export function AnimatedGetStartedButton({
         href="/register"
         className={`get-started-qr-btn group relative flex items-center justify-center gap-2 overflow-hidden font-medium text-white ${sizeClass[size]} ${fullWidth ? 'w-full' : ''}`}
       >
-        <span className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#3D261C] via-[#5C3D2E] to-[#3D261C] bg-[length:200%_100%] transition-all duration-500 group-hover:bg-[position:100%_0]" />
+        <span className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#111111] via-[#333333] to-[#111111] bg-[length:200%_100%] transition-all duration-500 group-hover:bg-[position:100%_0]" />
 
-        {/* Soft warm glow */}
+        {/* Soft cool glow */}
         <motion.span
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(240,124,60,0.35),transparent_55%)]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.15),transparent_55%)]"
           animate={{ opacity: [0.5, 0.85, 0.5] }}
           transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
         />
@@ -51,10 +51,10 @@ export function AnimatedGetStartedButton({
         />
 
         {/* QR finder corners */}
-        <span className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 border-l-2 border-t-2 border-[#F07C3C]/90" />
-        <span className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 border-b-2 border-l-2 border-[#F07C3C]/90 translate-y-[2px]" />
-        <span className="pointer-events-none absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 border-r-2 border-t-2 border-[#F07C3C]/90" />
-        <span className="pointer-events-none absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 border-b-2 border-r-2 border-[#F07C3C]/90 translate-y-[2px]" />
+        <span className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 border-l-2 border-t-2 border-white/90" />
+        <span className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 border-b-2 border-l-2 border-white/90 translate-y-[2px]" />
+        <span className="pointer-events-none absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 border-r-2 border-t-2 border-white/90" />
+        <span className="pointer-events-none absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 border-b-2 border-r-2 border-white/90 translate-y-[2px]" />
 
         {/* Cafe steam (minimal) */}
         {[0, 1, 2].map((i) => (

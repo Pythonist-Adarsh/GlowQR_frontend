@@ -1,31 +1,47 @@
-'use client'
-
-import { motion } from 'framer-motion'
-
-export function GlowLogo({ size = 32 }: { size?: number }) {
-  const s = Math.round(size * 0.52)
+export function GlowLogo({ size = 40, className = '' }: { size?: number, className?: string }) {
+  // SVG representation of the new GlowQR Logo (Q embedded in QR Code)
   return (
-    <motion.div
-      className="relative flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#F07C3C] shadow-[0_4px_18px_rgba(240,124,60,0.38)]"
-      style={{ width: size, height: size }}
-      whileHover={{ scale: 1.06 }}
+    <svg 
+      width={size} 
+      height={size} 
+      viewBox="0 0 100 100" 
+      fill="none" 
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
     >
-      <span className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/35 to-transparent" />
-      <svg
-        width={s}
-        height={s}
-        viewBox="0 0 24 24"
-        className="relative text-white"
-        aria-hidden
-      >
-        <rect x="3" y="3" width="7" height="7" rx="1" fill="currentColor" />
-        <rect x="14" y="3" width="7" height="7" rx="1" fill="currentColor" />
-        <rect x="3" y="14" width="7" height="7" rx="1" fill="currentColor" />
-        <rect x="13" y="13" width="3" height="3" rx="0.45" fill="currentColor" opacity="0.92" />
-        <rect x="17" y="13" width="3" height="3" rx="0.45" fill="currentColor" opacity="0.92" />
-        <rect x="13" y="17" width="3" height="3" rx="0.45" fill="currentColor" opacity="0.92" />
-        <rect x="18" y="18" width="2.25" height="2.25" rx="0.35" fill="currentColor" opacity="0.85" />
-      </svg>
-    </motion.div>
-  )
+      {/* Outer Glow / Base Background (if dark) */}
+      <rect width="100" height="100" rx="16" fill="transparent" />
+      
+      {/* Top Left QR Square */}
+      <rect x="20" y="20" width="22" height="22" rx="4" stroke="currentColor" strokeWidth="4" />
+      <rect x="26" y="26" width="10" height="10" rx="2" fill="currentColor" />
+      
+      {/* Top Right QR Square */}
+      <rect x="58" y="20" width="22" height="22" rx="4" stroke="currentColor" strokeWidth="4" />
+      <rect x="64" y="26" width="10" height="10" rx="2" fill="currentColor" />
+      
+      {/* Bottom Left QR Square */}
+      <rect x="20" y="58" width="22" height="22" rx="4" stroke="currentColor" strokeWidth="4" />
+      <rect x="26" y="64" width="10" height="10" rx="2" fill="currentColor" />
+      
+      {/* Small scattered QR pixels around */}
+      <rect x="46" y="20" width="4" height="4" fill="currentColor" />
+      <rect x="50" y="28" width="4" height="4" fill="currentColor" />
+      <rect x="20" y="46" width="4" height="4" fill="currentColor" />
+      <rect x="28" y="50" width="4" height="4" fill="currentColor" />
+      <rect x="76" y="46" width="4" height="4" fill="currentColor" />
+      <rect x="68" y="50" width="4" height="4" fill="currentColor" />
+      <rect x="72" y="58" width="4" height="4" fill="currentColor" />
+      <rect x="46" y="76" width="4" height="4" fill="currentColor" />
+      <rect x="54" y="76" width="4" height="4" fill="currentColor" />
+      <rect x="60" y="72" width="4" height="4" fill="currentColor" />
+
+      {/* The Central "Q" overlapping the QR code */}
+      <circle cx="50" cy="50" r="16" fill="black" /> {/* Masking background */}
+      <circle cx="50" cy="50" r="14" stroke="currentColor" strokeWidth="4" />
+      
+      {/* The tail of the Q */}
+      <path d="M58 58 L76 76" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
+    </svg>
+  );
 }
