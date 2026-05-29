@@ -10,8 +10,8 @@ import { AnimatedGetStartedButton } from '@/components/marketing/AnimatedGetStar
 const links = [
   { href: '#features', label: 'Features' },
   { href: '#pricing', label: 'Pricing' },
-  { href: '#how-it-works', label: 'How it works' },
-  { href: '#faq', label: 'FAQ' },
+  { href: '/about', label: 'About Us' },
+  { href: '/contact', label: 'Contact Us' },
 ]
 
 export function LandingNavbar() {

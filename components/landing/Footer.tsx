@@ -16,7 +16,8 @@ const cols = [
   {
     title: 'Company',
     links: [
-      { label: 'About', href: '#how-it-works' },
+      { label: 'About Us', href: '/about' },
+      { label: 'Contact Us', href: '/contact' },
       { label: 'Careers', href: '#' },
       { label: 'Press', href: '#' },
     ],
@@ -41,7 +42,7 @@ const cols = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-[#2D1B14] py-16 text-neutral-400">
+    <footer className="border-t border-white/10 bg-[#111111] py-16 text-neutral-400">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-12 lg:flex-row lg:justify-between">
           <div className="max-w-xs">
