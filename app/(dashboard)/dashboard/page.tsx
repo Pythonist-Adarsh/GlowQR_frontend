@@ -288,18 +288,36 @@ export default function DashboardPage() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-4 gap-6 mb-10">
-          {[
-            { label: 'Total Scans', value: analyticsSummary?.total_scans?.toString() || '0', trend: '+0%', icon: Eye, color: 'blue' },
-            { label: 'Avg Rating', value: analyticsSummary?.google_rating?.toString() || '0.0', trend: '+0.0', icon: Star, color: 'amber' },
-            { label: 'New Reviews', value: (analyticsSummary?.reviews_this_week ?? analyticsSummary?.reviews_this_month ?? 0).toString(), trend: '+0%', icon: MessageSquare, color: 'emerald' },
-            { label: 'Conversion', value: (analyticsSummary?.conversion_rate || 0) + '%', trend: '+0%', icon: TrendingUp, color: 'purple' },
-          ].map((stat) => (
+          {(() => {
+             if (user.plan === 'trial') {
+               return [
+                 { label: 'Total Scans', value: analyticsSummary?.total_scans?.toString() || '0', trend: '', icon: Eye, color: 'blue' },
+                 { label: 'Reviews this week', value: analyticsSummary?.reviews_this_week?.toString() || '0', trend: '', icon: MessageSquare, color: 'emerald' },
+                 { label: 'Avg Rating', value: analyticsSummary?.google_rating?.toString() || '0.0', trend: '', icon: Star, color: 'amber' },
+                 { label: 'Trial days left', value: analyticsSummary?.trial_days_left?.toString() || '0', trend: '', icon: TrendingUp, color: 'purple' },
+               ];
+             } else if (user.plan === 'basic') {
+               return [
+                 { label: 'Total Scans', value: analyticsSummary?.total_scans?.toString() || '0', trend: '', icon: Eye, color: 'blue' },
+                 { label: 'Google Redirects', value: analyticsSummary?.total_redirects?.toString() || '0', trend: '', icon: ExternalLink, color: 'amber' },
+                 { label: 'Conversion Rate', value: (analyticsSummary?.conversion_rate || 0) + '%', trend: '', icon: TrendingUp, color: 'purple' },
+                 { label: 'Reviews this month', value: analyticsSummary?.reviews_this_month?.toString() || '0', trend: '', icon: MessageSquare, color: 'emerald' },
+               ];
+             } else {
+               return [
+                 { label: 'Total Scans', value: analyticsSummary?.total_scans?.toString() || '0', trend: '', icon: Eye, color: 'blue' },
+                 { label: 'Conversion', value: (analyticsSummary?.conversion_rate || 0) + '%', trend: '', icon: TrendingUp, color: 'purple' },
+                 { label: 'Avg Overall', value: analyticsSummary?.google_rating?.toString() || '0.0', trend: '', icon: Star, color: 'amber' },
+                 { label: 'Negative Alerts', value: analyticsSummary?.negative_alerts_count?.toString() || '0', trend: '', icon: MessageSquare, color: 'emerald' },
+               ];
+             }
+          })().map((stat) => (
             <div key={stat.label} className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm transition-all hover:shadow-md">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-3 rounded-2xl bg-slate-50 text-slate-600 border border-slate-100">
                   <stat.icon className="w-6 h-6" />
                 </div>
-                <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-full">{stat.trend}</span>
+                {stat.trend && <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-full">{stat.trend}</span>}
               </div>
               <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest">{stat.label}</p>
               <p className="text-2xl font-black text-slate-900 mt-1">{stat.value}</p>
