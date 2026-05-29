@@ -871,6 +871,18 @@ export default function OnboardingWizard() {
     ]
   })
 
+  useEffect(() => {
+    const existing = localStorage.getItem('glowqr_business_data')
+    if (existing) {
+      try {
+        const parsed = JSON.parse(existing)
+        setData((prev: any) => ({ ...prev, ...parsed }))
+      } catch (e) {
+        console.error("Failed to parse existing business data", e)
+      }
+    }
+  }, [])
+
   const updateData = (newData: any) => setData((prev: any) => ({ ...prev, ...newData }))
 
   const steps = [
@@ -889,7 +901,7 @@ export default function OnboardingWizard() {
       setLoading(true)
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch(`${API_BASE_URL}/businesses/`, {
+        const res = await fetch(`${API_BASE_URL}/api/business/`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
