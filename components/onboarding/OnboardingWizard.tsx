@@ -3,7 +3,6 @@
 import { useState, useCallback, useMemo, memo, useEffect, Suspense, lazy, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { API_BASE_URL } from '@/lib/api-config'
 import { 
   Building2, 
   MapPin, 
