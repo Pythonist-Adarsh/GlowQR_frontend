@@ -67,7 +67,13 @@
   --text-primary: #ffffff;
   --text-secondary: #cccccc;
   --text-tertiary: #999999;
-  --text-on-brand: #ffffff;
+  --text-on-brand: #000000;
+
+  --brand-primary: #ffffff;
+  --brand-primary-light: #f0f0f0;
+  --brand-primary-dark: #cccccc;
+  --brand-accent: #ffffff;
+  --brand-accent-muted: rgba(255, 255, 255, 0.15);
 
   --border-default: rgba(255, 255, 255, 0.08);
   --border-hover: rgba(255, 255, 255, 0.14);
