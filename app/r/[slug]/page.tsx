@@ -29,6 +29,7 @@ async function getBusinessData(slug: string) {
       location: data.city || "Downtown Area",
       primaryColor: data.brand_color || "#1D9E75",
       logoUrl: data.logo_url,
+      website: data.website || "",
       googleReviewUrl: data.google_review_url || "https://search.google.com/local/writereview?placeid=ChIJN1t_tDeuEmsRUsoyG83fYSh",
       plan: data.plan || "trial",
       animationStyle: data.animation_style,
