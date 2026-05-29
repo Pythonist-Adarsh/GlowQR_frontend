@@ -160,6 +160,8 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
           price_range: spendRange,
           seating_type: seatingType,
           wait_time: waitTime,
+          review_variant: selectedVariant !== null ? selectedVariant : undefined,
+          review_text: selectedVariant !== null ? variants[selectedVariant] : undefined,
           was_negative: ratings.overall <= 3
         })
       });

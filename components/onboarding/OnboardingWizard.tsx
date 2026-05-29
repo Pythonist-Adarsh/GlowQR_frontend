@@ -960,7 +960,9 @@ export default function OnboardingWizard() {
           headers: { ...headers, 'Content-Type': 'application/json' },
           body: JSON.stringify({
             name: data.name,
+            tagline: data.tagline,
             google_review_url: data.googleReviewUrl,
+            website: data.website,
             place_id: data.placeId,
             google_rating: parseFloat(data.currentRating) || 4.5,
             review_count: parseInt(data.reviewCount) || 120
@@ -970,7 +972,9 @@ export default function OnboardingWizard() {
         const formData = new FormData();
         formData.append('city', data.city || '');
         formData.append('area_locality', data.area || '');
+        formData.append('address', data.address || '');
         formData.append('phone_number', data.phone || '');
+        formData.append('whatsapp_number', data.whatsapp || '');
         if (data.logo && typeof data.logo === 'string' && data.logo.startsWith('data:image')) {
             const blobRes = await fetch(data.logo);
             const blob = await blobRes.blob();

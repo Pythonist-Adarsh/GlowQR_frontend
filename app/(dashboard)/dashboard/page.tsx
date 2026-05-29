@@ -126,7 +126,7 @@ export default function DashboardPage() {
         width: 160,
         height: 160,
         data: reviewUrl || 'https://glow-qr-frontend.vercel.app',
-        image: user.plan === 'expired' ? undefined : (b.logo || undefined),
+        image: user.plan === 'expired' ? undefined : (b.logo_url || undefined),
         dotsOptions: { color: b.primaryColor || '#1D9E75', type: "rounded" as any },
         cornersSquareOptions: { color: b.primaryColor || '#1D9E75', type: "extra-rounded" as any },
         imageOptions: { crossOrigin: "anonymous", margin: 6, imageSize: 0.35 },
@@ -142,7 +142,7 @@ export default function DashboardPage() {
       }
       setQrCodeLoaded(true);
     });
-  }, [reviewUrl, b.logo, b.primaryColor, user.plan]);
+  }, [reviewUrl, b.logo_url, b.primaryColor, user.plan]);
 
   const handleDownloadPng = () => {
     if (qrCode.current) {
@@ -193,11 +193,11 @@ export default function DashboardPage() {
         <nav className="flex-1 space-y-1">
           {[
             { icon: LayoutDashboard, label: 'Overview', active: true },
-            { icon: QrCode, label: 'My QR Code' },
+            { icon: QrCode, label: 'My QR Code', action: () => window.scrollTo(0, 500) },
             { icon: Settings, label: 'Onboarding Setup', action: () => router.push('/onboarding') },
-            { icon: BarChart3, label: 'Analytics' },
-            { icon: MessageSquare, label: 'Reviews' },
-            { icon: Palette, label: 'Theme Design' },
+            { icon: BarChart3, label: 'Analytics', action: () => window.scrollTo(0, document.body.scrollHeight) },
+            { icon: MessageSquare, label: 'Reviews', action: () => router.push('/onboarding?step=5') },
+            { icon: Palette, label: 'Theme Design', action: () => router.push('/onboarding?step=5') },
           ].map((item) => (
             <button 
               key={item.label}
@@ -335,8 +335,8 @@ export default function DashboardPage() {
                
                <div className="flex gap-8 items-start">
                   <div className="w-24 h-24 rounded-3xl bg-slate-50 border border-slate-200 flex items-center justify-center overflow-hidden shadow-sm">
-                    {b.logo ? (
-                      <img src={b.logo} alt="Logo" className="w-full h-full object-contain" />
+                    {b.logo_url ? (
+                      <img src={b.logo_url} alt="Logo" className="w-full h-full object-contain" />
                     ) : (
                       <Building2 className="w-10 h-10 text-slate-300" />
                     )}
@@ -353,7 +353,7 @@ export default function DashboardPage() {
                         </div>
                         <div className="flex items-center gap-2 text-xs text-slate-600 font-medium">
                            <Globe className="w-4 h-4 text-slate-400" />
-                           {b.website || 'No website linked'}
+                           {b.menu_data?.website || b.website || 'No website linked'}
                         </div>
                      </div>
                   </div>
@@ -380,14 +380,22 @@ export default function DashboardPage() {
                   <button onClick={() => window.open(reviewUrl, '_blank')} className="text-[10px] font-black text-[var(--brand-primary, #1a8a3c)] uppercase tracking-widest hover:underline">Test Simulation</button>
                </div>
                <div className="space-y-4">
-                  {[
-                    `I had a fantastic time at ${b.name || 'this place'}. The atmosphere was perfect, and the ${b.signatureDish || 'food'} was absolutely outstanding! Highly recommend visiting if you are near ${b.area || b.city || 'town'}.`,
-                    `Great experience! The staff made us feel very welcome, and everything was handled with care. 5 stars for ${b.name || 'this business'}!`
-                  ].map((rev, i) => (
-                    <div key={i} className="p-5 rounded-2xl bg-[#F0F7F0] border border-emerald-100 shadow-sm">
-                       <p className="text-sm text-[#085041] leading-relaxed italic font-medium">&quot;{rev}&quot;</p>
+                  {analyticsSummary?.recent_reviews?.length > 0 ? (
+                    analyticsSummary.recent_reviews.map((rev: any, i: number) => (
+                      <div key={i} className="p-5 rounded-2xl bg-[#F0F7F0] border border-emerald-100 shadow-sm flex flex-col gap-2">
+                        <div className="flex items-center gap-1 text-emerald-500">
+                          {Array.from({ length: rev.overall_rating || 5 }).map((_, j) => (
+                            <Star key={j} className="w-4 h-4 fill-current" />
+                          ))}
+                        </div>
+                        <p className="text-sm text-[#085041] leading-relaxed italic font-medium">&quot;{rev.review_text || `Customer enjoyed their visit and highlighted the ${rev.selected_items?.join(', ') || 'service'}!`}&quot;</p>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="p-5 rounded-2xl bg-slate-50 border border-slate-100 shadow-sm text-center">
+                       <p className="text-sm text-slate-400 font-medium italic">No recent AI generated reviews yet. Scan your QR to test it!</p>
                     </div>
-                  ))}
+                  )}
                </div>
             </div>
           </div>
@@ -405,11 +413,7 @@ export default function DashboardPage() {
                      }} />
                      
                      <div className="w-[160px] h-[160px] flex items-center justify-center relative bg-white">
-                       {qrCodes.length > 0 && qrCodes[0].qr_image_url ? (
-                         <img src={qrCodes[0].qr_image_url} alt="Active QR" className="w-full h-full object-contain" />
-                       ) : (
-                         <div ref={qrRef} />
-                       )}
+                       <div ref={qrRef} />
                      </div>
                   </div>
                   <h4 className="text-xl font-black text-slate-900 mb-1">Your Active QR</h4>
@@ -496,31 +500,38 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Locked Premium Sections */}
-        <div className="relative mt-8">
-          {user.plan === 'basic' && (
-            <div className="absolute inset-0 bg-white/40 backdrop-blur-[6px] z-10 flex flex-col items-center justify-center rounded-[2.5rem] border border-slate-200 transition-all hover:bg-white/30">
-              <div className="w-12 h-12 bg-white rounded-2xl shadow-sm border border-slate-200 flex items-center justify-center mb-3">
-                <Lock className="w-6 h-6 text-slate-400" />
-              </div>
-              <p className="text-base font-bold text-slate-900 mb-3">Unlock Premium Analytics & Insights</p>
-              <button onClick={() => openUpgradeModal('premium')} className="text-xs font-black text-white bg-slate-900 uppercase tracking-widest px-6 py-3 rounded-xl shadow-sm hover:bg-slate-800 pointer-events-auto transition-all">
-                Upgrade to Premium ₹699/month
-              </button>
-            </div>
-          )}
-          <div className="grid grid-cols-3 gap-8">
-            {['Heatmap Analytics', 'Conversion Funnel Chart', 'Negative Alerts'].map(title => (
-              <div key={title} className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden h-48 flex flex-col items-center justify-center">
-                <div className={`${user.plan === 'basic' ? 'opacity-50' : ''} text-center w-full`}>
-                  <p className="text-sm font-bold text-slate-400 mb-2">{title}</p>
-                  <div className="w-full h-20 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-center">
-                    <BarChart3 className="w-6 h-6 text-slate-300" />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+        {/* Locked Premium Sections (6 Insight Cards) */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-8 mt-8">
+          {[
+            { title: 'Scan heatmap', lock: ['basic', 'trial'] },
+            { title: 'Conversion funnel', lock: ['basic', 'trial'] },
+            { title: 'Top menu items', lock: ['trial'] },
+            { title: 'AI problem detection', lock: ['basic', 'trial'] },
+            { title: 'Negative alerts inbox', lock: ['basic', 'trial'] },
+            { title: 'Category ratings', lock: ['basic', 'trial'] },
+          ].map((insight) => {
+             const isLocked = insight.lock.includes(user.plan);
+             return (
+               <div key={insight.title} className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm relative overflow-hidden h-48 flex flex-col items-center justify-center group">
+                 {isLocked && (
+                   <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 flex flex-col items-center justify-center transition-all">
+                     <div className="w-10 h-10 bg-white rounded-xl shadow-sm border border-slate-200 flex items-center justify-center mb-3">
+                       <Lock className="w-5 h-5 text-slate-400" />
+                     </div>
+                     <button onClick={() => openUpgradeModal('premium')} className="text-[10px] font-black text-slate-800 bg-amber-100 uppercase tracking-widest px-4 py-2 rounded-lg shadow-sm hover:bg-amber-200 pointer-events-auto transition-all">
+                       {insight.title === 'Top menu items' ? 'Basic + Premium' : 'Premium Only'}
+                     </button>
+                   </div>
+                 )}
+                 <div className={`${isLocked ? 'pointer-events-none opacity-40' : ''} text-center w-full`}>
+                   <p className="text-sm font-bold text-slate-600 mb-2">{insight.title}</p>
+                   <div className="w-full h-20 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-center overflow-hidden p-2 text-xs text-slate-400 font-medium text-center">
+                     Live insight data renders here
+                   </div>
+                 </div>
+               </div>
+             );
+          })}
         </div>
       </main>
     </div>
