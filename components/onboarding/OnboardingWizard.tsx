@@ -750,7 +750,7 @@ const Step5 = ({ data, updateData }: any) => {
 
 const Step6 = ({ data, onPreview }: { data: any, onPreview: () => void }) => {
   const [copiedLink, setCopiedLink] = useState(false);
-  const reviewUrl = typeof window !== 'undefined' ? `${window.location.origin}/r/${data.slug || data.qr_slug || data.name?.toLowerCase().replace(/\s+/g, '-') || 'business'}` : `https://glow-qr-frontend.vercel.app/r/${data.slug || data.qr_slug || data.name?.toLowerCase().replace(/\s+/g, '-') || 'business'}`;
+  const reviewUrl = data.scanUrl || (typeof window !== 'undefined' ? `${window.location.origin}/r/${data.slug || data.qr_slug || data.name?.toLowerCase().replace(/\s+/g, '-') || 'business'}` : `https://glow-qr-frontend.vercel.app/r/${data.slug || data.qr_slug || data.name?.toLowerCase().replace(/\s+/g, '-') || 'business'}`);
   const qrRef = useRef<HTMLDivElement>(null);
   const qrCode = useRef<any>(null);
 
@@ -789,16 +789,6 @@ const Step6 = ({ data, onPreview }: { data: any, onPreview: () => void }) => {
 
   return (
   <div className="space-y-8 text-center w-full">
-    <div className="flex gap-4 p-4 bg-emerald-50 text-emerald-700 rounded-2xl border border-emerald-100 text-left items-start">
-      <CheckCircle2 className="w-6 h-6 shrink-0 mt-0.5 text-emerald-500" />
-      <div>
-        <h3 className="font-bold mb-1">Setup complete!</h3>
-        <p className="text-sm opacity-90 mb-2">Your review page is live at:</p>
-        <a href={reviewUrl} target="_blank" rel="noopener noreferrer" className="text-sm font-medium underline break-all hover:text-emerald-900 transition-colors">
-          {reviewUrl}
-        </a>
-      </div>
-    </div>
 
     <div className="flex flex-col items-center">
       <div className="relative bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-sm group cursor-pointer" onClick={onPreview}>
@@ -925,60 +915,109 @@ export default function OnboardingWizard() {
   ]
 
   const handleNext = async () => {
-    if (currentStep < 5) {
-      setCurrentStep(s => s + 1)
-    } else {
-      setLoading(true)
-      try {
-        const token = localStorage.getItem('token');
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 6000);
-        
-        const res = await fetch(`${API_BASE_URL}/api/business/`, {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const headers: Record<string, string> = {
+        'Authorization': `Bearer ${token}`
+      };
+      
+      let res;
+      if (currentStep === 0) {
+        res = await fetch(`${API_BASE_URL}/api/onboarding/step/1`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          signal: controller.signal,
+          headers: { ...headers, 'Content-Type': 'application/json' },
           body: JSON.stringify({
             name: data.name,
-            tagline: data.tagline,
-            primary_color: data.primaryColor,
-            logo_url: data.logo?.substring(0, 50) + "..." || "", // In real life, upload to storage first
-            address: data.address,
             google_review_url: data.googleReviewUrl,
-            category: data.category,
-            menu_data: data.menuCategories || [],
-            negative_filter_enabled: true,
-            review_language: data.language,
-            ai_variant_count: data.variants ? parseInt(data.variants.charAt(0)) : 3,
-            welcome_message: data.welcomeMsg || "",
-            animation_style: data.theme,
+            place_id: data.placeId,
+            google_rating: parseFloat(data.currentRating) || 4.5,
+            review_count: parseInt(data.reviewCount) || 120
           })
         });
-        clearTimeout(timeoutId);
-        
-        if (res.ok) {
-          localStorage.setItem('onboarding_completed', 'true')
-          localStorage.setItem('glowqr_business_data', JSON.stringify(data))
-          router.push('/dashboard')
-        } else {
-          console.error("Failed to create business", await res.text());
-          // Fallback to allow continuing the flow even if backend fails
-          localStorage.setItem('onboarding_completed', 'true')
-          localStorage.setItem('glowqr_business_data', JSON.stringify(data))
-          router.push('/dashboard')
+      } else if (currentStep === 1) {
+        const formData = new FormData();
+        formData.append('city', data.city || '');
+        formData.append('area_locality', data.area || '');
+        formData.append('phone_number', data.phone || '');
+        if (data.logo && data.logo.startsWith('data:image')) {
+            const blobRes = await fetch(data.logo);
+            const blob = await blobRes.blob();
+            formData.append('logo', blob, 'logo.png');
         }
-      } catch (err) {
-        console.error("Failed to create business", err);
-        // Fallback to allow continuing the flow even if backend fails
-        localStorage.setItem('onboarding_completed', 'true')
-        localStorage.setItem('glowqr_business_data', JSON.stringify(data))
-        router.push('/dashboard')
-      } finally {
-        setLoading(false);
+        res = await fetch(`${API_BASE_URL}/api/onboarding/step/2`, {
+          method: 'POST',
+          headers,
+          body: formData
+        });
+      } else if (currentStep === 2) {
+        res = await fetch(`${API_BASE_URL}/api/onboarding/step/3`, {
+          method: 'POST',
+          headers: { ...headers, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            category: data.category,
+            price_range: data.spendRange,
+            cuisine_speciality: data.speciality
+          })
+        });
+      } else if (currentStep === 3) {
+        res = await fetch(`${API_BASE_URL}/api/onboarding/step/4`, {
+          method: 'POST',
+          headers: { ...headers, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            signature_dish: data.signatureDish || '',
+            highlighted_dishes: data.highlightDishes || '',
+            menu_categories: data.menuCategories || []
+          })
+        });
+      } else if (currentStep === 4) {
+        const formData = new FormData();
+        formData.append('theme', data.theme || 'classic');
+        formData.append('language', data.language || 'English');
+        formData.append('primary_color', data.primaryColor || '#6C63FF');
+        formData.append('variants', data.variants || '3 variants');
+        formData.append('welcome_msg', data.welcomeMsg || '');
+        if (data.logo && data.logo.startsWith('data:image')) {
+            const blobRes = await fetch(data.logo);
+            const blob = await blobRes.blob();
+            formData.append('logo', blob, 'logo.png');
+        }
+        res = await fetch(`${API_BASE_URL}/api/onboarding/step/5`, {
+          method: 'POST',
+          headers,
+          body: formData
+        });
       }
+      
+      if (res && !res.ok) {
+        console.error("Failed at step", currentStep, await res.text());
+        return; 
+      }
+      
+      if (currentStep === 4) {
+        const completeRes = await fetch(`${API_BASE_URL}/api/onboarding/complete`, {
+          method: 'POST',
+          headers
+        });
+        if (completeRes.ok) {
+          const completeData = await completeRes.json();
+          if (completeData.qr_code && completeData.qr_code.scan_url) {
+             updateData({ scanUrl: completeData.qr_code.scan_url });
+          }
+        }
+      }
+
+      if (currentStep < 5) {
+        setCurrentStep(s => s + 1);
+      } else {
+        localStorage.setItem('onboarding_completed', 'true');
+        localStorage.setItem('glowqr_business_data', JSON.stringify(data));
+        router.push('/dashboard');
+      }
+    } catch (err) {
+      console.error("API error", err);
+    } finally {
+      setLoading(false);
     }
   }
 
