@@ -896,7 +896,38 @@ export default function OnboardingWizard() {
     if (existing) {
       try {
         const parsed = JSON.parse(existing)
-        setData((prev: any) => ({ ...prev, ...parsed }))
+        setData((prev: any) => ({
+          ...prev,
+          name: parsed.name || prev.name,
+          tagline: parsed.tagline || prev.tagline,
+          googleReviewUrl: parsed.google_review_url || prev.googleReviewUrl,
+          placeId: parsed.place_id || prev.placeId,
+          currentRating: parsed.google_rating || prev.currentRating,
+          reviewCount: parsed.review_count || prev.reviewCount,
+          city: parsed.city || prev.city,
+          area: parsed.area_locality || prev.area,
+          address: parsed.address || prev.address,
+          phone: parsed.phone_number || prev.phone,
+          whatsapp: parsed.whatsapp_number || prev.whatsapp,
+          email: parsed.owner_email || prev.email,
+          openTime: parsed.business_hours?.opening || prev.openTime,
+          closeTime: parsed.business_hours?.closing || prev.closeTime,
+          daysOpen: parsed.business_hours?.days || prev.daysOpen,
+          category: parsed.category || prev.category,
+          spendRange: parsed.price_range || prev.spendRange,
+          speciality: parsed.cuisine_speciality || prev.speciality,
+          dietary: parsed.dietary_options || prev.dietary,
+          theme: parsed.animation_style === 'particle_burst' ? 'classic' : parsed.animation_style === 'minimal_fade' ? 'premium' : 'free',
+          primaryColor: parsed.primary_color || prev.primaryColor,
+          variants: parsed.ai_variant_count ? `${parsed.ai_variant_count} variants` : prev.variants,
+          language: parsed.review_language ? parsed.review_language.charAt(0).toUpperCase() + parsed.review_language.slice(1) : prev.language,
+          logo: parsed.logo_url || prev.logo,
+          plan: parsed.plan || prev.plan,
+          website: parsed.menu_data?.website || prev.website,
+          menuCategories: parsed.menu_data && Array.isArray(parsed.menu_data) ? parsed.menu_data : prev.menuCategories,
+          signatureDish: parsed.signature_dish || prev.signatureDish,
+          highlightDishes: parsed.highlighted_dishes || prev.highlightDishes
+        }))
       } catch (e) {
         console.error("Failed to parse existing business data", e)
       }

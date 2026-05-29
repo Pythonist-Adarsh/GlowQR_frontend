@@ -33,6 +33,7 @@ export default function DashboardPage() {
   const [businessData, setBusinessData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [analyticsSummary, setAnalyticsSummary] = useState<any>(null);
 
   const [qrCodes, setQrCodes] = useState<any[]>([]);
   
@@ -66,6 +67,15 @@ export default function DashboardPage() {
           if (qrRes.ok) {
             const qrData = await qrRes.json();
             setQrCodes(qrData.qr_codes || []);
+          }
+
+          // Fetch analytics summary
+          const analyticsRes = await fetch(`${API_BASE_URL}/api/analytics/summary`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (analyticsRes.ok) {
+            const analyticsData = await analyticsRes.json();
+            setAnalyticsSummary(analyticsData);
           }
         } else {
           router.push('/onboarding');
@@ -172,7 +182,7 @@ export default function DashboardPage() {
         }
       `}</style>
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col p-6 shadow-sm">
+      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col p-6 shadow-sm h-screen overflow-y-auto sticky top-0">
         <div className="flex items-center gap-3 mb-10 px-2">
           <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-md">
             <QrCode className="w-6 h-6" />
@@ -279,10 +289,10 @@ export default function DashboardPage() {
         {/* Stats Grid */}
         <div className="grid grid-cols-4 gap-6 mb-10">
           {[
-            { label: 'Total Scans', value: '1,284', trend: '+12%', icon: Eye, color: 'blue' },
-            { label: 'Avg Rating', value: '4.8', trend: '+0.2', icon: Star, color: 'amber' },
-            { label: 'New Reviews', value: '86', trend: '+24%', icon: MessageSquare, color: 'emerald' },
-            { label: 'Conversion', value: '68%', trend: '+5%', icon: TrendingUp, color: 'purple' },
+            { label: 'Total Scans', value: analyticsSummary?.total_scans?.toString() || '0', trend: '+0%', icon: Eye, color: 'blue' },
+            { label: 'Avg Rating', value: analyticsSummary?.google_rating?.toString() || '0.0', trend: '+0.0', icon: Star, color: 'amber' },
+            { label: 'New Reviews', value: (analyticsSummary?.reviews_this_week ?? analyticsSummary?.reviews_this_month ?? 0).toString(), trend: '+0%', icon: MessageSquare, color: 'emerald' },
+            { label: 'Conversion', value: (analyticsSummary?.conversion_rate || 0) + '%', trend: '+0%', icon: TrendingUp, color: 'purple' },
           ].map((stat) => (
             <div key={stat.label} className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm transition-all hover:shadow-md">
               <div className="flex items-center justify-between mb-4">
@@ -469,30 +479,30 @@ export default function DashboardPage() {
         </div>
 
         {/* Locked Premium Sections */}
-        <div className="grid grid-cols-3 gap-8 mt-8">
-          {['Heatmap Analytics', 'Conversion Funnel Chart', 'Negative Alerts'].map(title => (
-            <div key={title} className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm relative overflow-hidden h-48 flex flex-col items-center justify-center group">
-              
-              {user.plan === 'basic' && (
-                <div className="absolute inset-0 bg-white/40 backdrop-blur-[6px] z-10 flex flex-col items-center justify-center transition-all group-hover:bg-white/30">
-                  <div className="w-12 h-12 bg-white rounded-2xl shadow-sm border border-slate-200 flex items-center justify-center mb-3">
-                    <Lock className="w-6 h-6 text-slate-400" />
+        <div className="relative mt-8">
+          {user.plan === 'basic' && (
+            <div className="absolute inset-0 bg-white/40 backdrop-blur-[6px] z-10 flex flex-col items-center justify-center rounded-[2.5rem] border border-slate-200 transition-all hover:bg-white/30">
+              <div className="w-12 h-12 bg-white rounded-2xl shadow-sm border border-slate-200 flex items-center justify-center mb-3">
+                <Lock className="w-6 h-6 text-slate-400" />
+              </div>
+              <p className="text-base font-bold text-slate-900 mb-3">Unlock Premium Analytics & Insights</p>
+              <button onClick={() => openUpgradeModal('premium')} className="text-xs font-black text-white bg-slate-900 uppercase tracking-widest px-6 py-3 rounded-xl shadow-sm hover:bg-slate-800 pointer-events-auto transition-all">
+                Upgrade to Premium ₹699/month
+              </button>
+            </div>
+          )}
+          <div className="grid grid-cols-3 gap-8">
+            {['Heatmap Analytics', 'Conversion Funnel Chart', 'Negative Alerts'].map(title => (
+              <div key={title} className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden h-48 flex flex-col items-center justify-center">
+                <div className={`${user.plan === 'basic' ? 'opacity-50' : ''} text-center w-full`}>
+                  <p className="text-sm font-bold text-slate-400 mb-2">{title}</p>
+                  <div className="w-full h-20 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-center">
+                    <BarChart3 className="w-6 h-6 text-slate-300" />
                   </div>
-                  <p className="text-xs font-bold text-slate-900 mb-3">Available in Premium ₹699/month</p>
-                  <button onClick={() => openUpgradeModal('premium')} className="text-xs font-black text-white bg-slate-900 uppercase tracking-widest px-4 py-2 rounded-xl shadow-sm hover:bg-slate-800 pointer-events-auto">
-                    Upgrade
-                  </button>
-                </div>
-              )}
-              
-              <div className={`${user.plan === 'basic' ? 'pointer-events-none' : ''} text-center`}>
-                <p className="text-sm font-bold text-slate-400 mb-2">{title}</p>
-                <div className="w-full h-20 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-center">
-                  <BarChart3 className="w-6 h-6 text-slate-300" />
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </main>
     </div>
