@@ -109,7 +109,8 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
           variant_count: business.plan === 'free' ? 1 : (business.plan === 'basic' ? 3 : 5),
           plan: business.plan,
           seating_type: seatingType,
-          wait_time: waitTime
+          wait_time: waitTime,
+          city: cityPart
         })
       });
 
