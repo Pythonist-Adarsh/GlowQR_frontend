@@ -443,7 +443,7 @@ export function OverviewTab({
                         .replace("image/png", "image/octet-stream");
                       const downloadLink = document.createElement("a");
                       downloadLink.href = pngUrl;
-                      downloadLink.download = ${b.slug || "glowqr"}-code.png;
+                      downloadLink.download = `${b.slug || "glowqr"}-code.png`;
                       document.body.appendChild(downloadLink);
                       downloadLink.click();
                       document.body.removeChild(downloadLink);
