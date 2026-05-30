@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import { Lock } from 'lucide-react';
 
 export default function AdminLogin() {
-  const [secret, setSecret] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -19,14 +20,15 @@ export default function AdminLogin() {
       const res = await fetch('/api/admin/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ secret }),
+        body: JSON.stringify({ email, password }),
       });
 
       if (res.ok) {
         router.push('/admin');
         router.refresh();
       } else {
-        setError('Invalid admin secret');
+        const data = await res.json();
+        setError(data.error || 'Invalid credentials');
       }
     } catch (err) {
       setError('Something went wrong');
@@ -47,13 +49,24 @@ export default function AdminLogin() {
         
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Admin Secret</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              placeholder="Admin Email"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Password</label>
             <input
               type="password"
-              value={secret}
-              onChange={(e) => setSecret(e.target.value)}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              placeholder="Enter admin secret key"
+              placeholder="Password"
               required
             />
           </div>

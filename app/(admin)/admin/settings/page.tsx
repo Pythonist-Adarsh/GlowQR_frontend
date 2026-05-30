@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { API_BASE_URL } from '@/lib/api-config';
-import { Save, AlertTriangle, Key, Mail, CreditCard } from 'lucide-react';
+import { Save, AlertTriangle, Key, Mail, CreditCard, Lock } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function SettingsPage() {
@@ -16,6 +16,10 @@ export default function SettingsPage() {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [passwordChanging, setPasswordChanging] = useState(false);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -60,6 +64,32 @@ export default function SettingsPage() {
       toast.error('Error saving settings');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handlePasswordChange = async () => {
+    if (!currentPassword || !newPassword) return;
+    
+    setPasswordChanging(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/change-password`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ current_password: currentPassword, new_password: newPassword })
+      });
+      
+      if (res.ok) {
+        toast.success('Password changed successfully');
+        setCurrentPassword('');
+        setNewPassword('');
+      } else {
+        const data = await res.json();
+        toast.error(data.detail || 'Failed to change password');
+      }
+    } catch (err) {
+      toast.error('Error changing password');
+    } finally {
+      setPasswordChanging(false);
     }
   };
 
@@ -135,6 +165,36 @@ export default function SettingsPage() {
                 <p className="font-bold mb-1">Security Notice</p>
                 <p>For security reasons, API keys (GROQ, Resend, Supabase) are strictly managed via the backend environment variables on your hosting provider (Render). They are not exposed or editable here.</p>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Change Admin Password */}
+        <section className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="p-6 border-b border-slate-200 bg-slate-50 flex items-center gap-3">
+            <Lock className="w-5 h-5 text-slate-500" />
+            <h2 className="text-lg font-bold text-slate-900">Change Admin Password</h2>
+          </div>
+          <div className="p-6 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Current Password</label>
+                <input type="password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-slate-900" placeholder="Enter current password" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">New Password</label>
+                <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-slate-900" placeholder="Enter new password" />
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <button 
+                type="button" 
+                onClick={handlePasswordChange}
+                disabled={!currentPassword || !newPassword || passwordChanging}
+                className="bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-emerald-700 transition disabled:opacity-50"
+              >
+                {passwordChanging ? 'Changing...' : 'Update Password'}
+              </button>
             </div>
           </div>
         </section>
