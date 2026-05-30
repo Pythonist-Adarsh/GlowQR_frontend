@@ -896,6 +896,7 @@ export function DashboardClient({
                                 height: 40,
                                 width: 40,
                                 excavate: true,
+                                crossOrigin: "anonymous" as const,
                               }
                             : undefined
                         }
