@@ -14,14 +14,18 @@ export async function POST(req: NextRequest) {
     });
 
     if (backendRes.ok) {
-      // Extract the cookie from backend response
-      const setCookieHeader = backendRes.headers.get('set-cookie');
+      const data = await backendRes.json();
       
-      const response = NextResponse.json({ success: true });
-      if (setCookieHeader) {
-        response.headers.set('set-cookie', setCookieHeader);
+      if (data.token) {
+        cookies().set('admin_session', data.token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          path: '/',
+          maxAge: 60 * 60 * 24, // 24 hours
+        });
       }
-      return response;
+      return NextResponse.json({ success: true });
     }
 
     const errorData = await backendRes.json();
