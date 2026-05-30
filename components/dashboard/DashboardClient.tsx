@@ -623,7 +623,8 @@ export function DashboardClient({
                         </div>
                         <div className="flex items-center gap-2 text-xs text-slate-600 font-medium">
                           <Globe className="w-4 h-4 text-slate-400" />
-                          {b.menu_data?.website ||
+                          {b.website_url ||
+                            b.menu_data?.website ||
                             b.website ||
                             "No website linked"}
                         </div>
