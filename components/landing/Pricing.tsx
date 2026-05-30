@@ -11,7 +11,7 @@ const tiers = [
     period: '',
     desc: '7 days',
     features: [
-      '7-day full access (no card needed)',
+      '3-day full access (no card needed)',
       'AR branding experience on scan',
       '5 AI review suggestions',
       'Basic scan analytics',

@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { API_BASE_URL } from '@/lib/api-config';
+import { GlowLogo } from '@/components/GlowLogo';
 
 export function AdminSidebar() {
   const pathname = usePathname();
@@ -58,7 +59,7 @@ export function AdminSidebar() {
     <div className="w-64 bg-slate-900 text-slate-300 flex flex-col h-screen sticky top-0 border-r border-slate-800">
       <div className="p-6 border-b border-slate-800">
         <h1 className="text-xl font-bold text-white flex items-center gap-2">
-          <span className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-sm">QR</span>
+          <GlowLogo size={28} className="text-emerald-500" />
           GlowQR Admin
         </h1>
       </div>

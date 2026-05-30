@@ -185,7 +185,7 @@ export default function ContactPage() {
         <div className="mt-32 flex flex-col md:flex-row items-center justify-between bg-[var(--bg-secondary)] p-8 md:p-12 rounded-3xl border border-[var(--border-default)] shadow-sm">
           <div className="mb-6 md:mb-0 md:mr-8">
             <h2 className="text-xl font-bold text-[var(--text-primary)] mb-1">Not sure if GlowQR is right for you?</h2>
-            <p className="text-sm text-[var(--text-secondary)]">Start the free 7-day trial — no card, no commitment. See results in 48 hours.</p>
+            <p className="text-sm text-[var(--text-secondary)]">Start the free 3-day trial — no card, no commitment. See results in 48 hours.</p>
           </div>
           <AnimatedGetStartedButton size="md">Start free trial</AnimatedGetStartedButton>
         </div>

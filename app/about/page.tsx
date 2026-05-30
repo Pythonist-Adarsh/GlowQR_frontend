@@ -86,7 +86,7 @@ export default function AboutPage() {
         </section>
 
         <div className="mt-32 text-center bg-[var(--bg-secondary)] p-12 rounded-3xl border border-[var(--border-default)] shadow-sm">
-          <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">Start your 7-day free trial today</h2>
+          <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">Start your 3-day free trial today</h2>
           <p className="text-sm text-[var(--text-secondary)] mb-8">No credit card. No setup fees. Full premium access for a week.</p>
           <AnimatedGetStartedButton size="lg">Get Started Free</AnimatedGetStartedButton>
         </div>

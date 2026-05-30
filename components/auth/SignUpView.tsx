@@ -149,7 +149,7 @@ export function SignUpView() {
               {loading ? 'Creating account...' : 'Create account'}
             </motion.button>
             <p className="text-center text-xs text-[#666666]">
-              By signing up, you agree to our Terms. Your 7-day trial starts immediately.
+              By signing up, you agree to our Terms. Your 3-day trial starts immediately.
             </p>
           </div>
         </form>
