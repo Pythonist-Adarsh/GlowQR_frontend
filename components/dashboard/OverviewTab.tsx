@@ -12,6 +12,7 @@ import {
   MessageSquare,
   AlertCircle,
   ThumbsDown,
+  Eye,
 } from "lucide-react";
 import {
   BarChart,
