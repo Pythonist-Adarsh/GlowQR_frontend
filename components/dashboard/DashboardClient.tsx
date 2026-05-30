@@ -25,7 +25,22 @@ import {
   Palette,
   Sparkles,
   Lock,
+  AlertCircle,
+  CheckCircle2,
+  ChevronRight,
+  ThumbsDown,
 } from "lucide-react";
+import {
+  BarChart as RechartsBarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  CartesianGrid,
+} from "recharts";
 import { API_BASE_URL } from "@/lib/api-config";
 
 export function DashboardClient({
@@ -414,29 +429,19 @@ export function DashboardClient({
                     className={`mb-8 p-4 border rounded-2xl flex items-center justify-between shadow-sm ${isUrgent ? "bg-red-50 border-red-200" : "bg-amber-50 border-amber-200"}`}
                   >
                     <div className="flex items-center gap-3">
-                      <Star
-                        className={`w-5 h-5 ${isUrgent ? "text-red-500" : "text-amber-500"}`}
-                      />
+                      <div className={`w-3 h-3 rounded-full ${isUrgent ? 'bg-red-500' : 'bg-amber-500'} animate-pulse`} />
                       <p
                         className={`text-sm font-bold ${isUrgent ? "text-red-900" : "text-amber-900"}`}
                       >
-                        ⏰ Your free trial ends in {daysLeft} days
+                        Your free trial ends in {daysLeft} days — Upgrade to keep your QR active
                       </p>
                     </div>
-                    <div className="flex gap-3">
-                      <button
-                        onClick={() => openUpgradeModal("basic")}
-                        className="px-4 py-2 border border-amber-300 text-amber-800 bg-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-amber-100 transition-all"
-                      >
-                        Upgrade to Basic ₹299
-                      </button>
-                      <button
-                        onClick={() => openUpgradeModal("premium")}
-                        className={`px-4 py-2 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all ${isUrgent ? "bg-red-500 hover:bg-red-600" : "bg-amber-500 hover:bg-amber-600"}`}
-                      >
-                        Upgrade to Premium ₹699
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => openUpgradeModal("premium")}
+                      className={`px-4 py-2 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all ${isUrgent ? "bg-red-500 hover:bg-red-600" : "bg-amber-500 hover:bg-amber-600"}`}
+                    >
+                      Upgrade Now →
+                    </button>
                   </div>
                 );
               })()}
@@ -662,27 +667,29 @@ export function DashboardClient({
                 </div>
               </div>
 
-              <div className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm col-span-2 mt-8">
-                <h3 className="font-bold text-slate-900 mb-4">
-                  Your Menu Items
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {b.menu_items && b.menu_items.length > 0 ? (
-                    b.menu_items.map((item: any, i: number) => (
-                      <span
-                        key={i}
-                        className="px-3 py-1 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium border border-slate-200"
-                      >
-                        {item.name || item}
-                      </span>
-                    ))
-                  ) : (
-                    <p className="text-sm text-slate-500">
-                      No menu items added during onboarding.
-                    </p>
-                  )}
+              {user.plan !== "trial" && (
+                <div className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm col-span-2 mt-8">
+                  <h3 className="font-bold text-slate-900 mb-4">
+                    Your Menu Items
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {b.menu_items && b.menu_items.length > 0 ? (
+                      b.menu_items.map((item: any, i: number) => (
+                        <span
+                          key={i}
+                          className="px-3 py-1 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium border border-slate-200"
+                        >
+                          {item.name || item}
+                        </span>
+                      ))
+                    ) : (
+                      <p className="text-sm text-slate-500">
+                        No menu items added during onboarding.
+                      </p>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* AI Review Preview Card */}
               <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm">
@@ -732,8 +739,155 @@ export function DashboardClient({
                   )}
                 </div>
               </div>
-            </div>
 
+              {user.plan === "trial" && (
+                <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm">
+                  <h3 className="font-bold text-slate-900 mb-6">Scans (Last 7 Days)</h3>
+                  <div className="h-64 w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RechartsBarChart data={[
+                        { name: 'Mon', scans: 12 }, { name: 'Tue', scans: 18 },
+                        { name: 'Wed', scans: 15 }, { name: 'Thu', scans: 25 },
+                        { name: 'Fri', scans: 45 }, { name: 'Sat', scans: 60 },
+                        { name: 'Sun', scans: 50 }
+                      ]}>
+                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} />
+                        <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} />
+                        <RechartsTooltip cursor={{fill: '#f1f5f9'}} contentStyle={{borderRadius: '1rem', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} />
+                        <Bar dataKey="scans" fill="#10B981" radius={[4, 4, 0, 0]} />
+                      </RechartsBarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              )}
+
+              {(user.plan === "basic" || user.plan === "premium") && (
+                <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm">
+                  <h3 className="font-bold text-slate-900 mb-6">Scans (Last 30 Days)</h3>
+                  <div className="h-64 w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={Array.from({length: 30}, (_, i) => ({ day: i+1, scans: Math.floor(Math.random() * 50) + 10 }))}>
+                        <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} minTickGap={20} />
+                        <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} />
+                        <RechartsTooltip contentStyle={{borderRadius: '1rem', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} />
+                        <Line type="monotone" dataKey="scans" stroke="#10B981" strokeWidth={3} dot={false} activeDot={{r: 6}} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              )}
+
+              {/* Advanced Ratings & Insights for Basic/Premium */}
+              {(user.plan === "basic" || user.plan === "premium") && (
+                <div className="grid grid-cols-2 gap-8">
+                  <div className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm">
+                    <h3 className="font-bold text-slate-900 mb-4">Rating Breakdown</h3>
+                    <div className="space-y-3">
+                      {[5, 4, 3, 2, 1].map(star => (
+                        <div key={star} className="flex items-center gap-3">
+                          <span className="text-sm font-bold text-slate-700 w-4">{star}</span>
+                          <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
+                          <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div className="h-full bg-amber-400 rounded-full" style={{ width: `${star === 5 ? 70 : star === 4 ? 20 : star === 3 ? 5 : 2}%` }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm">
+                    <h3 className="font-bold text-slate-900 mb-4">Category Ratings</h3>
+                    <div className="space-y-4">
+                      {['Food', 'Service', 'Environment'].map(cat => (
+                        <div key={cat}>
+                          <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
+                            <span>{cat}</span>
+                            <span>{Math.max(4.2, 5 - Math.random()).toFixed(1)}</span>
+                          </div>
+                          <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${80 + Math.random() * 20}%` }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {user.plan === "basic" && (
+                <div className="relative mt-8">
+                  <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center rounded-[2.5rem] border border-slate-200">
+                    <div className="bg-white p-6 rounded-3xl shadow-xl max-w-sm text-center">
+                      <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Lock className="w-6 h-6" />
+                      </div>
+                      <h3 className="text-lg font-black text-slate-900 mb-2">Unlock AI Insights</h3>
+                      <p className="text-sm text-slate-500 mb-6">Upgrade to Premium to access AI Problem Detection, Scan Heatmaps, and Conversion Funnels.</p>
+                      <button onClick={() => openUpgradeModal("premium")} className="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all">
+                        Upgrade to Premium
+                      </button>
+                    </div>
+                  </div>
+                  <div className="opacity-40 pointer-events-none filter blur-[4px]">
+                    <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm h-64 mb-8">
+                      <h3 className="font-bold text-slate-900 mb-4">AI Problem Detection</h3>
+                      <div className="h-4 bg-slate-200 rounded w-3/4 mb-3"></div>
+                      <div className="h-4 bg-slate-200 rounded w-full mb-3"></div>
+                      <div className="h-4 bg-slate-200 rounded w-5/6"></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {user.plan === "premium" && (
+                <>
+                  <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-8">
+                      <div className="px-3 py-1 bg-purple-50 text-purple-600 border border-purple-100 text-[10px] font-black uppercase tracking-widest rounded-full flex items-center gap-1 shadow-sm">
+                        <Sparkles className="w-3 h-3" /> AI Analysis
+                      </div>
+                    </div>
+                    <h3 className="font-bold text-slate-900 mb-4">AI Problem Detection</h3>
+                    <p className="text-slate-600 leading-relaxed text-sm">
+                      <span className="font-semibold text-slate-900">Insight:</span> Recent negative alerts suggest a recurring issue with "Slow Service" during weekend peak hours (7 PM - 9 PM). Consider adjusting staff allocation during these times to improve the service rating trend.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-8">
+                    <div className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm">
+                      <h3 className="font-bold text-slate-900 mb-4">Scan Heatmap (Last 7 Days)</h3>
+                      <div className="grid grid-cols-7 gap-1">
+                        {Array.from({length: 49}).map((_, i) => (
+                          <div key={i} className="aspect-square rounded-sm" style={{backgroundColor: `rgba(16, 185, 129, ${Math.random()})`}}></div>
+                        ))}
+                      </div>
+                      <p className="text-center text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest">Peak: Saturday 8:00 PM</p>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm">
+                      <h3 className="font-bold text-slate-900 mb-4">Conversion Funnel</h3>
+                      <div className="space-y-2">
+                        {[
+                          { step: 'Scanned QR', val: 100, color: 'bg-slate-800' },
+                          { step: 'Opened Review', val: 75, color: 'bg-emerald-600' },
+                          { step: 'Rated', val: 60, color: 'bg-emerald-500' },
+                          { step: 'Copied & Posted', val: 40, color: 'bg-emerald-400' },
+                        ].map((f, idx) => (
+                          <div key={f.step} className="flex items-center gap-3">
+                            <span className="text-xs font-bold text-slate-600 w-24">{f.step}</span>
+                            <div className="flex-1 h-6 bg-slate-50 rounded-md overflow-hidden flex items-center">
+                              <div className={`h-full ${f.color} flex items-center px-2`} style={{ width: `${f.val}%` }}>
+                                <span className="text-[10px] text-white font-bold">{f.val}%</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+            
             {/* QR Code & Barcode Card Sidebar column */}
             <div className="space-y-8">
               <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm relative overflow-hidden group/qr">
@@ -778,70 +932,18 @@ export function DashboardClient({
                 </div>
               </div>
 
-              {/* Interactive Barcode Widget */}
-              <div className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm relative overflow-hidden group/barcode cursor-pointer hover:shadow-md transition-all">
-                <div className="flex flex-col items-center">
-                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.25em] mb-4">
-                    Retail Scan Visualizer
-                  </p>
-
-                  {/* Barcode Lines with Laser overlay */}
-                  <div className="relative w-full h-16 bg-slate-50 rounded-2xl flex items-end justify-center px-4 overflow-hidden py-3 border border-slate-100">
-                    {/* Glowing green horizontal scanning laser */}
-                    <div
-                      className="absolute left-0 right-0 h-0.5 bg-emerald-500 shadow-[0_0_8px_#10B981] opacity-0 group-hover/barcode:opacity-100 transition-opacity z-10 pointer-events-none"
-                      style={{
-                        animation: "laserScan 2.0s infinite ease-in-out",
-                      }}
-                    />
-
-                    {/* Pseudo retail Code-128 lines */}
-                    <div className="w-full h-full flex justify-between items-stretch">
-                      {[
-                        2, 4, 1, 3, 1, 2, 4, 2, 1, 3, 2, 1, 4, 1, 2, 3, 1, 4, 2,
-                        1, 3, 1, 2, 4, 1, 3, 2, 1, 4, 1, 2, 3, 1, 2, 4, 2, 1, 3,
-                      ].map((width, i) => (
-                        <div
-                          key={i}
-                          className="bg-slate-800 transition-all duration-300 origin-bottom rounded-sm"
-                          style={{
-                            width: `${width}px`,
-                            opacity: i % 2 === 0 ? 1 : 0, // alternates
-                            transform: "scaleY(1)",
-                            animation:
-                              i % 3 === 0
-                                ? "barcodePulse 2.5s infinite ease-in-out"
-                                : "none",
-                            animationDelay: `${i * 0.05}s`,
-                          }}
-                        />
-                      ))}
-                    </div>
+              {user.plan === "trial" && (
+                <div className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm text-center">
+                  <div className="w-12 h-12 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Star className="w-6 h-6" />
                   </div>
-
-                  <style>{`
-                  @keyframes laserScan {
-                    0% { top: 0%; }
-                    50% { top: 100%; }
-                    100% { top: 0%; }
-                  }
-                  @keyframes barcodePulse {
-                    0% { transform: scaleY(1); opacity: 0.95; }
-                    50% { transform: scaleY(0.75); opacity: 0.6; }
-                    100% { transform: scaleY(1); opacity: 0.95; }
-                  }
-                `}</style>
-
-                  <p className="text-[9px] font-mono text-slate-500 mt-3 font-semibold uppercase tracking-widest">
-                    *GLOW-$
-                    {b.name
-                      ?.substring(0, 4)
-                      .toUpperCase()
-                      .replace(/\s+/g, "") || "QR"}
-                    -2026*
-                  </p>
+                  <h3 className="font-black text-slate-900 mb-2">Upgrade to Basic/Premium</h3>
+                  <p className="text-xs text-slate-500 mb-6">Unlock full analytics, rating breakdowns, and custom AI insights to grow your business.</p>
+                  <button onClick={() => openUpgradeModal("basic")} className="w-full py-3 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-800 transition-all">
+                    View Plans
+                  </button>
                 </div>
-              </div>
+              )}
 
               {/* Growth milestone goal card */}
               <div className="bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden border border-slate-800">
