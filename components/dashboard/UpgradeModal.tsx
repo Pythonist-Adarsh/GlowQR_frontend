@@ -37,8 +37,8 @@ export function UpgradeModal({ isOpen, onClose, defaultPlan = 'basic' }: Upgrade
     setLoading(true);
     try {
       const accessToken = localStorage.getItem('token');
-      // POST /api/v1/upgrade/request
-      await fetch(`${API_BASE_URL}/api/v1/upgrade/request`, {
+      // POST /api/upgrade/request
+      await fetch(`${API_BASE_URL}/api/upgrade/request`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

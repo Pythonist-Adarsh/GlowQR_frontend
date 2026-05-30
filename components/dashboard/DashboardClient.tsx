@@ -176,11 +176,13 @@ export function DashboardClient({
       };
       if (!qrCode.current) {
         qrCode.current = new QRCodeStyling(qrConfig);
-        if (qrRef.current) {
-          qrCode.current.append(qrRef.current);
-        }
       } else {
         qrCode.current.update(qrConfig);
+      }
+      
+      if (qrRef.current) {
+        qrRef.current.innerHTML = '';
+        qrCode.current.append(qrRef.current);
       }
       setQrCodeLoaded(true);
     });
