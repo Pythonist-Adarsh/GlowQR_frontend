@@ -428,7 +428,7 @@ export function DashboardClient({
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex items-center gap-1 text-emerald-500">
                         {Array.from({ length: 5 }).map((_, j) => (
-                          <Star key={j} className={w-4 h-4 } />
+                          <Star key={j} className={`w-4 h-4 ${j < (rev.overall_rating || 5) ? 'fill-current' : 'text-slate-200'}`} />
                         ))}
                       </div>
                       <span className="text-xs font-bold text-slate-400">
@@ -445,7 +445,7 @@ export function DashboardClient({
                       </div>
                     )}
                     <p className="text-sm text-slate-700 leading-relaxed italic">
-                      "{rev.review_text || Customer enjoyed their visit and left a positive rating!}"
+                      "{rev.review_text || `Customer enjoyed their visit and left a positive rating!`}"
                     </p>
                   </div>
                 ))}
