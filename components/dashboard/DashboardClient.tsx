@@ -685,28 +685,38 @@ export function DashboardClient({
                 </div>
                 <div className="space-y-4">
                   {analyticsSummary?.recent_reviews?.length > 0 ? (
-                    analyticsSummary.recent_reviews.map(
-                      (rev: any, i: number) => (
-                        <div
-                          key={i}
-                          className="p-5 rounded-2xl bg-[#F0F7F0] border border-emerald-100 shadow-sm flex flex-col gap-2"
-                        >
-                          <div className="flex items-center gap-1 text-emerald-500">
-                            {Array.from({
-                              length: rev.overall_rating || 5,
-                            }).map((_, j) => (
-                              <Star key={j} className="w-4 h-4 fill-current" />
-                            ))}
+                    <>
+                      {analyticsSummary.recent_reviews.slice(0, 3).map(
+                        (rev: any, i: number) => (
+                          <div
+                            key={i}
+                            className="p-5 rounded-2xl bg-[#F0F7F0] border border-emerald-100 shadow-sm flex flex-col gap-2"
+                          >
+                            <div className="flex items-center gap-1 text-emerald-500">
+                              {Array.from({
+                                length: rev.overall_rating || 5,
+                              }).map((_, j) => (
+                                <Star key={j} className="w-4 h-4 fill-current" />
+                              ))}
+                            </div>
+                            <p className="text-sm text-[#085041] leading-relaxed italic font-medium">
+                              &quot;
+                              {rev.review_text ||
+                                `Customer enjoyed their visit and highlighted the ${rev.selected_items?.join(", ") || "service"}!`}
+                              &quot;
+                            </p>
                           </div>
-                          <p className="text-sm text-[#085041] leading-relaxed italic font-medium">
-                            &quot;
-                            {rev.review_text ||
-                              `Customer enjoyed their visit and highlighted the ${rev.selected_items?.join(", ") || "service"}!`}
-                            &quot;
-                          </p>
-                        </div>
-                      ),
-                    )
+                        ),
+                      )}
+                      {analyticsSummary.recent_reviews.length > 3 && (
+                        <button 
+                          onClick={() => setActiveTab('reviews')}
+                          className="w-full py-3 mt-2 text-sm font-bold text-emerald-600 bg-emerald-50 rounded-xl hover:bg-emerald-100 transition-colors"
+                        >
+                          View All {analyticsSummary.recent_reviews.length} Reviews
+                        </button>
+                      )}
+                    </>
                   ) : (
                     <div className="p-5 rounded-2xl bg-slate-50 border border-slate-100 shadow-sm text-center">
                       <p className="text-sm text-slate-400 font-medium italic">

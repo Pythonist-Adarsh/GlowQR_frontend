@@ -48,10 +48,10 @@ export function UpgradeModal({ isOpen, onClose, defaultPlan = 'basic' }: Upgrade
         body: JSON.stringify({
           plan: selectedPlan,
           amount: selectedPlan === 'basic' ? 299 : 699,
-          contactName: formData.name,
+          contact_name: formData.name,
           phone: formData.phone,
-          utrNumber: formData.utrNumber,
-          paymentMethod: 'upi'
+          utr_number: formData.utrNumber,
+          payment_method: 'upi'
         })
       });
       if (!res.ok) {
