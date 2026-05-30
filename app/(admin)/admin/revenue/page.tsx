@@ -13,7 +13,7 @@ export default function RevenuePage() {
   useEffect(() => {
     const fetchRevenue = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/admin/revenue`);
+        const res = await fetch(`/api/admin-proxy/revenue`);
         if (res.ok) {
           const json = await res.json();
           setData(json);
@@ -28,7 +28,7 @@ export default function RevenuePage() {
   }, []);
 
   const handleExport = () => {
-    window.open(`${API_BASE_URL}/api/admin/revenue/export`, '_blank');
+    window.open(`/api/admin-proxy/revenue/export`, '_blank');
   };
 
   if (loading) return <div className="p-8 text-slate-500 font-medium">Loading Revenue Data...</div>;

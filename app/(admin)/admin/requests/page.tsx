@@ -17,7 +17,7 @@ export default function RequestsPage() {
 
   const fetchRequests = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/requests?status=${filter}`);
+      const res = await fetch(`/api/admin-proxy/requests?status=${filter}`);
       if (res.ok) {
         const data = await res.json();
         setRequests(data.requests || []);
@@ -38,7 +38,7 @@ export default function RequestsPage() {
     const reason = action === 'reject' ? (rejectReason === 'Other' ? customReason : rejectReason) : undefined;
     
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/upgrade/${id}/${action}`, {
+      const res = await fetch(`/api/admin-proxy/upgrade/${id}/${action}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: action === 'reject' ? JSON.stringify({ reason }) : undefined

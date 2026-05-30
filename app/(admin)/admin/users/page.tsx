@@ -21,7 +21,7 @@ export default function UsersPage() {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/users?plan=${planFilter}&search=${search}`);
+      const res = await fetch(`/api/admin-proxy/users?plan=${planFilter}&search=${search}`);
       if (res.ok) {
         const data = await res.json();
         setUsers(data.users || []);
@@ -46,7 +46,7 @@ export default function UsersPage() {
     setViewModalOpen(true);
     // Fetch full details
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/users/${u.id}`);
+      const res = await fetch(`/api/admin-proxy/users/${u.id}`);
       if (res.ok) {
         const full = await res.json();
         setSelectedUser({ ...u, fullDetails: full });
@@ -63,7 +63,7 @@ export default function UsersPage() {
 
   const saveEdit = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/users/${selectedUser.id}/plan`, {
+      const res = await fetch(`/api/admin-proxy/users/${selectedUser.id}/plan`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

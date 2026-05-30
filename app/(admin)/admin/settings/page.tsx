@@ -24,7 +24,7 @@ export default function SettingsPage() {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/admin/settings`);
+        const res = await fetch(`/api/admin-proxy/settings`);
         if (res.ok) {
           const data = await res.json();
           setSettings(data);
@@ -50,7 +50,7 @@ export default function SettingsPage() {
     e.preventDefault();
     setSaving(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/settings`, {
+      const res = await fetch(`/api/admin-proxy/settings`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(settings)
@@ -72,7 +72,7 @@ export default function SettingsPage() {
     
     setPasswordChanging(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/change-password`, {
+      const res = await fetch(`/api/admin-proxy/change-password`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ current_password: currentPassword, new_password: newPassword })

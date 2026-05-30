@@ -16,7 +16,7 @@ export default function FeedbackPage() {
 
   const fetchFeedback = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/feedback?status=${statusFilter}&business=${businessSearch}`);
+      const res = await fetch(`/api/admin-proxy/feedback?status=${statusFilter}&business=${businessSearch}`);
       if (res.ok) {
         const data = await res.json();
         setFeedbacks(data.feedbacks || []);
@@ -39,7 +39,7 @@ export default function FeedbackPage() {
 
   const updateFeedback = async (id: number, action: any) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/feedback/${id}`, {
+      const res = await fetch(`/api/admin-proxy/feedback/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(action)

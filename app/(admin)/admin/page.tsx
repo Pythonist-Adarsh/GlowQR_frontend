@@ -14,7 +14,7 @@ export default function AdminOverview() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/admin/stats`);
+        const res = await fetch(`/api/admin-proxy/stats`);
         if (res.status === 401) {
             router.push('/admin/login');
             return;
