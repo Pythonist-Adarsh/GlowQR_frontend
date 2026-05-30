@@ -157,43 +157,18 @@ export function DashboardClient({
       : `https://glow-qr-frontend.vercel.app/r/${b.slug || b.qr_slug || fallbackSlug}`;
 
   useEffect(() => {
-    import("qr-code-styling").then(({ default: QRCodeStyling }) => {
-      const qrConfig = {
-        width: 160,
-        height: 160,
-        data: reviewUrl || "https://glow-qr-frontend.vercel.app",
-        image: user.plan === "expired" ? undefined : b.logo_url || undefined,
-        dotsOptions: {
-          color: b.primaryColor || "#1D9E75",
-          type: "rounded" as any,
-        },
-        cornersSquareOptions: {
-          color: b.primaryColor || "#1D9E75",
-          type: "extra-rounded" as any,
-        },
-        imageOptions: { crossOrigin: "anonymous", margin: 6, imageSize: 0.35 },
-        backgroundOptions: { color: "#ffffff" },
-      };
-      if (!qrCode.current) {
-        qrCode.current = new QRCodeStyling(qrConfig);
-      } else {
-        qrCode.current.update(qrConfig);
-      }
-      
-      if (qrRef.current) {
-        qrRef.current.innerHTML = '';
-        qrCode.current.append(qrRef.current);
-      }
-      setQrCodeLoaded(true);
-    });
-  }, [reviewUrl, b.logo_url, b.primaryColor, user.plan]);
+    // Legacy qr-code-styling removed in favor of qrcode.react
+    setQrCodeLoaded(true);
+  }, [reviewUrl, b.logo_url, b.primaryColor, user.plan, loading]);
 
   const handleDownloadPng = () => {
-    if (qrCode.current) {
-      qrCode.current.download({
-        name: `${(b.name || "glowqr").toLowerCase().replace(/\s+/g, "-")}-qr`,
-        extension: "png",
-      });
+    const canvas = document.getElementById("active-qr-canvas") as HTMLCanvasElement;
+    if (canvas) {
+      const url = canvas.toDataURL("image/png");
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${(b.name || "glowqr").toLowerCase().replace(/\s+/g, "-")}-qr.png`;
+      a.click();
     }
   };
 
@@ -905,8 +880,25 @@ export function DashboardClient({
                       }}
                     />
 
-                    <div className="w-[160px] h-[160px] flex items-center justify-center relative bg-white">
-                      <div ref={qrRef} />
+                    <div className="w-[160px] h-[160px] flex items-center justify-center relative bg-white rounded-xl overflow-hidden">
+                      <QRCodeCanvas
+                        id="active-qr-canvas"
+                        value={reviewUrl || "https://glow-qr-frontend.vercel.app"}
+                        size={160}
+                        fgColor={b.primaryColor || "#1D9E75"}
+                        bgColor="#ffffff"
+                        level="H"
+                        imageSettings={
+                          b.logo_url && user.plan !== "expired"
+                            ? {
+                                src: b.logo_url,
+                                height: 40,
+                                width: 40,
+                                excavate: true,
+                              }
+                            : undefined
+                        }
+                      />
                     </div>
                   </div>
                   <h4 className="text-xl font-black text-slate-900 mb-1">
