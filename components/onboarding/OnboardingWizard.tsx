@@ -303,22 +303,23 @@ const Step2 = ({ data, updateData }: any) => (
 
 const Step3 = ({ data, updateData }: any) => {
   const categories = [
-    { id: 'restaurant', name: 'Restaurant', icon: 'Utensils' },
-    { id: 'cafe', name: 'Café', icon: 'Coffee' },
-    { id: 'bakery', name: 'Bakery', icon: 'Croissant' },
-    { id: 'bar', name: 'Bar', icon: 'GlassWater' },
-    { id: 'fastfood', name: 'Fast Food', icon: 'Utensils' },
-    { id: 'finedining', name: 'Fine Dining', icon: 'Utensils' },
-    { id: 'foodtruck', name: 'Food Truck', icon: 'Utensils' },
-    { id: 'cloudkitchen', name: 'Cloud Kitchen', icon: 'Utensils' },
-    { id: 'hotel', name: 'Hotel', icon: 'Hotel' },
-    { id: 'spa', name: 'Spa', icon: 'Sparkles' },
-    { id: 'salon', name: 'Salon', icon: 'Sparkles' },
-    { id: 'retail', name: 'Retail', icon: 'ShoppingBag' },
-    { id: 'gym', name: 'Gym', icon: 'Dumbbell' },
-    { id: 'medical', name: 'Medical', icon: 'Stethoscope' },
-    { id: 'education', name: 'Education', icon: 'GraduationCap' },
-    { id: 'other', name: 'Other', icon: 'Layout' },
+    { id: 'restaurant', name: 'Restaurant', icon: 'Utensils', enabled: true },
+    { id: 'cafe', name: 'Cafe / Coffee Shop', icon: 'Coffee', enabled: true },
+    { id: 'fastfood', name: "Fast Food / QSR", icon: 'Utensils', enabled: true },
+    { id: 'bar', name: 'Bar / Lounge', icon: 'GlassWater', enabled: true },
+    { id: 'bakery', name: 'Bakery / Dessert Shop', icon: 'Croissant', enabled: true },
+    { id: 'foodcourt', name: 'Food Court', icon: 'Layout', enabled: true },
+    { id: 'finedining', name: 'Fine Dining', icon: 'Utensils', enabled: false },
+    { id: 'foodtruck', name: 'Food Truck', icon: 'Utensils', enabled: false },
+    { id: 'cloudkitchen', name: 'Cloud Kitchen', icon: 'Utensils', enabled: false },
+    { id: 'hotel', name: 'Hotel', icon: 'Hotel', enabled: false },
+    { id: 'spa', name: 'Spa', icon: 'Sparkles', enabled: false },
+    { id: 'salon', name: 'Salon', icon: 'Sparkles', enabled: false },
+    { id: 'retail', name: 'Retail', icon: 'ShoppingBag', enabled: false },
+    { id: 'gym', name: 'Gym', icon: 'Dumbbell', enabled: false },
+    { id: 'medical', name: 'Medical', icon: 'Stethoscope', enabled: false },
+    { id: 'education', name: 'Education', icon: 'GraduationCap', enabled: false },
+    { id: 'other', name: 'Other', icon: 'Layout', enabled: false },
   ];
 
   return (
@@ -327,11 +328,13 @@ const Step3 = ({ data, updateData }: any) => {
         {categories.map(cat => (
           <button 
             key={cat.id}
-            onClick={() => updateData({ category: cat.id })}
-            className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all ${data.category === cat.id ? 'border-[var(--color-brand-primary)] bg-slate-50 text-[var(--color-brand-primary)]' : 'border-slate-100 bg-white text-slate-400 hover:border-slate-200'}`}
+            type="button"
+            disabled={!cat.enabled}
+            onClick={() => { if (cat.enabled) updateData({ category: cat.id }) }}
+            className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all ${!cat.enabled ? 'opacity-40 cursor-not-allowed bg-slate-50 border-slate-100' : data.category === cat.id ? 'border-[var(--color-brand-primary)] bg-slate-50 text-[var(--color-brand-primary)]' : 'border-slate-100 bg-white text-slate-400 hover:border-slate-200'}`}
           >
             <span className="mb-2"><IconByName name={cat.icon} className="w-6 h-6" /></span>
-            <span className="text-[9px] font-black uppercase tracking-widest">{cat.name}</span>
+            <span className="text-[9px] font-black uppercase tracking-widest text-center">{cat.name}</span>
           </button>
         ))}
       </div>
