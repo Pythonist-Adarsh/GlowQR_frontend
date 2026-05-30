@@ -1,0 +1,146 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { API_BASE_URL } from '@/lib/api-config';
+import { Users, CreditCard, Activity, Clock, LogOut, CheckCircle, AlertTriangle } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar } from 'recharts';
+import { useRouter } from 'next/navigation';
+
+export default function AdminOverview() {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/admin/stats`);
+        if (res.status === 401) {
+            router.push('/admin/login');
+            return;
+        }
+        if (res.ok) {
+          const json = await res.json();
+          setData(json);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, [router]);
+
+  if (loading) return <div className="p-8 text-slate-500 font-medium">Loading Overview...</div>;
+  if (!data) return <div className="p-8 text-red-500 font-medium">Failed to load data</div>;
+
+  const stats = data.stats;
+  const charts = data.charts;
+
+  const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'];
+
+  return (
+    <div className="p-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-slate-900">Dashboard Overview</h1>
+        <p className="text-slate-500 mt-1">High-level metrics and health indicators.</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-blue-100 text-blue-600 rounded-xl"><Users className="w-6 h-6" /></div>
+            <div><p className="text-sm font-medium text-slate-500">Total Users</p><h3 className="text-2xl font-bold">{stats.total_users}</h3></div>
+          </div>
+        </div>
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-emerald-100 text-emerald-600 rounded-xl"><CheckCircle className="w-6 h-6" /></div>
+            <div><p className="text-sm font-medium text-slate-500">Active Subscriptions</p><h3 className="text-2xl font-bold">{stats.active_subscriptions}</h3></div>
+          </div>
+        </div>
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-amber-100 text-amber-600 rounded-xl"><Clock className="w-6 h-6" /></div>
+            <div><p className="text-sm font-medium text-slate-500">Trial Users</p><h3 className="text-2xl font-bold">{stats.trial_users}</h3></div>
+          </div>
+        </div>
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-red-100 text-red-600 rounded-xl"><LogOut className="w-6 h-6" /></div>
+            <div><p className="text-sm font-medium text-slate-500">Expired Users</p><h3 className="text-2xl font-bold">{stats.expired_users}</h3></div>
+          </div>
+        </div>
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-purple-100 text-purple-600 rounded-xl"><CreditCard className="w-6 h-6" /></div>
+            <div><p className="text-sm font-medium text-slate-500">Revenue This Month</p><h3 className="text-2xl font-bold">₹{stats.revenue_this_month}</h3></div>
+          </div>
+        </div>
+        <div className={`p-6 rounded-2xl shadow-sm border ${stats.pending_requests > 0 ? 'bg-amber-50 border-amber-200' : 'bg-white border-slate-200'}`}>
+          <div className="flex items-center gap-4">
+            <div className={`p-3 rounded-xl ${stats.pending_requests > 0 ? 'bg-amber-100 text-amber-600' : 'bg-slate-100 text-slate-600'}`}><AlertTriangle className="w-6 h-6" /></div>
+            <div><p className="text-sm font-medium text-slate-500">Pending Requests</p><h3 className="text-2xl font-bold">{stats.pending_requests}</h3></div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+          <h3 className="text-lg font-bold text-slate-900 mb-6">User Signups (Last 30 Days)</h3>
+          <div className="h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={charts.signups}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
+                <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
+                <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                <Line type="monotone" dataKey="users" stroke="#10b981" strokeWidth={3} dot={{r: 4, fill: '#10b981'}} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+          <h3 className="text-lg font-bold text-slate-900 mb-6">Plan Distribution</h3>
+          <div className="h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie data={charts.plan_distribution} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={5} dataKey="value">
+                  {charts.plan_distribution.map((entry: any, index: number) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="flex justify-center gap-4 mt-4">
+                {charts.plan_distribution.map((entry: any, index: number) => (
+                    <div key={entry.name} className="flex items-center gap-2 text-sm text-slate-600 font-medium capitalize">
+                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
+                        {entry.name} ({entry.value})
+                    </div>
+                ))}
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 lg:col-span-2">
+          <h3 className="text-lg font-bold text-slate-900 mb-6">Daily Revenue (Last 30 Days)</h3>
+          <div className="h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={charts.daily_revenue}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
+                <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
+                <Tooltip cursor={{fill: '#f8fafc'}} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                <Bar dataKey="revenue" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
