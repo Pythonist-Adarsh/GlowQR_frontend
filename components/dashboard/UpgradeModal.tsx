@@ -1,4 +1,5 @@
 'use client';
+import { toast } from 'react-hot-toast';
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -38,7 +39,7 @@ export function UpgradeModal({ isOpen, onClose, defaultPlan = 'basic' }: Upgrade
     try {
       const accessToken = localStorage.getItem('token');
       // POST /api/upgrade/request
-      await fetch(`${API_BASE_URL}/api/upgrade/request`, {
+      const res = await fetch(`${API_BASE_URL}/api/upgrade/request`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -46,17 +47,20 @@ export function UpgradeModal({ isOpen, onClose, defaultPlan = 'basic' }: Upgrade
         },
         body: JSON.stringify({
           plan: selectedPlan,
+          amount: selectedPlan === 'basic' ? 299 : 699,
           contactName: formData.name,
           phone: formData.phone,
           utrNumber: formData.utrNumber,
           paymentMethod: 'upi'
         })
       });
+      if (!res.ok) {
+        throw new Error('Failed to submit upgrade request');
+      }
       setStep(3);
     } catch (err) {
       console.error(err);
-      // Even on error, show step 3 for this mock, or handle properly
-      setStep(3);
+      toast.error("Failed to submit request. Please try again.");
     } finally {
       setLoading(false);
     }
