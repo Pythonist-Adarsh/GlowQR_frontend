@@ -18,7 +18,7 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
   // Expired plan
   if (plan === 'expired') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white p-6 text-center">
+      <div className="min-h-screen flex items-center justify-center bg-slate-900 {textColor} p-6 text-center">
         <div>
           <h1 className="text-2xl font-bold mb-2">Scanner Inactive</h1>
           <p className="text-slate-400">This QR code is no longer active.</p>
@@ -27,7 +27,12 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
     );
   }
 
-  const isPremium = plan === 'premium' || plan === 'trial';
+  const isPremium = plan === 'premium';
+  const animStyle = businessData?.animation_style || 'glow_float';
+  const isLight = animStyle === 'free' || animStyle === 'glow_float';
+  const textColor = isLight ? 'text-slate-800' : '{textColor}';
+  const textColorMuted = isLight ? 'text-slate-500' : '{textColorMuted}';
+  const bgColor = isLight ? 'bg-slate-50' : (animStyle === 'premium' ? 'bg-[#06060F]' : 'bg-slate-900');
   const brandColor = businessData?.primaryColor || '#1D9E75';
 
   useEffect(() => {
@@ -169,7 +174,8 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
       className="absolute inset-0 z-50 flex flex-col items-center justify-center overflow-hidden"
       style={{ backgroundColor: `${brandColor}15` }}
     >
-      <div className="absolute inset-0 bg-slate-900/95 mix-blend-multiply" />
+      {!isLight && <div className="absolute inset-0 bg-slate-900/95 mix-blend-multiply" />}
+      {isLight && <div className="absolute inset-0 bg-white/90 mix-blend-screen" />}
       <canvas ref={canvasRef} className="absolute inset-0 z-10 pointer-events-none" />
 
       {/* Camera Grid Overlay (Premium) */}
@@ -236,7 +242,7 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
             {businessData.logo || businessData.logoUrl ? (
               <img src={businessData.logo || businessData.logoUrl} alt="Logo" className="w-full h-full object-contain drop-shadow-md" />
             ) : (
-              <span className="text-3xl font-black text-white text-center uppercase tracking-tighter leading-none" style={{ color: brandColor }}>
+              <span className="text-3xl font-black {textColor} text-center uppercase tracking-tighter leading-none" style={{ color: brandColor }}>
                 {businessData.name?.substring(0, 2)}
               </span>
             )}
@@ -249,14 +255,14 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
           transition={{ delay: 0.5 }}
           className="w-full flex flex-col items-center"
         >
-          <h2 className="text-2xl font-black text-white mb-2 leading-tight uppercase tracking-wide">{businessData.name}</h2>
-          <p className="text-white/60 font-medium tracking-wide text-sm mb-6 italic">{businessData.tagline}</p>
+          <h2 className="text-2xl font-black {textColor} mb-2 leading-tight uppercase tracking-wide">{businessData.name}</h2>
+          <p className="{textColorMuted} font-medium tracking-wide text-sm mb-6 italic">{businessData.tagline}</p>
           
           {businessData.website && (
             <a 
               href={businessData.website.startsWith('http') ? businessData.website : `https://${businessData.website}`}
               target="_blank" rel="noopener noreferrer"
-              className="text-[10px] font-bold uppercase tracking-widest px-5 py-2.5 rounded-full border border-white/20 hover:bg-white/10 text-white flex items-center gap-2 transition-all mb-8"
+              className="text-[10px] font-bold uppercase tracking-widest px-5 py-2.5 rounded-full border border-white/20 hover:bg-white/10 {textColor} flex items-center gap-2 transition-all mb-8"
             >
               VISIT WEBSITE <ExternalLink className="w-3 h-3" />
             </a>
@@ -272,7 +278,7 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
             showContent && (
               <motion.p 
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} 
-                className="text-white/90 font-bold tracking-widest uppercase text-xs leading-relaxed"
+                className="{textColor} font-bold tracking-widest uppercase text-xs leading-relaxed"
               >
                 {businessData.welcomeMessage || `Welcome to ${businessData.name}`}
               </motion.p>
@@ -287,7 +293,7 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
               onClick={onComplete}
-              className="w-full py-4 mt-4 rounded-xl font-bold text-sm text-white shadow-[0_0_20px_rgba(0,0,0,0.3)] flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+              className="w-full py-4 mt-4 rounded-xl font-bold text-sm {textColor} shadow-[0_0_20px_rgba(0,0,0,0.3)] flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
               style={{ backgroundColor: brandColor }}
             >
               Share your experience <ArrowRight className="w-4 h-4" />

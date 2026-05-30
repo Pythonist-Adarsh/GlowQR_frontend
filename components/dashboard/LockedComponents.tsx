@@ -36,7 +36,7 @@ export const ExpiredOverlay = ({ children }: { children: React.ReactNode }) => {
       </div>
       <div className="absolute inset-0 flex items-center justify-center z-50">
         <div className="bg-white p-10 rounded-3xl shadow-xl border border-red-100 text-center max-w-md">
-          <div className="text-5xl mb-4">😴</div>
+          <div className="text-5xl mb-4">🔒</div>
           <h2 className="text-2xl font-black text-slate-900 mb-2">Your plan has expired</h2>
           <p className="text-sm text-slate-600 mb-6 leading-relaxed">
             Your QR code is currently inactive. Customers who scan it will see an inactive screen. Reactivate today to start collecting reviews again.
