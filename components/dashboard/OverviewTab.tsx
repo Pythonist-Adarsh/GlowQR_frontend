@@ -171,9 +171,9 @@ export function OverviewTab({
             <div className="absolute top-8 right-8 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-black uppercase tracking-widest">
               Active Setup
             </div>
-            <div className="h-24 min-w-[6rem] max-w-[16rem] rounded-2xl border-4 border-white shadow-lg overflow-hidden shrink-0 flex items-center justify-center bg-white" style={{ backgroundColor: '#ffffff' }}>
+            <div className="h-24 max-w-[16rem] rounded-2xl border-4 border-white shadow-lg overflow-hidden shrink-0 flex items-center justify-center bg-white p-1" style={{ backgroundColor: '#ffffff' }}>
               {(b.logo_url || b.logo) ? (
-                <img src={b.logo_url || b.logo} alt="Logo" className="h-full w-auto object-contain" />
+                <img src={b.logo_url || b.logo} alt="Logo" className="max-h-full max-w-full object-contain" />
               ) : (
                 <div className="w-24 h-24 flex items-center justify-center text-white font-bold text-xl" style={{ backgroundColor: b.primaryColor || "#1a8a3c" }}>
                   {b.name?.charAt(0) || "B"}

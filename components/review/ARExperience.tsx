@@ -234,13 +234,13 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
           )}
 
           <motion.div
-            className="h-32 min-w-[8rem] max-w-[20rem] bg-white/10 backdrop-blur-md border border-white/20 rounded-[2rem] p-4 shadow-[0_0_30px_rgba(0,0,0,0.3)] flex items-center justify-center relative z-10 overflow-hidden"
+            className="h-32 max-w-[20rem] bg-white/10 backdrop-blur-md border border-white/20 rounded-[2rem] p-4 shadow-[0_0_30px_rgba(0,0,0,0.3)] flex items-center justify-center relative z-10 overflow-hidden"
             initial={{ scale: 0.4, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 200, damping: 15 }}
           >
             {businessData.logo || businessData.logoUrl ? (
-              <img src={businessData.logo || businessData.logoUrl} alt="Logo" className="h-full w-auto object-contain drop-shadow-md" />
+              <img src={businessData.logo || businessData.logoUrl} alt="Logo" className="max-h-full max-w-full object-contain drop-shadow-md" />
             ) : (
               <span className="text-3xl font-black {textColor} text-center uppercase tracking-tighter leading-none" style={{ color: brandColor }}>
                 {businessData.name?.substring(0, 2)}
