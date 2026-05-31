@@ -465,6 +465,12 @@ export function OverviewTab({
                   <ExternalLink className="w-4 h-4" /> Link
                 </button>
               </div>
+              <button
+                onClick={() => window.open(reviewUrl, "_blank")}
+                className="w-full mt-3 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all shadow-md"
+              >
+                <Sparkles className="w-4 h-4" /> Test AR Simulation
+              </button>
             </div>
 
             {/* AI Review Generation preview */}
@@ -510,6 +516,30 @@ export function OverviewTab({
                   <div className="p-5 rounded-2xl bg-slate-50 border border-slate-100 shadow-sm text-center">
                     <p className="text-sm text-slate-400 font-medium italic">No AI generated reviews yet. Scan your QR to test it!</p>
                   </div>
+                )}
+              </div>
+            </div>
+
+            {/* Menu Items Section */}
+            <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm col-span-1 md:col-span-2">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                  <span className="w-8 h-8 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center">🍔</span>
+                  Your Menu Items
+                </h3>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {b.menu_items && b.menu_items.length > 0 ? (
+                  b.menu_items.map((item: any, i: number) => (
+                    <span
+                      key={i}
+                      className="px-4 py-2 bg-slate-50 text-slate-700 rounded-xl text-sm font-bold border border-slate-200"
+                    >
+                      {item.name || item}
+                    </span>
+                  ))
+                ) : (
+                  <p className="text-sm text-slate-400 font-medium italic">No menu items added. Add them in the setup tab!</p>
                 )}
               </div>
             </div>

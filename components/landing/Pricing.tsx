@@ -109,13 +109,12 @@ export function Pricing() {
                   </li>
                 ))}
               </ul>
-              <Button
-                size="lg"
-                className={`mt-10 w-full ${t.highlighted ? 'bg-gray-900 text-white hover:bg-gray-800' : 'bg-white text-gray-900 border border-gray-200 hover:bg-gray-50'}`}
+              <button
+                className={`mt-10 w-full rounded-xl py-4 font-bold transition-all active:scale-[0.98] ${t.highlighted ? 'bg-slate-900 text-white shadow-xl hover:bg-slate-800' : 'bg-white text-slate-900 border-2 border-slate-200 shadow-sm hover:border-slate-300'}`}
                 onClick={() => window.location.href = '/register'}
               >
                 {t.name === 'Free Trial' ? 'Start Free Trial →' : `Get ${t.name} →`}
-              </Button>
+              </button>
             </motion.div>
           ))}
         </motion.div>

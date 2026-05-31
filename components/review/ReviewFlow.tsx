@@ -79,6 +79,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
 
   // Screen 4 States
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
   const [generatedReviews, setGeneratedReviews] = useState<string[]>([]);
   const [activeReviewIndex, setActiveReviewIndex] = useState(0);
 
@@ -135,13 +136,15 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
   };
 
   const handlePostReview = async () => {
-    try {
-      await navigator.clipboard.writeText(generatedReviews[activeReviewIndex]);
-    } catch(e) {}
+    navigator.clipboard.writeText(generatedReviews[activeReviewIndex]);
+    setIsCopied(true);
 
-    if (business.googleReviewUrl && business.googleReviewUrl !== '#') {
-      window.open(business.googleReviewUrl, '_blank');
-    }
+    setTimeout(() => {
+      if (business.googleReviewUrl && business.googleReviewUrl !== '#') {
+        window.open(business.googleReviewUrl, '_blank');
+      }
+      // setStep(STEPS.COPIED);
+    }, 2000);
 
     try {
       await fetch(`${API_BASE_URL}/api/scan/record`, {
@@ -167,8 +170,6 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
         })
       });
     } catch (e) {}
-
-    setStep(STEPS.COPIED);
   };
 
   const pageVariants = {
@@ -452,11 +453,18 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                   <div 
                     key={idx} 
                     onClick={() => setActiveReviewIndex(idx)}
-                    className={`w-full ${cardBg} border ${activeReviewIndex === idx ? 'border-amber-500 shadow-md' : borderClass} rounded-2xl p-5 relative cursor-pointer transition-all`}
+                    className={`w-full ${cardBg} border-2 ${activeReviewIndex === idx ? 'border-amber-500 shadow-lg ' + (isDark ? 'bg-amber-500/5' : 'bg-amber-50') : (isDark ? 'border-slate-800' : 'border-slate-200')} rounded-2xl p-5 relative cursor-pointer transition-all`}
                   >
                     <div className="flex justify-between items-center mb-3">
-                      <span className={`text-[9px] font-bold uppercase tracking-widest ${activeReviewIndex === idx ? 'text-amber-500' : 'text-slate-400'}`}>Variant {idx + 1}</span>
-                      {activeReviewIndex === idx && <Check className="w-3 h-3 text-amber-500" />}
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[9px] font-bold uppercase tracking-widest ${activeReviewIndex === idx ? 'text-amber-500' : 'text-slate-400'}`}>Variant {idx + 1}</span>
+                        <div className="flex gap-[2px]">
+                          {[1, 2, 3, 4, 5].map(s => (
+                            <Star key={s} className={`w-2.5 h-2.5 ${s <= ratings.overall ? 'fill-amber-400 text-amber-400' : 'text-slate-300 dark:text-slate-700'}`} />
+                          ))}
+                        </div>
+                      </div>
+                      {activeReviewIndex === idx && <Check className="w-4 h-4 text-amber-500" />}
                     </div>
                     <textarea 
                       className={`w-full bg-transparent text-sm leading-relaxed resize-none focus:outline-none ${isDark ? 'text-white' : 'text-slate-800'}`}
@@ -481,14 +489,23 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
               {/* Upgrade Nudges removed from here. They belong on the dashboard outside the simulation. */}
             </div>
 
-            <div className={`p-6 pt-4 shrink-0 border-t ${borderClass} ${isDark ? 'bg-[#111827]' : 'bg-white'}`}>
+            <div className={`p-6 pt-4 shrink-0 border-t ${borderClass} ${isDark ? 'bg-[#111827]' : 'bg-white'} relative`}>
               <button 
                 onClick={handlePostReview}
                 className="w-full py-4 rounded-xl font-bold text-sm text-white shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] mb-3"
-                style={{ backgroundColor: business.primaryColor }}
+                style={{ backgroundColor: isCopied ? '#10b981' : business.primaryColor }}
               >
-                📋 Copy & Post Review <ExternalLink className="w-4 h-4" />
+                {isCopied ? (
+                  <>✓ Copied!</>
+                ) : (
+                  <>📋 Copy & Post Review <ExternalLink className="w-4 h-4" /></>
+                )}
               </button>
+              {isCopied && (
+                <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-4 py-2 rounded-full text-xs font-bold shadow-xl flex items-center gap-2 z-50 animate-in fade-in zoom-in duration-300 whitespace-nowrap">
+                  <Check className="w-3 h-3 text-emerald-400" /> Review copied — now paste on Google Maps
+                </div>
+              )}
               <p className={`text-[8px] text-center max-w-[280px] mx-auto opacity-60 leading-relaxed ${textMuted}`}>
                 GlowQR helps you write your own review. The final text is yours to edit before posting. We never post reviews on your behalf.
               </p>
