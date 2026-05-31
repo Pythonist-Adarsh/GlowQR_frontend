@@ -269,7 +269,7 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
           )}
         </motion.div>
 
-        <div className="h-16 flex items-center justify-center mb-6">
+        <div className="min-h-[4rem] h-auto flex items-center justify-center mb-6">
           {isPremium ? (
             <p className="text-emerald-400 font-bold tracking-widest uppercase text-xs leading-relaxed" style={{ color: getLightenedBrandColor(brandColor, 30) }}>
               {typedMessage}

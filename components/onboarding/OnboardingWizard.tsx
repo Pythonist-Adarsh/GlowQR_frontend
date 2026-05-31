@@ -699,7 +699,7 @@ const Step5 = ({ data, updateData }: any) => {
         </div>
       )}
 
-      <InputField label="Welcome message" badge="optional" value={data.welcomeMsg} onChange={(e: any) => updateData({ welcomeMsg: e.target.value })} hint="Animated text on Premium plan only" />
+      <InputField label="Welcome message" badge="optional" value={data.welcomeMsg} onChange={(e: any) => updateData({ welcomeMsg: e.target.value })} hint="Animated text on Premium plan only (Max 60 characters)" maxLength={60} />
 
       <SectionHeader>Review Settings</SectionHeader>
       <div className="grid grid-cols-2 gap-4">
@@ -1217,7 +1217,7 @@ export default function OnboardingWizard() {
                     <RefreshCw className="w-8 h-8 text-[var(--color-brand-primary)] animate-spin" />
                   </div>
                 }>
-                  <ReviewPageOrchestrator isEmbedded={true} initialData={{ ...data, qr_slug: data.slug || data.qr_slug || '', logo: data.logo || null, plan: data.plan || 'premium' }} />
+                  <ReviewPageOrchestrator isEmbedded={true} initialData={{ ...data, welcomeMessage: data.welcomeMsg, qr_slug: data.slug || data.qr_slug || '', logo: data.logo || null, plan: data.plan || 'premium' }} />
                 </Suspense>
              </motion.div>
           </div>
