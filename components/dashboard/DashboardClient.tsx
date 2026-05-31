@@ -588,62 +588,7 @@ export function DashboardClient({
           </div>
         )}
 
-        {/* Right Sidebar */}
-        <div className="w-full lg:w-1/3">
-          <div className="sticky top-4 flex flex-col gap-6">
-            {/* QR Card */}
-            <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm flex flex-col items-center">
-              <div className="w-48 h-48 bg-white p-4 rounded-3xl border-2 border-slate-100 shadow-sm mb-6 flex items-center justify-center relative">
-                {b.qr_image_url ? (
-                  <img src={b.qr_image_url} alt="QR Code" className="w-full h-full object-contain" />
-                ) : (
-                  <QRCodeCanvas
-                    value={reviewUrl}
-                    size={160}
-                    bgColor="#ffffff"
-                    fgColor={b.primaryColor || "#1a8a3c"}
-                    level="Q"
-                  />
-                )}
-              </div>
-              <h3 className="text-lg font-black text-slate-900 mb-1">Your Active QR</h3>
-              <p className="text-xs text-slate-500 font-medium mb-6">Ready for scanning</p>
-              <div className="flex w-full gap-3">
-                <button
-                  onClick={() => {
-                    const canvas = document.querySelector("canvas");
-                    if (canvas) {
-                      const pngUrl = canvas
-                        .toDataURL("image/png")
-                        .replace("image/png", "image/octet-stream");
-                      const downloadLink = document.createElement("a");
-                      downloadLink.href = pngUrl;
-                      downloadLink.download = `${b.slug || "glowqr"}-code.png`;
-                      document.body.appendChild(downloadLink);
-                      downloadLink.click();
-                      document.body.removeChild(downloadLink);
-                    } else if (b.qr_image_url) {
-                      window.open(b.qr_image_url, "_blank");
-                    }
-                  }}
-                  className="flex-1 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all"
-                >
-                  <Download className="w-4 h-4" /> PNG
-                </button>
-                <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(reviewUrl);
-                    alert("Link copied!");
-                  }}
-                  className="flex-1 py-3 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all"
-                >
-                  <ExternalLink className="w-4 h-4" /> Link
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
+              </main>
     </div>
   );
 }

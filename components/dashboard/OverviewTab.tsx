@@ -171,11 +171,11 @@ export function OverviewTab({
             <div className="absolute top-8 right-8 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-black uppercase tracking-widest">
               Active Setup
             </div>
-            <div className="w-20 h-20 rounded-full border-4 border-white shadow-lg overflow-hidden shrink-0" style={{ backgroundColor: b.primaryColor || "#1a8a3c" }}>
+            <div className="w-24 h-24 rounded-2xl border-4 border-white shadow-lg overflow-hidden shrink-0 flex items-center justify-center bg-white" style={{ backgroundColor: '#ffffff' }}>
               {(b.logo_url || b.logo) ? (
-                <img src={b.logo_url || b.logo} alt="Logo" className="w-full h-full object-cover" />
+                <img src={b.logo_url || b.logo} alt="Logo" className="w-full h-full object-contain" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-white font-bold text-xl">
+                <div className="w-full h-full flex items-center justify-center text-white font-bold text-xl" style={{ backgroundColor: b.primaryColor || "#1a8a3c" }}>
                   {b.name?.charAt(0) || "B"}
                 </div>
               )}
@@ -322,90 +322,6 @@ export function OverviewTab({
               <LockedSection 
                 title="AI Problem Detection" 
                 description="AI analyzes your ratings and tells you exactly what to fix" 
-                requiredPlan="Premium" 
-                price="₹699/mo" 
-              />
-            )}
-          </div>
-
-          {/* Premium Heatmap & Funnel */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-             <div className="bg-white rounded-[2.5rem] shadow-sm h-full">
-               {isPremium ? (
-                 <div className="p-8">
-                    <h3 className="font-bold text-slate-900 mb-6">Scan Heatmap</h3>
-                    <p className="text-sm text-slate-500 mb-4">Activity by hour of day</p>
-                    <div className="w-full h-32 flex flex-wrap gap-1">
-                      {/* Simple heatmap mock visualization since full grid requires D3 or complex CSS */}
-                      {analyticsSummary?.heatmap?.slice(0, 30).map((h: any, i: number) => (
-                         <div key={i} className="w-4 h-4 rounded-sm" style={{ backgroundColor: `rgba(26, 138, 60, ${Math.min(1, h.count / 10)})` }} title={`${h.day_of_week} ${h.hour_of_day}:00 - ${h.count} scans`} />
-                      ))}
-                    </div>
-                 </div>
-               ) : (
-                 <LockedSection 
-                  title="Scan Heatmap" 
-                  description="See exactly which days and hours your QR gets most scans" 
-                  requiredPlan="Premium" 
-                  price="₹699/mo" 
-                />
-               )}
-             </div>
-             
-             <div className="bg-white rounded-[2.5rem] shadow-sm h-full">
-               {isPremium ? (
-                 <div className="p-8">
-                    <h3 className="font-bold text-slate-900 mb-6 flex items-center gap-2"><ThumbsDown className="w-5 h-5 text-red-500" /> Negative Alerts</h3>
-                    <div className="space-y-3">
-                      {analyticsSummary?.negative_alerts?.slice(0,3).map((alert: any, i: number) => (
-                        <div key={i} className="p-3 bg-red-50 border border-red-100 rounded-lg text-sm text-red-900">
-                          <div className="flex items-center gap-1 mb-1">
-                             <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                             <span className="font-bold">{alert.rating}/5</span>
-                          </div>
-                          "{alert.feedback_text}"
-                        </div>
-                      ))}
-                      {(!analyticsSummary?.negative_alerts || analyticsSummary.negative_alerts.length === 0) && (
-                        <p className="text-sm text-slate-400">No negative alerts. Great job!</p>
-                      )}
-                    </div>
-                 </div>
-               ) : (
-                 <LockedSection 
-                  title="Negative Alerts" 
-                  description="Get notified when a customer gives 1-2 stars before it reaches Google" 
-                  requiredPlan="Premium" 
-                  price="₹699/mo" 
-                />
-               )}
-             </div>
-          </div>
-
-          {/* Premium Conversion Funnel */}
-          <div className="bg-white rounded-[2.5rem] shadow-sm w-full">
-            {isPremium ? (
-              <div className="p-8">
-                <h3 className="font-bold text-slate-900 mb-6">Conversion Funnel</h3>
-                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                  {['scanned', 'opened', 'rated', 'copied', 'posted'].map((stage, i) => {
-                     const stageData = analyticsSummary?.funnel?.[stage];
-                     return (
-                       <div key={stage} className="flex-1 flex flex-col items-center">
-                         <div className="w-full text-center py-4 bg-emerald-50 rounded-xl mb-2 border border-emerald-100">
-                           <p className="text-lg font-black text-emerald-700">{stageData?.pct || 0}%</p>
-                           <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">{stage}</p>
-                         </div>
-                         {i < 4 && <ChevronRight className="w-5 h-5 text-slate-300 hidden md:block" />}
-                       </div>
-                     );
-                  })}
-                </div>
-              </div>
-            ) : (
-              <LockedSection 
-                title="Conversion Funnel" 
-                description="See where customers drop off in the review journey" 
                 requiredPlan="Premium" 
                 price="₹699/mo" 
               />
