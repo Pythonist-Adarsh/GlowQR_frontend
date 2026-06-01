@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useRef } from "react";
+import html2canvas from "html2canvas";
 import {
   BarChart3,
   ExternalLink,
@@ -36,6 +37,19 @@ export function OverviewTab({
   setActiveTab,
   reviewUrl,
 }: any) {
+  const qrCardRef = useRef<HTMLDivElement>(null);
+  
+  const downloadCard = async () => {
+    if (qrCardRef.current) {
+      const canvas = await html2canvas(qrCardRef.current, { scale: 3, backgroundColor: '#ffffff' });
+      const pngUrl = canvas.toDataURL("image/png");
+      const downloadLink = document.createElement("a");
+      downloadLink.href = pngUrl;
+      downloadLink.download = `${b.slug || "glowqr"}-printable-card.png`;
+      downloadLink.click();
+    }
+  };
+
   const plan = user.plan || "trial";
   const now = new Date();
   
@@ -333,40 +347,62 @@ export function OverviewTab({
         <div className="w-full lg:w-1/3">
           <div className="sticky top-4 flex flex-col gap-6">
             {/* QR Card */}
-            <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm flex flex-col items-center">
-              <div className="w-48 h-48 bg-white p-4 rounded-3xl border-2 border-slate-100 shadow-sm mb-6 flex items-center justify-center relative">
-                {b.qr_image_url ? (
-                  <img src={b.qr_image_url} alt="QR Code" className="w-full h-full object-contain" />
-                ) : (
-                  <QRCodeCanvas
-                    value={reviewUrl}
-                    size={160}
-                    bgColor="#ffffff"
-                    fgColor={b.primaryColor || "#1a8a3c"}
-                    level="Q"
-                  />
-                )}
+            <div className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm flex flex-col items-center">
+              
+              {/* Printable Card Area */}
+              <div ref={qrCardRef} className="w-full max-w-[260px] bg-white pt-8 pb-6 px-4 rounded-xl flex flex-col items-center justify-center relative overflow-hidden mb-6">
+                <div className="w-16 h-16 rounded-full overflow-hidden mb-3 flex items-center justify-center bg-transparent">
+                  {b.logo ? (
+                    <img src={b.logo} alt="Logo" className="w-full h-full object-contain" />
+                  ) : (
+                    <div className="w-full h-full rounded-full border-2 border-slate-900 border-dashed flex items-center justify-center">
+                      <span className="text-[10px] font-black text-slate-900 leading-none text-center">YOUR<br/>LOGO</span>
+                    </div>
+                  )}
+                </div>
+                <h4 className="text-[19px] font-black text-slate-900 mb-4 text-center leading-tight tracking-tight px-2">{b.name}</h4>
+                
+                <div className="bg-white p-1 mb-4 border border-slate-100 rounded-xl shadow-sm">
+                  {b.qr_image_url ? (
+                    <img src={b.qr_image_url} alt="QR Code" className="w-40 h-40 object-contain" />
+                  ) : (
+                    <QRCodeCanvas
+                      value={reviewUrl}
+                      size={160}
+                      bgColor="#ffffff"
+                      fgColor="#000000"
+                      level="H"
+                    />
+                  )}
+                </div>
+                
+                <p className="text-[12px] text-center font-bold text-slate-800 leading-tight mb-3 px-2">
+                  Scan the QR code to<br />leave us a review on<br />
+                  <span className="inline-flex mt-2">
+                    <span className="text-blue-500 font-black text-xl tracking-tighter">G</span>
+                    <span className="text-red-500 font-black text-xl tracking-tighter">o</span>
+                    <span className="text-yellow-500 font-black text-xl tracking-tighter">o</span>
+                    <span className="text-blue-500 font-black text-xl tracking-tighter">g</span>
+                    <span className="text-green-500 font-black text-xl tracking-tighter">l</span>
+                    <span className="text-red-500 font-black text-xl tracking-tighter">e</span>
+                  </span>
+                </p>
+                
+                <div className="flex gap-1.5 text-yellow-400 mt-1">
+                  <Star className="w-6 h-6 fill-current" />
+                  <Star className="w-6 h-6 fill-current" />
+                  <Star className="w-6 h-6 fill-current" />
+                  <Star className="w-6 h-6 fill-current" />
+                  <Star className="w-6 h-6 fill-current" />
+                </div>
               </div>
-              <h3 className="text-lg font-black text-slate-900 mb-1">Your Active QR</h3>
-              <p className="text-xs text-slate-500 font-medium mb-6">Ready for scanning</p>
+
+              <h3 className="text-lg font-black text-slate-900 mb-1">Your Printable QR</h3>
+              <p className="text-xs text-slate-500 font-medium mb-6">Perfect for tables & counters</p>
+              
               <div className="flex w-full gap-3">
                 <button
-                  onClick={() => {
-                    const canvas = document.querySelector("canvas");
-                    if (canvas) {
-                      const pngUrl = canvas
-                        .toDataURL("image/png")
-                        .replace("image/png", "image/octet-stream");
-                      const downloadLink = document.createElement("a");
-                      downloadLink.href = pngUrl;
-                      downloadLink.download = `${b.slug || "glowqr"}-code.png`;
-                      document.body.appendChild(downloadLink);
-                      downloadLink.click();
-                      document.body.removeChild(downloadLink);
-                    } else if (b.qr_image_url) {
-                      window.open(b.qr_image_url, "_blank");
-                    }
-                  }}
+                  onClick={downloadCard}
                   className="flex-1 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all"
                 >
                   <Download className="w-4 h-4" /> PNG
