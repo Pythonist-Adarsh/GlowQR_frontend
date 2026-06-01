@@ -1,11 +1,17 @@
 import type { Metadata } from 'next'
 import { SignUpView } from '@/components/auth/SignUpView'
+import { LandingNavbar } from '@/components/landing/LandingNavbar'
 
 export const metadata: Metadata = {
-  title: 'Create account â€” GlowQR',
-  description: 'Start collecting reviews in under 5 minutes.',
+  title: 'Sign up — GlowQR',
+  description: 'Create your account to start managing your QR menus.',
 }
 
 export default function SignUpPage() {
-  return <SignUpView />
+  return (
+    <>
+      <LandingNavbar forceScrolled={true} />
+      <SignUpView />
+    </>
+  )
 }

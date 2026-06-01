@@ -27,7 +27,7 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
     );
   }
 
-  const isPremium = plan === 'premium';
+  const isPremium = plan === 'premium' || plan === 'trial';
   const animStyle = businessData?.animation_style || 'glow_float';
   const isLight = animStyle === 'free' || animStyle === 'glow_float';
   const textColor = isLight ? 'text-slate-800' : 'text-white';

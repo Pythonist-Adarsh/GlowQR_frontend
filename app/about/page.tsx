@@ -67,19 +67,19 @@ export default function AboutPage() {
           <h2 className="text-xs font-black uppercase tracking-widest text-[var(--text-tertiary)] mb-6">Why It Matters for Indian Businesses</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-[var(--bg-secondary)] p-6 rounded-2xl border border-[var(--border-default)] text-center">
-              <div className="text-3xl font-black text-[var(--text-primary)] mb-2">63M+</div>
+              <div className="text-3xl font-black text-[var(--text-primary)] mb-2">1450M+</div>
               <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase">Searches on local maps everyday</div>
             </div>
             <div className="bg-[var(--bg-secondary)] p-6 rounded-2xl border border-[var(--border-default)] text-center">
-              <div className="text-3xl font-black text-[var(--text-primary)] mb-2">87%</div>
+              <div className="text-3xl font-black text-[var(--text-primary)] mb-2">95%</div>
               <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase">Consumers read reviews before visiting</div>
             </div>
             <div className="bg-[var(--bg-secondary)] p-6 rounded-2xl border border-[var(--border-default)] text-center">
-              <div className="text-3xl font-black text-[var(--text-primary)] mb-2">4.4★</div>
+              <div className="text-3xl font-black text-[var(--text-primary)] mb-2">4.8★</div>
               <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase">Average minimum expected review</div>
             </div>
             <div className="bg-[var(--bg-secondary)] p-6 rounded-2xl border border-[var(--border-default)] text-center">
-              <div className="text-3xl font-black text-[var(--text-primary)] mb-2">80s</div>
+              <div className="text-3xl font-black text-[var(--text-primary)] mb-2">30s</div>
               <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase">Time to publish using GlowQR AI</div>
             </div>
           </div>

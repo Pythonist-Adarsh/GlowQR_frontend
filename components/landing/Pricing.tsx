@@ -9,7 +9,7 @@ const tiers = [
     name: 'Free Trial',
     price: '₹0',
     period: '',
-    desc: '7 days',
+    desc: '3 days',
     features: [
       '3-day full access (no card needed)',
       'AR branding experience on scan',
@@ -20,7 +20,7 @@ const tiers = [
   },
   {
     name: 'Basic',
-    price: '₹299',
+    price: '₹199',
     period: '/month',
     desc: 'Essential tools to grow your reviews',
     features: [
@@ -36,7 +36,7 @@ const tiers = [
   },
   {
     name: 'Premium',
-    price: '₹699',
+    price: '₹499',
     period: '/month',
     desc: 'Advanced tools and AI insights',
     features: [
@@ -125,7 +125,7 @@ export function Pricing() {
           viewport={{ once: true }}
           className="mt-8 text-center text-sm font-medium text-gray-500"
         >
-          💳 Pay via UPI · Activated within 2-4 hours · Cancel anytime
+          💳 Pay via UPI · Activated within 2-4 hours
         </motion.p>
       </div>
     </section>

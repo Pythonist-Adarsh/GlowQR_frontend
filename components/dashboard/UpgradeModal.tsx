@@ -3,7 +3,7 @@ import { toast } from 'react-hot-toast';
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Copy, X } from 'lucide-react';
+import { Check, Copy, X, Eye, EyeOff } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/api-config';
 
 interface UpgradeModalProps {
@@ -17,6 +17,7 @@ export function UpgradeModal({ isOpen, onClose, defaultPlan = 'basic' }: Upgrade
   const [selectedPlan, setSelectedPlan] = useState(defaultPlan);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showUpi, setShowUpi] = useState(false);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -24,11 +25,11 @@ export function UpgradeModal({ isOpen, onClose, defaultPlan = 'basic' }: Upgrade
     utrNumber: '',
   });
 
-  const price = selectedPlan === 'premium' ? 699 : 299;
+  const price = selectedPlan === 'premium' ? 499 : 199;
   const planName = selectedPlan === 'premium' ? 'Premium Plan' : 'Basic Plan';
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(process.env.NEXT_PUBLIC_UPI_ID || 'yourname@upi');
+    navigator.clipboard.writeText('adarshtiwari2412-4@okhdfcbank');
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -126,22 +127,22 @@ export function UpgradeModal({ isOpen, onClose, defaultPlan = 'basic' }: Upgrade
                   <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex justify-between items-center">
                     <div>
                       <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">UPI ID</p>
-                      <p className="font-mono text-slate-900">{process.env.NEXT_PUBLIC_UPI_ID || 'yourname@upi'}</p>
+                      <p className="font-mono text-slate-900">{showUpi ? 'adarshtiwari2412-4@okhdfcbank' : '*****************************'}</p>
                     </div>
-                    <button 
-                      onClick={handleCopy}
-                      className="p-2 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors"
-                    >
-                      {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
-                    </button>
-                  </div>
-
-                  <div className="text-xs text-slate-500 text-center uppercase tracking-widest font-bold">Or transfer to</div>
-
-                  <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-sm space-y-1">
-                    <p><span className="text-slate-500">Bank:</span> <span className="font-medium text-slate-900">{process.env.NEXT_PUBLIC_BANK_NAME || 'HDFC Bank'}</span></p>
-                    <p><span className="text-slate-500">A/C No:</span> <span className="font-mono text-slate-900">{process.env.NEXT_PUBLIC_BANK_ACCOUNT || 'XXXXXXXXXX'}</span></p>
-                    <p><span className="text-slate-500">IFSC:</span> <span className="font-mono text-slate-900">{process.env.NEXT_PUBLIC_BANK_IFSC || 'HDFC0001234'}</span></p>
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => setShowUpi(!showUpi)}
+                        className="p-2 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors"
+                      >
+                        {showUpi ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                      <button 
+                        onClick={handleCopy}
+                        className="p-2 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors"
+                      >
+                        {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                      </button>
+                    </div>
                   </div>
 
                   <form onSubmit={handleSubmit} className="space-y-4 pt-4 border-t border-slate-100">

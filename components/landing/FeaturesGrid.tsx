@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { fadeUp, staggerContainer } from '@/lib/animations'
-import { Bot, Target, Palette, Smartphone } from 'lucide-react'
+import { Bot, Target, Palette, Smartphone, BarChart3, Utensils } from 'lucide-react'
 
 const features = [
   {
@@ -24,6 +24,16 @@ const features = [
     icon: <Smartphone className="w-7 h-7 text-slate-800" />,
     title: 'Mobile-first flows',
     desc: 'Frictionless QR journeys optimized for thumb reach.',
+  },
+  {
+    icon: <BarChart3 className="w-7 h-7 text-slate-800" />,
+    title: 'Actionable analytics',
+    desc: 'Track scans, conversion rates, and sentiment trends in real-time.',
+  },
+  {
+    icon: <Utensils className="w-7 h-7 text-slate-800" />,
+    title: 'Smart menus',
+    desc: 'Showcase your top-performing dishes seamlessly while guests review.',
   },
 ]
 
