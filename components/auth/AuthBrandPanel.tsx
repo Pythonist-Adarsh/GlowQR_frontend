@@ -1,16 +1,30 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { GlowLogo } from '@/components/GlowLogo'
 
 type Props = {
-  quote: string
-  attribution: string
   className?: string
 }
 
-export function AuthBrandPanel({ quote, attribution, className = '' }: Props) {
+const QUOTES = [
+  { quote: 'We doubled our Google reviews in three weeks. Guests love the menu — owners love the insights.', attribution: 'Camille Roux — Owner, Café Lumière' },
+  { quote: 'The AR experience blows our customers away every single time. It completely changes the dynamic of asking for a review.', attribution: 'David Chen — Manager, The Daily Grind' },
+  { quote: 'Finally, a platform that captures the happy customers before they leave the restaurant. An absolute game-changer.', attribution: 'Priya Sharma — Founder, Spice Route' }
+]
+
+export function AuthBrandPanel({ className = '' }: Props) {
+  const [index, setIndex] = useState(0)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIndex((prev) => (prev + 1) % QUOTES.length)
+    }, 5000)
+    return () => clearInterval(timer)
+  }, [])
+
   return (
     <aside
       className={`relative flex min-h-[36vh] flex-col overflow-hidden bg-[#111111] px-8 py-10 text-white sm:min-h-[40vh] lg:min-h-screen lg:px-12 lg:py-14 ${className}`}
@@ -22,23 +36,25 @@ export function AuthBrandPanel({ quote, attribution, className = '' }: Props) {
         <span className="font-serif text-xl font-semibold tracking-tight text-white">GlowQR</span>
       </Link>
 
-      <div className="relative z-[1] flex flex-1 flex-col justify-center py-12 lg:py-0">
-        <motion.blockquote
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55 }}
-          className="font-serif text-2xl font-medium leading-snug tracking-tight text-white md:text-3xl lg:max-w-md"
-        >
-          &ldquo;{quote}&rdquo;
-        </motion.blockquote>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.15, duration: 0.45 }}
-          className="mt-6 text-sm text-slate-400"
-        >
-          {attribution}
-        </motion.p>
+      <div className="relative z-[1] flex flex-1 flex-col justify-center py-12 lg:py-0 min-h-[160px]">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.5 }}
+          >
+            <blockquote
+              className="font-serif text-2xl font-medium leading-snug tracking-tight text-white md:text-3xl lg:max-w-md"
+            >
+              &ldquo;{QUOTES[index].quote}&rdquo;
+            </blockquote>
+            <p className="mt-6 text-sm text-slate-400">
+              {QUOTES[index].attribution}
+            </p>
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       <p className="relative z-[1] mt-auto text-xs text-slate-500">

@@ -162,7 +162,7 @@ export function SignUpView() {
         </p>
       </motion.section>
 
-      <AuthBrandPanel quote={QUOTE} attribution={ATTR} className="order-2 lg:order-2" />
+      <AuthBrandPanel className="order-2 lg:order-2" />
     </div>
   )
 }

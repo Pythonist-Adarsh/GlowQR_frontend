@@ -618,9 +618,9 @@ const Step4 = ({ data, updateData }: any) => {
 const Step5 = ({ data, updateData }: any) => {
   const user = { plan: 'basic' }; // Mocked user plan for plan gate
   const themes = [
-    { id: 'free', name: 'Glow & Float', price: '₹0 / mo', desc: 'Clean profile + gentle floating bubbles', bg: '#ffffff' },
-    { id: 'classic', name: 'Classic', price: '₹299 / mo', desc: 'Logo glow + smooth drag trails & bursts', bg: '#0a0a1a' },
-    { id: 'premium', name: 'Premium', price: '₹799 / mo', desc: '3D floating + typewriter note & mouse ripples', bg: '#06060F', badge: 'Popular' },
+    { id: 'free', name: 'Free Trial', price: '3 days free', desc: 'Premium experience included in trial', bg: '#ffffff' },
+    { id: 'classic', name: 'Basic', price: '₹199 / mo', desc: 'Logo glow + smooth drag trails & bursts', bg: '#0a0a1a' },
+    { id: 'premium', name: 'Premium', price: '₹499 / mo', desc: '3D floating + typewriter note & mouse ripples', bg: '#06060F', badge: 'Popular' },
   ]
 
   const colors = ['#6C63FF', '#1a8a3c', '#E8474F', '#F59E0B', '#0EA5E9', '#EC4899', '#111111'];
@@ -662,10 +662,15 @@ const Step5 = ({ data, updateData }: any) => {
         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Business Logo [Required]</label>
         <label className="group p-6 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-[var(--color-brand-primary)] hover:bg-slate-50 transition-all">
           {data.logo ? (
-            <div className="relative w-16 h-16 rounded-lg overflow-hidden">
-              <img src={data.logo} alt="Logo" className="w-full h-full object-contain" />
-              <button onClick={(e) => { e.preventDefault(); updateData({ logo: null }); }} className="absolute -top-1 -right-1 p-1 bg-red-500 text-white rounded-full"><X className="w-3 h-3" /></button>
-            </div>
+              <div className="relative group/logo w-full max-w-[200px] h-32 flex items-center justify-center bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 p-4">
+                <div className="absolute inset-0 bg-slate-900/5 opacity-0 group-hover/logo:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
+                  <span className="bg-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm text-slate-700">Click to change</span>
+                </div>
+                <img src={data.logo} alt="Logo" className="w-full h-full object-contain drop-shadow-sm transition-transform group-hover/logo:scale-105" />
+                <button onClick={(e) => { e.preventDefault(); updateData({ logo: null }); }} className="absolute -top-3 -right-3 p-1.5 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-full shadow-sm transition-colors border border-red-100">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
           ) : (
             <>
               <UploadCloud className="w-6 h-6 text-slate-300 group-hover:text-[var(--color-brand-primary)]" />

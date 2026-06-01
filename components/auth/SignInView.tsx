@@ -63,7 +63,7 @@ export function SignInView() {
   }
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
-      <AuthBrandPanel quote={QUOTE} attribution={ATTR} className="order-2 lg:order-1" />
+      <AuthBrandPanel className="order-2 lg:order-1" />
 
       <motion.section
         initial={{ opacity: 0, x: 16 }}

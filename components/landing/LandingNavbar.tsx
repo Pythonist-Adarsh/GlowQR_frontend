@@ -8,8 +8,8 @@ import { ThemeToggle } from '@/components/ThemeToggle'
 import { AnimatedGetStartedButton } from '@/components/marketing/AnimatedGetStartedButton'
 
 const links = [
-  { href: '#features', label: 'Features' },
-  { href: '#pricing', label: 'Pricing' },
+  { href: '/#features', label: 'Features' },
+  { href: '/#pricing', label: 'Pricing' },
   { href: '/about', label: 'About Us' },
   { href: '/contact', label: 'Contact Us' },
 ]
@@ -29,7 +29,7 @@ export function LandingNavbar({ forceScrolled = false }: { forceScrolled?: boole
 
   return (
     <motion.header
-      className={`landing-nav ${scrolled ? 'landing-nav--scrolled' : ''}`}
+      className={`landing-nav ${scrolled || forceScrolled ? 'landing-nav--scrolled' : ''}`}
       initial={{ y: -60, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
