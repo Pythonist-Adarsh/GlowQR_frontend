@@ -255,7 +255,11 @@ export function DashboardClient({
         <aside className={`bg-white border-r border-slate-200 flex flex-col shadow-sm h-screen overflow-y-auto sticky top-0 transition-all duration-300 ${isSidebarCollapsed ? 'w-20 p-4' : 'w-64 p-6'}`}>
           <div className={`flex items-center mb-10 ${isSidebarCollapsed ? 'justify-center' : 'justify-between'} px-2`}>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-md flex-shrink-0">
+              <div 
+                className={`w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-md flex-shrink-0 ${isSidebarCollapsed ? 'cursor-pointer hover:bg-slate-800 transition-colors' : ''}`}
+                onClick={() => isSidebarCollapsed && setIsSidebarCollapsed(false)}
+                title={isSidebarCollapsed ? "Expand Sidebar" : undefined}
+              >
                 <QrCode className="w-6 h-6" />
               </div>
               {!isSidebarCollapsed && (
@@ -265,7 +269,7 @@ export function DashboardClient({
               )}
             </div>
             {!isSidebarCollapsed && (
-              <button onClick={() => setIsSidebarCollapsed(true)} className="text-slate-400 hover:text-slate-600 transition-colors hidden md:block">
+              <button onClick={() => setIsSidebarCollapsed(true)} className="text-slate-400 hover:text-slate-600 transition-colors hidden md:block" title="Collapse Sidebar">
                 <Menu className="w-5 h-5" />
               </button>
             )}
