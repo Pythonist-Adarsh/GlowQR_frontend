@@ -133,10 +133,31 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
 
       if (res.ok) {
         const json = await res.json();
-        if (json.variants && json.variants.length > 0) {
-          setGeneratedReviews(json.variants);
-        } else {
-          setGeneratedReviews([`Absolutely loved visiting ${business.name}! Highly recommend!`]);
+        const generated = (json.variants && json.variants.length > 0) 
+          ? json.variants 
+          : [`Absolutely loved visiting ${business.name}! Highly recommend!`];
+        setGeneratedReviews(generated);
+
+        const isPremium = ['premium', 'trial'].includes(business.plan?.toLowerCase() || '');
+        if (ratings.overall <= 2 && isPremium) {
+          fetch(`${API_BASE_URL}/api/scan/alert-owner`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              qr_slug: data.qr_slug || window.location.pathname.split('/').pop() || '',
+              session_id: sessionStorage.getItem('glowqr_scan_session') || undefined,
+              overall_rating: ratings.overall,
+              food_rating: ratings.food,
+              service_rating: ratings.service,
+              atmosphere_rating: ratings.atmosphere,
+              selected_items: menuItems.filter((m: any) => selectedDishes.includes(m.id)).map((m: any) => m.name),
+              meal_type: mealType,
+              price_range: spendRange,
+              wait_time: waitTime,
+              review_text: generated[0],
+              action_tip: "Customer rated 1-2 stars. Follow up on this feedback and improve service standards."
+            })
+          }).catch(() => {});
         }
       } else {
         setGeneratedReviews([`Absolutely loved visiting ${business.name}! Highly recommend!`]);
@@ -188,29 +209,6 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
         })
       });
     } catch (e) {}
-
-    const isPremium = ['premium', 'trial'].includes(business.plan?.toLowerCase() || '');
-    // ADD: If low rating and premium, tell backend to fire owner alert
-    if (ratings.overall <= 2 && isPremium) {
-      // Fire and forget
-      fetch(`${API_BASE_URL}/api/scan/alert-owner`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          qr_slug: data.qr_slug || window.location.pathname.split('/').pop() || '',
-          session_id: sessionStorage.getItem('glowqr_scan_session') || undefined,
-          overall_rating: ratings.overall,
-          food_rating: ratings.food,
-          service_rating: ratings.service,
-          atmosphere_rating: ratings.atmosphere,
-          selected_items: menuItems.filter((m: any) => selectedDishes.includes(m.id)).map((m: any) => m.name),
-          meal_type: mealType,
-          price_range: spendRange,
-          wait_time: waitTime,
-          review_text_copied: generatedReviews[activeReviewIndex],
-        })
-      }).catch(() => {});
-    }
   };
 
   const pageVariants = {

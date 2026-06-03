@@ -257,18 +257,27 @@ export function DashboardClient({
         title="Toggle Sidebar"
       >
         {isSidebarCollapsed ? <Menu className="w-5 h-5" /> : <X className="w-5 h-5" />}
-      </button>
-
-      {/* Sidebar */}
-      <aside className={`bg-white border-r border-slate-200 flex flex-col shadow-sm h-screen overflow-y-auto sticky top-0 transition-all duration-300 ${isSidebarCollapsed ? 'w-0 -translate-x-full p-0 overflow-hidden' : 'w-64 p-6 translate-x-0'}`}>
-        <div className="flex items-center gap-3 mb-10 px-2">
-          <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-md flex-shrink-0">
-            <QrCode className="w-6 h-6" />
+        </button>
+  
+        {/* Sidebar */}
+        <aside className={`bg-white border-r border-slate-200 flex flex-col shadow-sm h-screen overflow-y-auto sticky top-0 transition-all duration-300 ${isSidebarCollapsed ? 'w-20 p-4' : 'w-64 p-6'}`}>
+          <div className={`flex items-center mb-10 ${isSidebarCollapsed ? 'justify-center' : 'justify-between'} px-2`}>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-md flex-shrink-0">
+                <QrCode className="w-6 h-6" />
+              </div>
+              {!isSidebarCollapsed && (
+                <span className="text-xl font-black tracking-tight text-slate-900 whitespace-nowrap">
+                  GlowQR
+                </span>
+              )}
+            </div>
+            {!isSidebarCollapsed && (
+              <button onClick={() => setIsSidebarCollapsed(true)} className="text-slate-400 hover:text-slate-600 transition-colors hidden md:block">
+                <Menu className="w-5 h-5" />
+              </button>
+            )}
           </div>
-          <span className="text-xl font-black tracking-tight text-slate-900 whitespace-nowrap">
-            GlowQR
-          </span>
-        </div>
 
         <nav className="flex-1 space-y-1">
           {[
@@ -310,25 +319,27 @@ export function DashboardClient({
               action: () => setActiveTab("settings"),
             },
           ].map((item) => (
-            <button
-              key={item.label}
-              onClick={item.action}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${activeTab === item.id || (item.id === "qr" && activeTab === "overview") ? "bg-slate-900 text-white shadow-md" : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"}`}
-            >
-              <item.icon className="w-5 h-5" />
-              {item.label}
-            </button>
-          ))}
-        </nav>
-
-        <button
-          onClick={handleLogout}
-          className="mt-auto flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-red-500 hover:text-red-600 hover:bg-red-50 transition-all"
-        >
-          <LogOut className="w-5 h-5" />
-          Logout
-        </button>
-      </aside>
+              <button
+                key={item.label}
+                onClick={item.action}
+                title={isSidebarCollapsed ? item.label : undefined}
+                className={`w-full flex items-center ${isSidebarCollapsed ? 'justify-center p-3' : 'gap-3 px-4 py-3'} rounded-xl text-sm font-bold transition-all ${activeTab === item.id || (item.id === "qr" && activeTab === "overview") ? "bg-slate-900 text-white shadow-md" : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"}`}
+              >
+                <item.icon className="w-5 h-5 flex-shrink-0" />
+                {!isSidebarCollapsed && <span>{item.label}</span>}
+              </button>
+            ))}
+          </nav>
+  
+          <button
+            onClick={handleLogout}
+            title={isSidebarCollapsed ? "Logout" : undefined}
+            className={`mt-auto flex items-center ${isSidebarCollapsed ? 'justify-center p-3' : 'gap-3 px-4 py-3'} rounded-xl text-sm font-bold text-red-500 hover:text-red-600 hover:bg-red-50 transition-all`}
+          >
+            <LogOut className="w-5 h-5 flex-shrink-0" />
+            {!isSidebarCollapsed && <span>Logout</span>}
+          </button>
+        </aside>
 
       {/* Main Content */}
       <main className="flex-1 p-10 overflow-y-auto relative">
@@ -435,7 +446,7 @@ export function DashboardClient({
         )}
 
         {activeTab === "settings" && (
-          <SettingsTab user={user} onUpdate={fetchData} />
+          <SettingsTab user={user} onUpdate={() => window.location.reload()} />
         )}
 
         {activeTab === "reviews" && (
