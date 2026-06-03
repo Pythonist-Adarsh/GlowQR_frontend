@@ -55,6 +55,7 @@ export function DashboardClient({
 }) {
   const router = useRouter();
   const [businessData, setBusinessData] = useState<any>(null);
+  const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [linkCopied, setLinkCopied] = useState(false);
   const [analyticsSummary, setAnalyticsSummary] = useState<any>(null);
@@ -123,10 +124,10 @@ export function DashboardClient({
             if (meRes.ok) {
                const meData = await meRes.json();
                analyticsData.current_period_end = meData.user.current_period_end;
-               analyticsData.subscription_status = meData.user.subscription_status;
                analyticsData.plan = meData.user.plan;
                // update business plan
                data.business.plan = meData.user.plan;
+               setUserData(meData.user);
                setBusinessData({...data.business});
             }
             
@@ -148,6 +149,7 @@ export function DashboardClient({
             setAnalyticsSummary(analyticsData);
           }
         } else {
+          localStorage.removeItem("glowqr_business_data");
           router.push("/onboarding");
         }
       } catch (err) {
@@ -167,17 +169,20 @@ export function DashboardClient({
     name: "Your Business",
     tagline: "Premium Experience",
     category: "Restaurant",
+    phone_number: "+1 234 567 8900",
+    website: "yourwebsite.com",
+    google_review_url: "google.com",
     address: "Lucknow, India",
     primaryColor: "#1a8a3c",
     logo: null,
   };
 
   const user = {
-    plan: b?.plan || "basic",
+    plan: userData?.plan || b?.plan || "basic",
     trialEndsAt:
-      b?.trialEndsAt || new Date(Date.now() + 3 * 86400000).toISOString(),
-    subscription_status: analyticsSummary?.subscription_status || null,
-    current_period_end: analyticsSummary?.current_period_end || null,
+      userData?.trial_ends_at || b?.trialEndsAt || new Date(Date.now() + 3 * 86400000).toISOString(),
+    subscription_status: userData?.subscription_status || "Trial",
+    current_period_end: userData?.current_period_end || null,
   };
 
   const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
@@ -256,7 +261,7 @@ export function DashboardClient({
   
         {/* Sidebar */}
         <aside className={`bg-white border-r border-slate-200 flex flex-col shadow-sm h-screen overflow-y-auto sticky top-0 transition-all duration-300 ${isSidebarCollapsed ? 'w-20 p-4' : 'w-64 p-6'}`}>
-          <div className={`flex ${isSidebarCollapsed ? 'flex-col gap-6 justify-center' : 'items-center justify-between'} mb-10 px-2`}>
+          <div className={`flex items-center mb-10 ${isSidebarCollapsed ? 'justify-center' : 'justify-between'} px-2`}>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-md flex-shrink-0">
                 <QrCode className="w-6 h-6" />
@@ -267,13 +272,11 @@ export function DashboardClient({
                 </span>
               )}
             </div>
-            <button 
-              onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} 
-              className="text-slate-400 hover:text-slate-600 transition-colors hidden md:block" 
-              title={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
-            >
-              <Menu className="w-5 h-5" />
-            </button>
+            {!isSidebarCollapsed && (
+              <button onClick={() => setIsSidebarCollapsed(true)} className="text-slate-400 hover:text-slate-600 transition-colors hidden md:block" title="Collapse Sidebar">
+                <Menu className="w-5 h-5" />
+              </button>
+            )}
           </div>
 
         <nav className="flex-1 space-y-1">
@@ -339,6 +342,18 @@ export function DashboardClient({
 
       {/* Main Content */}
       <main className="flex-1 p-10 overflow-y-auto relative">
+        
+        {/* Floating Expand Sidebar Button (Right Side) */}
+        {isSidebarCollapsed && (
+          <button 
+            onClick={() => setIsSidebarCollapsed(false)}
+            className="absolute top-10 right-10 z-50 bg-white p-3 rounded-xl shadow-md border border-slate-200 text-slate-600 hover:text-slate-900 transition-colors"
+            title="Expand Sidebar"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
+        )}
+
         <UpgradeModal
           isOpen={upgradeModalOpen}
           onClose={() => setUpgradeModalOpen(false)}
