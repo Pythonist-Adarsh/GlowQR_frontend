@@ -187,12 +187,27 @@ export function OverviewTab({
             </div>
             <div className="h-24 max-w-[16rem] rounded-2xl border-4 border-white shadow-lg overflow-hidden shrink-0 flex items-center justify-center bg-white p-1" style={{ backgroundColor: '#ffffff' }}>
               {(b.logo_url || b.logo) ? (
-                <img src={b.logo_url || b.logo} alt="Logo" className="max-h-full max-w-full object-contain" />
-              ) : (
-                <div className="w-24 h-24 flex items-center justify-center text-white font-bold text-xl" style={{ backgroundColor: b.primaryColor || "#1a8a3c" }}>
+                <img 
+                  src={b.logo_url || b.logo} 
+                  alt="Logo" 
+                  className="max-h-full max-w-full object-contain" 
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    if (e.currentTarget.nextElementSibling) {
+                      (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'flex';
+                    }
+                  }} 
+                />
+              ) : null}
+              {!(b.logo_url || b.logo) && (
+                <div className="w-24 h-24 flex items-center justify-center text-white font-bold text-xl rounded-full" style={{ backgroundColor: b.primaryColor || "#1a8a3c" }}>
                   {b.name?.charAt(0) || "B"}
                 </div>
               )}
+              {/* Fallback element for onError */}
+              <div style={{display: 'none'}} className="w-24 h-24 items-center justify-center text-white font-bold text-xl rounded-full bg-slate-900">
+                  {b.name?.charAt(0) || "B"}
+              </div>
             </div>
             <div className="flex-1 text-center md:text-left">
               <h2 className="text-2xl font-black text-slate-900">{b.name}</h2>

@@ -331,10 +331,15 @@ const Step3 = ({ data, updateData }: any) => {
             type="button"
             disabled={!cat.enabled}
             onClick={() => { if (cat.enabled) updateData({ category: cat.id }) }}
-            className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all ${!cat.enabled ? 'opacity-40 cursor-not-allowed bg-slate-50 border-slate-100' : data.category === cat.id ? 'border-[var(--color-brand-primary)] bg-slate-50 text-[var(--color-brand-primary)]' : 'border-slate-100 bg-white text-slate-400 hover:border-slate-200'}`}
+            className={`relative flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all overflow-hidden ${!cat.enabled ? 'opacity-50 cursor-not-allowed bg-slate-800/50 border-slate-700/50 text-slate-400' : data.category === cat.id ? 'border-[var(--color-brand-primary)] bg-white text-[var(--color-brand-primary)]' : 'border-slate-700 bg-slate-800/80 text-slate-300 hover:border-slate-600'}`}
           >
             <span className="mb-2"><IconByName name={cat.icon} className="w-6 h-6" /></span>
             <span className="text-[9px] font-black uppercase tracking-widest text-center">{cat.name}</span>
+            {!cat.enabled && (
+              <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[1px] flex items-center justify-center">
+                <span className="text-[8px] font-black text-white bg-slate-900/80 px-2 py-1 rounded-full border border-slate-700 uppercase tracking-widest">Soon</span>
+              </div>
+            )}
           </button>
         ))}
       </div>

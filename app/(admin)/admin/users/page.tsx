@@ -192,14 +192,14 @@ export default function UsersPage() {
             <h2 className="text-xl font-bold text-slate-900 mb-4">Edit User Plan</h2>
             <div className="mb-4">
               <label className="block text-sm font-medium text-slate-700 mb-1">Plan</label>
-              <select value={newPlan} onChange={e => setNewPlan(e.target.value)} className="w-full px-4 py-2 border border-slate-300 rounded-lg mb-4">
+              <select value={newPlan?.toLowerCase() || ''} onChange={e => setNewPlan(e.target.value)} className="w-full px-4 py-2 border border-slate-300 rounded-lg mb-4 appearance-auto bg-white">
                 <option value="trial">Trial</option>
                 <option value="basic">Basic</option>
                 <option value="premium">Premium</option>
                 <option value="expired">Expired</option>
               </select>
               
-              {newPlan === 'trial' && (
+              {newPlan?.toLowerCase() === 'trial' && (
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Trial Expiry Date</label>
                   <input type="date" value={newExpiry} onChange={e => setNewExpiry(e.target.value)} className="w-full px-4 py-2 border border-slate-300 rounded-lg" />
