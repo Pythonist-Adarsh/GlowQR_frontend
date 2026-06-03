@@ -284,7 +284,7 @@ export function OverviewTab({
                   title="Rating Breakdown" 
                   description="See how customers rate you — 5★ to 1★ distribution" 
                   requiredPlan="Basic" 
-                  price="₹299/mo" 
+                  price="₹199/mo" 
                 />
               )}
             </div>
@@ -310,7 +310,7 @@ export function OverviewTab({
                   title="Top Menu Items" 
                   description="See which dishes your customers love most" 
                   requiredPlan="Basic" 
-                  price="₹299/mo" 
+                  price="₹199/mo" 
                 />
               )}
             </div>
@@ -337,7 +337,7 @@ export function OverviewTab({
                 title="AI Problem Detection" 
                 description="AI analyzes your ratings and tells you exactly what to fix" 
                 requiredPlan="Premium" 
-                price="₹699/mo" 
+                price="₹499/mo" 
               />
             )}
           </div>

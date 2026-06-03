@@ -342,13 +342,13 @@ export function DashboardClient({
                   onClick={() => openUpgradeModal("basic")}
                   className="w-full py-4 border-2 border-slate-200 rounded-xl font-bold text-slate-900 hover:border-slate-900 transition-all"
                 >
-                  Upgrade to Basic ₹299/month
+                  Upgrade to Basic ₹199/month
                 </button>
                 <button
                   onClick={() => openUpgradeModal("premium")}
                   className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-all"
                 >
-                  Upgrade to Premium ₹699/month
+                  Upgrade to Premium ₹499/month
                 </button>
               </div>
               <p className="text-xs text-slate-500 font-medium">
@@ -497,7 +497,7 @@ export function DashboardClient({
                 title="AI Problem Detection" 
                 description="AI analyzes your ratings and tells you exactly what to fix" 
                 requiredPlan="Premium" 
-                price="₹699/mo" 
+                price="₹499/mo" 
               />
             )}
           </div>
@@ -521,7 +521,7 @@ export function DashboardClient({
                   title="Scan Heatmap" 
                   description="See exactly which days and hours your QR gets most scans" 
                   requiredPlan="Premium" 
-                  price="₹699/mo" 
+                  price="₹499/mo" 
                 />
                )}
              </div>
@@ -550,7 +550,7 @@ export function DashboardClient({
                   title="Negative Alerts" 
                   description="Get notified when a customer gives 1-2 stars before it reaches Google" 
                   requiredPlan="Premium" 
-                  price="₹699/mo" 
+                  price="₹499/mo" 
                 />
                )}
              </div>
@@ -581,7 +581,7 @@ export function DashboardClient({
                 title="Conversion Funnel" 
                 description="See where customers drop off in the review journey" 
                 requiredPlan="Premium" 
-                price="₹699/mo" 
+                price="₹499/mo" 
               />
             )}
           </div>

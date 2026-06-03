@@ -8,8 +8,8 @@ import toast from 'react-hot-toast';
 export default function SettingsPage() {
   const [settings, setSettings] = useState<any>({
     upi_id: '',
-    basic_plan_price: 299,
-    premium_plan_price: 699,
+    basic_plan_price: 199,
+    premium_plan_price: 499,
     notification_email: '',
     notify_on_upgrade: true,
     notify_on_negative: true,

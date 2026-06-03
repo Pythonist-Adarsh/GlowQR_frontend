@@ -48,7 +48,7 @@ export function UpgradeModal({ isOpen, onClose, defaultPlan = 'basic' }: Upgrade
         },
         body: JSON.stringify({
           plan: selectedPlan,
-          amount: selectedPlan === 'basic' ? 299 : 699,
+          amount: selectedPlan === 'basic' ? 199 : 499,
           contact_name: formData.name,
           phone: formData.phone,
           utr_number: formData.utrNumber,
@@ -102,7 +102,7 @@ export function UpgradeModal({ isOpen, onClose, defaultPlan = 'basic' }: Upgrade
                       >
                         <div className="flex justify-between items-center">
                           <span className="font-bold capitalize text-slate-900">{plan} Plan</span>
-                          <span className="font-bold text-slate-900">₹{plan === 'premium' ? '699' : '299'}/mo</span>
+                          <span className="font-bold text-slate-900">₹{plan === 'premium' ? '499' : '199'}/mo</span>
                         </div>
                       </div>
                     ))}

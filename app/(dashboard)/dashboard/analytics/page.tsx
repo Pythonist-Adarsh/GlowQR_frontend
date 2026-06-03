@@ -144,7 +144,7 @@ export default function AnalyticsPage() {
               title="Basic Analytics Locked" 
               description="Unlock visitor trends, menu performance, and Google connect scores."
               requiredPlan="basic"
-              price="₹299"
+              price="₹199"
             />
           </div>
         )}
@@ -174,7 +174,7 @@ export default function AnalyticsPage() {
               title="Premium Intelligence Locked" 
               description="Unlock AI Problem Detection, Revenue Impact estimators, Heatmaps, and Negative Review Shield analytics."
               requiredPlan="premium"
-              price="₹699"
+              price="₹499"
             />
           </div>
         )}
