@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Star, ChevronLeft, Check, MapPin, ExternalLink, ArrowRight,
-  RefreshCw, Utensils, X, Loader2, Sparkles, ChevronRight
+  RefreshCw, Utensils, X, Loader2, Sparkles, ChevronRight, MessageSquare
 } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/api-config';
 
@@ -14,6 +14,7 @@ const STEPS = {
   RATE: 3,    // Rating
   READY: 4,   // AI Reviews
   COPIED: 5,  // Done
+  NEGATIVE_FEEDBACK: 6, // Shield
 };
 
 function getLightenedBrandColor(hex: string, percent: number): string {
@@ -82,12 +83,21 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
   const [isCopied, setIsCopied] = useState(false);
   const [generatedReviews, setGeneratedReviews] = useState<string[]>([]);
   const [activeReviewIndex, setActiveReviewIndex] = useState(0);
+  const [feedbackText, setFeedbackText] = useState("");
+  const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
 
   const nextStep = () => setStep(s => Math.min(s + 1, STEPS.COPIED));
   const prevStep = () => setStep(s => Math.max(s - 1, STEPS.WELCOME));
 
   const handleGenerateReview = async () => {
     if (ratings.overall === 0) return;
+
+    // Negative Interception Shield
+    if (ratings.overall <= 3 && business.negativeFilterEnabled) {
+      setStep(STEPS.NEGATIVE_FEEDBACK);
+      return;
+    }
+
     setIsGenerating(true);
     
     try {
@@ -133,6 +143,24 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
       setActiveReviewIndex(0);
       nextStep();
     }
+  };
+
+  const handleSubmitFeedback = async () => {
+    setIsSubmittingFeedback(true);
+    try {
+      await fetch(`${API_BASE_URL}/api/scan/feedback`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          qr_slug: data.qr_slug || window.location.pathname.split('/').pop() || '',
+          session_id: sessionStorage.getItem('glowqr_scan_session') || undefined,
+          rating: ratings.overall,
+          feedback: feedbackText
+        })
+      });
+    } catch (e) {}
+    setIsSubmittingFeedback(false);
+    setStep(STEPS.COPIED);
   };
 
   const handlePostReview = async () => {
@@ -405,6 +433,46 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
           </motion.div>
         )}
 
+        {/* SCREEN: NEGATIVE FEEDBACK (Shield) */}
+        {step === STEPS.NEGATIVE_FEEDBACK && (
+          <motion.div 
+            key="feedback" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={transition}
+            className="flex-1 flex flex-col p-6 h-full"
+          >
+            <div className="flex-1 flex flex-col justify-center max-w-md mx-auto w-full">
+              <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mb-6 text-slate-500">
+                <MessageSquare className="w-8 h-8" />
+              </div>
+              <h2 className="text-2xl font-bold mb-3">We're sorry to hear that</h2>
+              <p className={`text-sm mb-6 ${textMuted}`}>
+                We aim for 5-star experiences. Please let us know how we can improve so we can make it right next time.
+              </p>
+              
+              <textarea 
+                className={`w-full ${cardBg} border ${borderClass} rounded-2xl p-4 text-sm resize-none focus:outline-none focus:border-emerald-500 transition-all min-h-[150px] mb-6`}
+                placeholder="Tell us what went wrong..."
+                value={feedbackText}
+                onChange={(e) => setFeedbackText(e.target.value)}
+              />
+              
+              <button 
+                onClick={handleSubmitFeedback}
+                disabled={!feedbackText.trim() || isSubmittingFeedback}
+                className="w-full py-4 rounded-xl font-bold text-sm text-white shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50"
+                style={{ backgroundColor: business.primaryColor }}
+              >
+                {isSubmittingFeedback ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Submit Feedback'}
+              </button>
+              <button 
+                onClick={() => setStep(STEPS.COPIED)}
+                className={`w-full py-4 mt-2 text-sm font-bold transition-colors ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-700'}`}
+              >
+                Skip
+              </button>
+            </div>
+          </motion.div>
+        )}
+
         {/* SCREEN 4: READY */}
         {step === STEPS.READY && (
           <motion.div 
@@ -524,7 +592,9 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
             </div>
             <h2 className="text-3xl font-black mb-3">Thank you!</h2>
             <p className={`text-sm leading-relaxed max-w-[250px] mb-12 ${textMuted}`}>
-              Thank you for choosing {business.name}. Google Maps should be opening now to paste your review.
+              {ratings.overall <= 3 
+                ? `Thank you for your feedback. We appreciate it and will use it to improve ${business.name}.`
+                : `Thank you for choosing ${business.name}. Google Maps should be opening now to paste your review.`}
             </p>
             
             <button 
