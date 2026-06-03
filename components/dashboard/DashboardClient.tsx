@@ -275,7 +275,7 @@ export function DashboardClient({
               id: "analytics",
               icon: BarChart3,
               label: "Analytics",
-              action: () => router.push("/analytics"),
+              action: () => router.push("/dashboard/analytics"),
             },
             {
               id: "reviews",
