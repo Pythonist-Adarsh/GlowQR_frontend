@@ -126,12 +126,21 @@ export const AnalyticsTab = () => {
         <h1 className="text-3xl font-bold text-slate-900">Analytics Dashboard</h1>
         <p className="text-slate-500 mt-2">Track performance, gather insights, and grow your business.</p>
       </div>
-
-      {/* BASIC ANALYTICS SECTION */}
-      <h2 className="text-xl font-bold text-slate-800 mb-4 mt-8 pb-2 border-b border-slate-100">Growth Metrics</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        {hasBasic ? (
-          <>
+      
+      {!hasBasic ? (
+        <div className="h-[60vh]">
+          <LockedSection 
+            title="Analytics Locked" 
+            description="Unlock visitor trends, menu performance, Google connect scores, and Premium AI insights."
+            requiredPlan="basic"
+            price="₹199"
+          />
+        </div>
+      ) : (
+        <>
+          {/* BASIC ANALYTICS SECTION */}
+          <h2 className="text-xl font-bold text-slate-800 mb-4 mt-8 pb-2 border-b border-slate-100">Growth Metrics</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             <div className="lg:col-span-1"><ReviewVelocityCard data={basicData.velocity} /></div>
             <div className="lg:col-span-2"><BestTimeCard data={basicData.bestTime} /></div>
             <div className="lg:col-span-1"><RepeatVisitorsCard data={basicData.repeat} /></div>
@@ -142,52 +151,43 @@ export const AnalyticsTab = () => {
             <div className="lg:col-span-1"><LanguageSplitCard data={basicData.language} /></div>
             <div className="lg:col-span-1"><GoogleConnectScore data={basicData.google} /></div>
             <div className="lg:col-span-2"><MonthlyReportCard data={basicData.monthly} onDownload={handleDownloadReport} /></div>
-          </>
-        ) : (
-          <div className="col-span-full">
-            <LockedSection 
-              title="Basic Analytics Locked" 
-              description="Unlock visitor trends, menu performance, and Google connect scores."
-              requiredPlan="basic"
-              price="₹199"
-            />
           </div>
-        )}
-      </div>
 
-      {/* PREMIUM ANALYTICS SECTION */}
-      <h2 className="text-xl font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
-        <span className="text-amber-500">✨</span> Premium Intelligence
-      </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
-        {hasPremium ? (
-          <>
-            <AIInsightsCard data={premiumData.ai} hoursAgo={1} />
-            
-            <div className="lg:col-span-2"><ScanHeatmap data={premiumData.heatmap} /></div>
-            <div className="lg:col-span-1"><NegativeAlertsInbox accessToken={localStorage.getItem('token') || ''} /></div>
-            
-            <div className="lg:col-span-1"><ConversionFunnel data={premiumData.funnel} /></div>
-            <div className="lg:col-span-1"><RevenueImpactCard data={premiumData.revenue} /></div>
-            <div className="lg:col-span-1"><NegativeInterceptionCard data={premiumData.negative} /></div>
-            <div className="lg:col-span-1"><StaffPerformanceCard data={premiumData.staff} /></div>
-            
-            <div className="lg:col-span-1"><SentimentAnalysisCard data={premiumData.sentiment} /></div>
-            <div className="lg:col-span-1"><CompetitorBenchmarkCard data={premiumData.competitor} /></div>
-            
-            <div className="lg:col-span-1"><QRPlacementCard data={premiumData.qr} /></div>
-          </>
-        ) : (
-          <div className="col-span-full">
-            <LockedSection 
-              title="Premium Intelligence Locked" 
-              description="Unlock AI Problem Detection, Revenue Impact estimators, Heatmaps, and Negative Review Shield analytics."
-              requiredPlan="premium"
-              price="₹499"
-            />
+          {/* PREMIUM ANALYTICS SECTION */}
+          <h2 className="text-xl font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+            <span className="text-amber-500">✨</span> Premium Intelligence
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
+            {hasPremium ? (
+              <>
+                <AIInsightsCard data={premiumData.ai} hoursAgo={1} />
+                
+                <div className="lg:col-span-2"><ScanHeatmap data={premiumData.heatmap} /></div>
+                <div className="lg:col-span-1"><NegativeAlertsInbox accessToken={localStorage.getItem('token') || ''} /></div>
+                
+                <div className="lg:col-span-1"><ConversionFunnel data={premiumData.funnel} /></div>
+                <div className="lg:col-span-1"><RevenueImpactCard data={premiumData.revenue} /></div>
+                <div className="lg:col-span-1"><NegativeInterceptionCard data={premiumData.negative} /></div>
+                <div className="lg:col-span-1"><StaffPerformanceCard data={premiumData.staff} /></div>
+                
+                <div className="lg:col-span-1"><SentimentAnalysisCard data={premiumData.sentiment} /></div>
+                <div className="lg:col-span-1"><CompetitorBenchmarkCard data={premiumData.competitor} /></div>
+                
+                <div className="lg:col-span-1"><QRPlacementCard data={premiumData.qr} /></div>
+              </>
+            ) : (
+              <div className="col-span-full">
+                <LockedSection 
+                  title="Premium Intelligence Locked" 
+                  description="Unlock AI Problem Detection, Revenue Impact estimators, Heatmaps, and Negative Review Shield analytics."
+                  requiredPlan="premium"
+                  price="₹499"
+                />
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </>
+      )}
       
       {/* Print styles applied globally to hide everything except Monthly Report if needed */}
       <style dangerouslySetInnerHTML={{__html: `
