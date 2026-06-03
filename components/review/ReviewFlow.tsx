@@ -82,7 +82,6 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
   const [isCopied, setIsCopied] = useState(false);
   const [generatedReviews, setGeneratedReviews] = useState<string[]>([]);
   const [activeReviewIndex, setActiveReviewIndex] = useState(0);
-  const [activeReviewIndex, setActiveReviewIndex] = useState(0);
   const [showEmpathy, setShowEmpathy] = useState(false);
 
   const nextStep = () => setStep(s => Math.min(s + 1, STEPS.COPIED));
