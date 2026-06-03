@@ -149,7 +149,7 @@ export function OverviewTab({
         <div key="rating" className={cardClass}>
           <div className="text-slate-400 mb-4"><Star className="w-5 h-5" /></div>
           <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Avg Rating</p>
-          <p className="text-3xl font-black text-slate-900">{avgRating || "N/A"}</p>
+          <p className="text-3xl font-black text-slate-900">{avgRating > 0 ? Number(avgRating).toFixed(1) : "0.0"}</p>
         </div>,
         <div key="reviews" className={cardClass}>
           <div className="text-slate-400 mb-4"><MessageSquare className="w-5 h-5" /></div>
