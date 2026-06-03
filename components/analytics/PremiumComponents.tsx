@@ -56,7 +56,8 @@ export const ScanHeatmap = ({ data, primaryColor = '#1a1a1a' }: any) => {
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const hours = Array.from({length: 24}, (_, i) => i);
   
-  const maxCount = Math.max(1, ...(data?.map((d: any) => d.count) || [1]));
+  const safeData = Array.isArray(data) ? data : [];
+  const maxCount = Math.max(1, ...(safeData.map((d: any) => d.count) || [1]));
   
   const getOpacity = (count: number) => {
     if (count === 0) return 0.05;
@@ -71,7 +72,7 @@ export const ScanHeatmap = ({ data, primaryColor = '#1a1a1a' }: any) => {
           <React.Fragment key={dayIndex}>
             <span className="text-xs text-slate-400 flex items-center">{day}</span>
             {hours.map(hour => {
-              const cell = data?.find((d: any) => d.day === dayIndex && d.hour === hour);
+              const cell = safeData.find((d: any) => d.day === dayIndex && d.hour === hour);
               const count = cell?.count || 0;
               return (
                 <div
@@ -264,7 +265,9 @@ export const NegativeInterceptionCard = ({ data }: any) => {
 };
 
 export const QRPlacementCard = ({ data }: any) => {
-  if (!data || data.length === 0) {
+  const safeData = Array.isArray(data) ? data : [];
+
+  if (safeData.length === 0) {
     return (
       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-full">
         <h3 className="text-slate-500 font-medium mb-4">QR Placement Intelligence</h3>
@@ -278,7 +281,7 @@ export const QRPlacementCard = ({ data }: any) => {
       <h3 className="text-slate-500 font-medium mb-4">QR Placement Intelligence</h3>
       
       <div className="space-y-0 flex-1">
-        {data.slice(0, 4).map((qr: any, i: number) => (
+        {safeData.slice(0, 4).map((qr: any, i: number) => (
           <div key={i} className="flex justify-between items-center py-3 border-b border-slate-100 last:border-0">
             <div>
               <div className="font-bold text-slate-700">
@@ -295,9 +298,9 @@ export const QRPlacementCard = ({ data }: any) => {
         ))}
       </div>
       
-      {data.length > 0 && (
+      {safeData.length > 0 && (
         <p className="text-sm mt-4 text-emerald-700 bg-emerald-50 p-3 rounded-lg border border-emerald-100">
-          "{data[0].label}" is performing best — keep QR codes prominent there!
+          "{safeData[0].label}" is performing best — keep QR codes prominent there!
         </p>
       )}
     </div>

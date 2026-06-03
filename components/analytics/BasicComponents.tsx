@@ -47,13 +47,14 @@ export const BestTimeCard = ({ data }: any) => {
 };
 
 export const RatingTrendChart = ({ data }: any) => {
-  const isTrendingUp = data && data.length > 1 && data[data.length - 1].avg_rating >= data[0].avg_rating;
+  const safeData = Array.isArray(data) ? data : [];
+  const isTrendingUp = safeData.length > 1 && safeData[safeData.length - 1].avg_rating >= safeData[0].avg_rating;
   return (
     <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
       <h3 className="text-slate-500 font-medium mb-4">4-Week Rating Trend</h3>
       <div className="h-40 w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data}>
+          <LineChart data={safeData}>
             <XAxis dataKey="week" tick={{fontSize: 11}} axisLine={false} tickLine={false} />
             <YAxis domain={[1, 5]} tick={{fontSize: 11}} axisLine={false} tickLine={false} />
             <Tooltip contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} />
@@ -82,14 +83,15 @@ export const MenuPerformanceChart = ({ data }: any) => {
     return '#ef4444';
   };
 
-  const lowRatedDish = data?.find((d: any) => d.avg_rating < 3.5);
+  const safeData = Array.isArray(data) ? data : [];
+  const lowRatedDish = safeData.find((d: any) => d.avg_rating < 3.5);
 
   return (
     <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
       <h3 className="text-slate-500 font-medium mb-4">Top Mentioned Items</h3>
       <div className="space-y-4">
-        {data?.length === 0 && <div className="text-slate-400 text-sm py-4">No menu data yet.</div>}
-        {data?.slice(0, 5).map((dish: any, i: number) => (
+        {safeData.length === 0 && <div className="text-slate-400 text-sm py-4">No menu data yet.</div>}
+        {safeData.slice(0, 5).map((dish: any, i: number) => (
           <div key={i} className="flex items-center gap-3">
             <div className="w-1/3 text-sm font-medium text-slate-700 truncate">{dish.dish_name}</div>
             <div className="w-2/3 flex items-center gap-2">
@@ -141,12 +143,14 @@ export const RepeatVisitorsCard = ({ data }: any) => {
 };
 
 export const LanguageSplitCard = ({ data, primaryColor = '#1a1a1a' }: any) => {
+  const safeData = Array.isArray(data) ? data : [];
+  
   return (
     <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-full">
       <h3 className="text-slate-500 font-medium mb-4">Review Language</h3>
       <div className="space-y-5">
-        {data?.length === 0 && <div className="text-slate-400 text-sm py-4">No language data yet.</div>}
-        {data?.map((lang: any) => (
+        {safeData.length === 0 && <div className="text-slate-400 text-sm py-4">No language data yet.</div>}
+        {safeData.map((lang: any) => (
           <div key={lang.language}>
             <div className="flex justify-between items-end mb-2">
               <span className="text-sm font-medium text-slate-700">{lang.language}</span>
@@ -161,9 +165,9 @@ export const LanguageSplitCard = ({ data, primaryColor = '#1a1a1a' }: any) => {
           </div>
         ))}
       </div>
-      {data?.length > 0 && (
+      {safeData.length > 0 && (
         <p className="text-sm mt-5 text-slate-600 italic">
-          "{data[0].language} is the preferred language for reviews."
+          "{safeData[0].language} is the preferred language for reviews."
         </p>
       )}
     </div>
