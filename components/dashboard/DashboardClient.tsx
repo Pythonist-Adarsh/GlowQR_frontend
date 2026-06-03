@@ -401,14 +401,6 @@ export function DashboardClient({
                     Upgrade Plan
                   </button>
                 )}
-                {user.plan === "premium" && user.subscription_status === "active" && (
-                  <button
-                    onClick={() => alert("Cancellation flow not yet integrated with Razorpay")}
-                    className="px-6 py-3 bg-red-50 text-red-600 rounded-xl font-bold hover:bg-red-100 transition-all"
-                  >
-                    Cancel Subscription
-                  </button>
-                )}
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
