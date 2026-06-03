@@ -250,14 +250,6 @@ export function DashboardClient({
           letter-spacing: -0.02em;
         }
       `}</style>
-      {/* Sidebar Toggle Button (Mobile & Desktop) */}
-      <button 
-        onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-        className="fixed bottom-6 left-6 z-50 bg-slate-900 text-white p-3 rounded-full shadow-xl hover:bg-slate-800 transition-all"
-        title="Toggle Sidebar"
-      >
-        {isSidebarCollapsed ? <Menu className="w-5 h-5" /> : <X className="w-5 h-5" />}
-        </button>
   
         {/* Sidebar */}
         <aside className={`bg-white border-r border-slate-200 flex flex-col shadow-sm h-screen overflow-y-auto sticky top-0 transition-all duration-300 ${isSidebarCollapsed ? 'w-20 p-4' : 'w-64 p-6'}`}>
@@ -285,9 +277,8 @@ export function DashboardClient({
               id: "overview",
               icon: LayoutDashboard,
               label: "Overview",
-              action: () => router.push("/dashboard"),
+              action: () => setActiveTab("overview"),
             },
-            
             {
               id: "onboarding",
               icon: Settings,
@@ -298,13 +289,13 @@ export function DashboardClient({
               id: "analytics",
               icon: BarChart3,
               label: "Analytics",
-              action: () => router.push("/analytics"),
+              action: () => setActiveTab("analytics"),
             },
             {
               id: "reviews",
               icon: MessageSquare,
               label: "Reviews",
-              action: () => router.push("/reviews"),
+              action: () => setActiveTab("reviews"),
             },
             {
               id: "subscription",
