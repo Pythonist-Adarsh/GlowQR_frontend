@@ -123,6 +123,7 @@ export function DashboardClient({
             if (meRes.ok) {
                const meData = await meRes.json();
                analyticsData.current_period_end = meData.user.current_period_end;
+               analyticsData.subscription_status = meData.user.subscription_status;
                analyticsData.plan = meData.user.plan;
                // update business plan
                data.business.plan = meData.user.plan;
@@ -175,6 +176,8 @@ export function DashboardClient({
     plan: b?.plan || "basic",
     trialEndsAt:
       b?.trialEndsAt || new Date(Date.now() + 3 * 86400000).toISOString(),
+    subscription_status: analyticsSummary?.subscription_status || null,
+    current_period_end: analyticsSummary?.current_period_end || null,
   };
 
   const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
@@ -253,13 +256,9 @@ export function DashboardClient({
   
         {/* Sidebar */}
         <aside className={`bg-white border-r border-slate-200 flex flex-col shadow-sm h-screen overflow-y-auto sticky top-0 transition-all duration-300 ${isSidebarCollapsed ? 'w-20 p-4' : 'w-64 p-6'}`}>
-          <div className={`flex items-center mb-10 ${isSidebarCollapsed ? 'justify-center' : 'justify-between'} px-2`}>
+          <div className={`flex ${isSidebarCollapsed ? 'flex-col gap-6 justify-center' : 'items-center justify-between'} mb-10 px-2`}>
             <div className="flex items-center gap-3">
-              <div 
-                className={`w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-md flex-shrink-0 ${isSidebarCollapsed ? 'cursor-pointer hover:bg-slate-800 transition-colors' : ''}`}
-                onClick={() => isSidebarCollapsed && setIsSidebarCollapsed(false)}
-                title={isSidebarCollapsed ? "Expand Sidebar" : undefined}
-              >
+              <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-md flex-shrink-0">
                 <QrCode className="w-6 h-6" />
               </div>
               {!isSidebarCollapsed && (
@@ -268,11 +267,13 @@ export function DashboardClient({
                 </span>
               )}
             </div>
-            {!isSidebarCollapsed && (
-              <button onClick={() => setIsSidebarCollapsed(true)} className="text-slate-400 hover:text-slate-600 transition-colors hidden md:block" title="Collapse Sidebar">
-                <Menu className="w-5 h-5" />
-              </button>
-            )}
+            <button 
+              onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} 
+              className="text-slate-400 hover:text-slate-600 transition-colors hidden md:block" 
+              title={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+            >
+              <Menu className="w-5 h-5" />
+            </button>
           </div>
 
         <nav className="flex-1 space-y-1">
