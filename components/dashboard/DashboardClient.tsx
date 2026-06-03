@@ -273,11 +273,9 @@ export function DashboardClient({
                 </span>
               )}
             </div>
-            {!isSidebarCollapsed && (
-              <button onClick={() => setIsSidebarCollapsed(true)} className="text-slate-400 hover:text-slate-600 transition-colors hidden md:block" title="Collapse Sidebar">
+              <button onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} className="text-slate-400 hover:text-slate-600 transition-colors hidden md:block" title={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}>
                 <Menu className="w-5 h-5" />
               </button>
-            )}
           </div>
 
         <nav className="flex-1 space-y-1">
@@ -465,13 +463,24 @@ export function DashboardClient({
               </div>
             ) : (
               <div className="grid gap-4">
-                {analyticsSummary.all_reviews.map((rev: any, i: number) => (
-                  <div key={i} className="p-6 bg-white rounded-[2rem] border border-slate-200 shadow-sm">
+                {analyticsSummary.all_reviews.map((rev: any, i: number) => {
+                  const isPositive = (rev.overall_rating || 5) >= 3;
+                  const bgColor = isPositive ? "bg-emerald-50 border-emerald-200" : "bg-red-50 border-red-200";
+                  const starColor = isPositive ? "text-emerald-500" : "text-red-500";
+                  const statusBg = rev.redirected_to_google ? "bg-blue-100 text-blue-800" : "bg-slate-200 text-slate-600";
+                  
+                  return (
+                  <div key={i} className={`p-6 rounded-[2rem] border shadow-sm ${bgColor}`}>
                     <div className="flex justify-between items-start mb-4">
-                      <div className="flex items-center gap-1 text-emerald-500">
-                        {Array.from({ length: 5 }).map((_, j) => (
-                          <Star key={j} className={`w-4 h-4 ${j < (rev.overall_rating || 5) ? 'fill-current' : 'text-slate-200'}`} />
-                        ))}
+                      <div className="flex items-center gap-4">
+                        <div className={`flex items-center gap-1 ${starColor}`}>
+                          {Array.from({ length: 5 }).map((_, j) => (
+                            <Star key={j} className={`w-4 h-4 ${j < (rev.overall_rating || 5) ? 'fill-current' : 'text-slate-300'}`} />
+                          ))}
+                        </div>
+                        <span className={`px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-wider ${statusBg}`}>
+                          {rev.redirected_to_google ? "Posted on Google" : "Not posted"}
+                        </span>
                       </div>
                       <span className="text-xs font-bold text-slate-400">
                         {rev.created_at ? new Date(rev.created_at).toLocaleDateString() : 'Recent'}
@@ -480,17 +489,17 @@ export function DashboardClient({
                     {rev.selected_items && rev.selected_items.length > 0 && (
                       <div className="flex flex-wrap gap-2 mb-3">
                         {rev.selected_items.map((item: string, j: number) => (
-                          <span key={j} className="px-2 py-1 bg-slate-100 text-slate-600 rounded-md text-[10px] font-bold tracking-wider uppercase">
+                          <span key={j} className="px-2 py-1 bg-white text-slate-600 rounded-md text-[10px] font-bold tracking-wider uppercase shadow-sm">
                             {item}
                           </span>
                         ))}
                       </div>
                     )}
                     <p className="text-sm text-slate-700 leading-relaxed italic">
-                      "{rev.review_text || `Customer enjoyed their visit and left a positive rating!`}"
+                      "{rev.review_text || `Customer left a rating.`}"
                     </p>
                   </div>
-                ))}
+                )})}
               </div>
             )}
           </div>
