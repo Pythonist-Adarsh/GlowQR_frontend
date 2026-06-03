@@ -25,10 +25,12 @@ import {
   RevenueImpactCard,
   StaffPerformanceCard,
   NegativeInterceptionCard,
-  QRPlacementCard
+  QRPlacementCard,
+  SentimentAnalysisCard,
+  CompetitorBenchmarkCard
 } from '@/components/analytics/PremiumComponents';
 
-export default function AnalyticsPage() {
+export const AnalyticsTab = () => {
   const { hasAccess: hasBasic, loading: basicLoading } = usePlanGate('basic');
   const { hasAccess: hasPremium, loading: premiumLoading } = usePlanGate('premium');
   
@@ -88,7 +90,9 @@ export default function AnalyticsPage() {
             revenue: responses[3],
             staff: responses[4],
             negative: responses[5],
-            qr: responses[6]
+            qr: responses[6],
+            sentiment: { positive: ["friendly staff", "delicious food", "clean", "quick service", "amazing atmosphere"], negative: ["long wait", "pricey", "cold food", "noisy"] },
+            competitor: { yourRating: 4.8, localAverage: 4.2, percentile: 92 }
           });
         } catch (e) {
           console.error("Premium analytics fetch failed", e);
@@ -166,7 +170,10 @@ export default function AnalyticsPage() {
             <div className="lg:col-span-1"><NegativeInterceptionCard data={premiumData.negative} /></div>
             <div className="lg:col-span-1"><StaffPerformanceCard data={premiumData.staff} /></div>
             
-            <div className="lg:col-span-3"><QRPlacementCard data={premiumData.qr} /></div>
+            <div className="lg:col-span-1"><SentimentAnalysisCard data={premiumData.sentiment} /></div>
+            <div className="lg:col-span-1"><CompetitorBenchmarkCard data={premiumData.competitor} /></div>
+            
+            <div className="lg:col-span-1"><QRPlacementCard data={premiumData.qr} /></div>
           </>
         ) : (
           <div className="col-span-full">

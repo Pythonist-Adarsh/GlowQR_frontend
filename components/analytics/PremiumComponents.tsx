@@ -306,3 +306,65 @@ export const QRPlacementCard = ({ data }: any) => {
     </div>
   );
 };
+
+export const SentimentAnalysisCard = ({ data }: any) => {
+  return (
+    <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-full flex flex-col">
+      <h3 className="text-slate-500 font-medium mb-4 flex items-center gap-2">
+        Sentiment Word Analysis
+      </h3>
+      <div className="flex flex-col gap-4">
+        <div>
+          <h4 className="text-sm font-bold text-emerald-600 mb-2">Positive Keywords</h4>
+          <div className="flex flex-wrap gap-2">
+            {(data?.positive || ["friendly", "delicious", "fast", "great service"]).map((word: string, i: number) => (
+              <span key={i} className="px-2 py-1 bg-emerald-50 text-emerald-700 rounded-md text-xs font-medium border border-emerald-100">
+                {word}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div>
+          <h4 className="text-sm font-bold text-red-600 mb-2">Negative Keywords</h4>
+          <div className="flex flex-wrap gap-2">
+            {(data?.negative || ["cold", "wait time", "expensive"]).map((word: string, i: number) => (
+              <span key={i} className="px-2 py-1 bg-red-50 text-red-700 rounded-md text-xs font-medium border border-red-100">
+                {word}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const CompetitorBenchmarkCard = ({ data }: any) => {
+  return (
+    <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-full flex flex-col">
+      <h3 className="text-slate-500 font-medium mb-4 flex items-center gap-2">
+        Competitor Benchmark
+      </h3>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-slate-600">Your Rating</span>
+          <span className="text-lg font-black text-slate-900">{data?.yourRating || 4.5}?</span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-slate-600">Local Average</span>
+          <span className="text-lg font-black text-slate-500">{data?.localAverage || 4.2}?</span>
+        </div>
+        <div className="w-full bg-slate-100 rounded-full h-2.5 mt-2">
+          <div className="bg-emerald-500 h-2.5 rounded-full" style={{ width: `${(data?.yourRating || 4.5) / 5 * 100}%` }}></div>
+        </div>
+        <div className="w-full bg-slate-200 rounded-full h-2.5 mt-1 opacity-50">
+          <div className="bg-slate-400 h-2.5 rounded-full" style={{ width: `${(data?.localAverage || 4.2) / 5 * 100}%` }}></div>
+        </div>
+        <p className="text-sm mt-2 text-emerald-700 bg-emerald-50 p-2 rounded border border-emerald-100">
+          You are performing <strong>better</strong> than {(data?.percentile || 85)}% of local competitors!
+        </p>
+      </div>
+    </div>
+  );
+};
+

@@ -1,5 +1,5 @@
-import { redirect } from 'next/navigation';
+import { DashboardClient } from '@/components/dashboard/DashboardClient';
 
-export default function AnalyticsRedirectPage() {
-  redirect('/dashboard/analytics');
+export default function AnalyticsPage() {
+  return <DashboardClient initialTab="analytics" />;
 }
