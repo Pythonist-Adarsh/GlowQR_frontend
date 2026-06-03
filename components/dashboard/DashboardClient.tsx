@@ -343,16 +343,7 @@ export function DashboardClient({
       {/* Main Content */}
       <main className="flex-1 p-10 overflow-y-auto relative">
         
-        {/* Floating Expand Sidebar Button (Right Side) */}
-        {isSidebarCollapsed && (
-          <button 
-            onClick={() => setIsSidebarCollapsed(false)}
-            className="absolute top-10 right-10 z-50 bg-white p-3 rounded-xl shadow-md border border-slate-200 text-slate-600 hover:text-slate-900 transition-colors"
-            title="Expand Sidebar"
-          >
-            <Menu className="w-6 h-6" />
-          </button>
-        )}
+
 
         <UpgradeModal
           isOpen={upgradeModalOpen}
