@@ -29,6 +29,7 @@ import {
   SentimentAnalysisCard,
   CompetitorBenchmarkCard
 } from '@/components/analytics/PremiumComponents';
+import { NegativeAlertsInbox } from '@/components/analytics/NegativeAlertsInbox';
 
 export const AnalyticsTab = () => {
   const { hasAccess: hasBasic, loading: basicLoading } = usePlanGate('basic');
@@ -164,8 +165,9 @@ export const AnalyticsTab = () => {
             <AIInsightsCard data={premiumData.ai} hoursAgo={1} />
             
             <div className="lg:col-span-2"><ScanHeatmap data={premiumData.heatmap} /></div>
-            <div className="lg:col-span-1"><ConversionFunnel data={premiumData.funnel} /></div>
+            <div className="lg:col-span-1"><NegativeAlertsInbox accessToken={localStorage.getItem('token') || ''} /></div>
             
+            <div className="lg:col-span-1"><ConversionFunnel data={premiumData.funnel} /></div>
             <div className="lg:col-span-1"><RevenueImpactCard data={premiumData.revenue} /></div>
             <div className="lg:col-span-1"><NegativeInterceptionCard data={premiumData.negative} /></div>
             <div className="lg:col-span-1"><StaffPerformanceCard data={premiumData.staff} /></div>

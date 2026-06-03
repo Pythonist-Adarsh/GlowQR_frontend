@@ -14,7 +14,6 @@ const STEPS = {
   RATE: 3,    // Rating
   READY: 4,   // AI Reviews
   COPIED: 5,  // Done
-  NEGATIVE_FEEDBACK: 6, // Shield
 };
 
 function getLightenedBrandColor(hex: string, percent: number): string {
@@ -83,8 +82,8 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
   const [isCopied, setIsCopied] = useState(false);
   const [generatedReviews, setGeneratedReviews] = useState<string[]>([]);
   const [activeReviewIndex, setActiveReviewIndex] = useState(0);
-  const [feedbackText, setFeedbackText] = useState("");
-  const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
+  const [activeReviewIndex, setActiveReviewIndex] = useState(0);
+  const [showEmpathy, setShowEmpathy] = useState(false);
 
   const nextStep = () => setStep(s => Math.min(s + 1, STEPS.COPIED));
   const prevStep = () => setStep(s => Math.max(s - 1, STEPS.WELCOME));
@@ -92,12 +91,18 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
   const handleGenerateReview = async () => {
     if (ratings.overall === 0) return;
 
-    // Negative Interception Shield
-    if (ratings.overall <= 3 && business.negativeFilterEnabled) {
-      setStep(STEPS.NEGATIVE_FEEDBACK);
-      return;
+    if (ratings.overall <= 2) {
+      setShowEmpathy(true);
+      setTimeout(() => {
+        setShowEmpathy(false);
+        generateReviewRequest();
+      }, 2200);
+    } else {
+      generateReviewRequest();
     }
+  };
 
+  const generateReviewRequest = async () => {
     setIsGenerating(true);
     
     try {
@@ -145,23 +150,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
     }
   };
 
-  const handleSubmitFeedback = async () => {
-    setIsSubmittingFeedback(true);
-    try {
-      await fetch(`${API_BASE_URL}/api/scan/feedback`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          qr_slug: data.qr_slug || window.location.pathname.split('/').pop() || '',
-          session_id: sessionStorage.getItem('glowqr_scan_session') || undefined,
-          rating: ratings.overall,
-          feedback: feedbackText
-        })
-      });
-    } catch (e) {}
-    setIsSubmittingFeedback(false);
-    setStep(STEPS.COPIED);
-  };
+
 
   const handlePostReview = async () => {
     navigator.clipboard.writeText(generatedReviews[activeReviewIndex]);
@@ -194,10 +183,32 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
           wait_time: waitTime,
           review_variant: activeReviewIndex,
           review_text: generatedReviews[activeReviewIndex],
-          was_negative: ratings.overall <= 3
+          was_negative: ratings.overall <= 2
         })
       });
     } catch (e) {}
+
+    // ADD: If low rating, tell backend to fire owner alert
+    if (ratings.overall <= 2) {
+      // Fire and forget
+      fetch(`${API_BASE_URL}/api/scan/alert-owner`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          qr_slug: data.qr_slug || window.location.pathname.split('/').pop() || '',
+          session_id: sessionStorage.getItem('glowqr_scan_session') || undefined,
+          overall_rating: ratings.overall,
+          food_rating: ratings.food,
+          service_rating: ratings.service,
+          atmosphere_rating: ratings.atmosphere,
+          selected_items: menuItems.filter((m: any) => selectedDishes.includes(m.id)).map((m: any) => m.name),
+          meal_type: mealType,
+          price_range: spendRange,
+          wait_time: waitTime,
+          review_text_copied: generatedReviews[activeReviewIndex],
+        })
+      }).catch(() => {});
+    }
   };
 
   const pageVariants = {
@@ -396,82 +407,76 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
               </span>
             </div>
 
-            <div className="space-y-4 mb-auto">
-              {[
-                { key: 'food', label: 'Food', icon: Utensils },
-                { key: 'service', label: 'Service', icon: Sparkles },
-                { key: 'atmosphere', label: 'Atmosphere', icon: Check }
-              ].map(({ key, label, icon: Icon }) => (
-                <div key={key} className={`flex items-center justify-between p-4 rounded-xl border ${borderClass} ${cardBg}`}>
-                  <div className="flex items-center gap-3">
-                    <Icon className={`w-4 h-4 ${textMuted}`} />
-                    <span className="text-xs font-bold">{label}</span>
-                  </div>
-                  <div className="flex gap-1">
-                    {[1, 2, 3, 4, 5].map(star => (
-                      <button 
-                        key={star}
-                        onClick={() => setRatings(r => ({ ...r, [key]: star }))}
-                        className="p-1"
-                      >
-                        <Star className={`w-4 h-4 ${star <= (ratings as any)[key] ? 'fill-amber-400 text-amber-400' : isDark ? 'text-slate-600' : 'text-slate-200'}`} />
-                      </button>
-                    ))}
-                  </div>
+            {showEmpathy ? (
+              <div className="flex-1 flex flex-col items-center justify-center text-center mt-12 mb-12">
+                {/* Stars showing their low rating */}
+                <div className="flex gap-1 mb-6">
+                  {[1,2,3,4,5].map(s => (
+                    <span key={s} className={`text-4xl ${s <= ratings.overall ? 'text-amber-400' : 'text-slate-200 dark:text-slate-700'}`}>
+                      ★
+                    </span>
+                  ))}
                 </div>
-              ))}
-            </div>
 
-            <button 
-              onClick={handleGenerateReview}
-              disabled={ratings.overall === 0 || isGenerating}
-              className="w-full py-4 mt-6 rounded-xl font-bold text-sm text-white shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50"
-              style={{ backgroundColor: business.primaryColor }}
-            >
-              {isGenerating ? <><Loader2 className="w-4 h-4 animate-spin" /> Generating AI Review...</> : <><Sparkles className="w-4 h-4" /> Generate my review</>}
-            </button>
-          </motion.div>
-        )}
+                <h2 className="text-xl font-bold mb-2">We hear you.</h2>
+                <p className={`text-sm leading-relaxed max-w-[250px] mb-8 ${textMuted}`}>
+                  Your honest feedback helps this business improve. 
+                  We'll help you share exactly what happened.
+                </p>
 
-        {/* SCREEN: NEGATIVE FEEDBACK (Shield) */}
-        {step === STEPS.NEGATIVE_FEEDBACK && (
-          <motion.div 
-            key="feedback" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={transition}
-            className="flex-1 flex flex-col p-6 h-full"
-          >
-            <div className="flex-1 flex flex-col justify-center max-w-md mx-auto w-full">
-              <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mb-6 text-slate-500">
-                <MessageSquare className="w-8 h-8" />
+                {/* Auto-progress bar */}
+                <div className="w-full max-w-[200px] h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                  <motion.div 
+                    initial={{ width: '0%' }}
+                    animate={{ width: '100%' }}
+                    transition={{ duration: 2.2, ease: "linear" }}
+                    className="h-full bg-emerald-500 rounded-full"
+                  />
+                </div>
+                <p className={`text-[10px] uppercase tracking-widest mt-4 ${textMuted} font-bold`}>Taking you to review step...</p>
               </div>
-              <h2 className="text-2xl font-bold mb-3">We're sorry to hear that</h2>
-              <p className={`text-sm mb-6 ${textMuted}`}>
-                We aim for 5-star experiences. Please let us know how we can improve so we can make it right next time.
-              </p>
-              
-              <textarea 
-                className={`w-full ${cardBg} border ${borderClass} rounded-2xl p-4 text-sm resize-none focus:outline-none focus:border-emerald-500 transition-all min-h-[150px] mb-6`}
-                placeholder="Tell us what went wrong..."
-                value={feedbackText}
-                onChange={(e) => setFeedbackText(e.target.value)}
-              />
-              
+            ) : (
+              <div className="space-y-4 mb-auto">
+                {[
+                  { key: 'food', label: 'Food', icon: Utensils },
+                  { key: 'service', label: 'Service', icon: Sparkles },
+                  { key: 'atmosphere', label: 'Atmosphere', icon: Check }
+                ].map(({ key, label, icon: Icon }) => (
+                  <div key={key} className={`flex items-center justify-between p-4 rounded-xl border ${borderClass} ${cardBg}`}>
+                    <div className="flex items-center gap-3">
+                      <Icon className={`w-4 h-4 ${textMuted}`} />
+                      <span className="text-xs font-bold">{label}</span>
+                    </div>
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4, 5].map(star => (
+                        <button 
+                          key={star}
+                          onClick={() => setRatings(r => ({ ...r, [key]: star }))}
+                          className="p-1"
+                        >
+                          <Star className={`w-4 h-4 ${star <= (ratings as any)[key] ? 'fill-amber-400 text-amber-400' : isDark ? 'text-slate-600' : 'text-slate-200'}`} />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {!showEmpathy && (
               <button 
-                onClick={handleSubmitFeedback}
-                disabled={!feedbackText.trim() || isSubmittingFeedback}
-                className="w-full py-4 rounded-xl font-bold text-sm text-white shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50"
+                onClick={handleGenerateReview}
+                disabled={ratings.overall === 0 || isGenerating}
+                className="w-full py-4 mt-6 rounded-xl font-bold text-sm text-white shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50"
                 style={{ backgroundColor: business.primaryColor }}
               >
-                {isSubmittingFeedback ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Submit Feedback'}
+                {isGenerating ? <><Loader2 className="w-4 h-4 animate-spin" /> Generating AI Review...</> : <><Sparkles className="w-4 h-4" /> Generate my review</>}
               </button>
-              <button 
-                onClick={() => setStep(STEPS.COPIED)}
-                className={`w-full py-4 mt-2 text-sm font-bold transition-colors ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-700'}`}
-              >
-                Skip
-              </button>
-            </div>
+            )}
           </motion.div>
         )}
+
+
 
         {/* SCREEN 4: READY */}
         {step === STEPS.READY && (
@@ -558,17 +563,37 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
             </div>
 
             <div className={`p-6 pt-4 shrink-0 border-t ${borderClass} ${isDark ? 'bg-[#111827]' : 'bg-white'} relative`}>
-              <button 
-                onClick={handlePostReview}
-                className="w-full py-4 rounded-xl font-bold text-sm text-white shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] mb-3"
-                style={{ backgroundColor: isCopied ? '#10b981' : business.primaryColor }}
-              >
-                {isCopied ? (
-                  <>✓ Copied!</>
-                ) : (
-                  <>📋 Copy & Post Review <ExternalLink className="w-4 h-4" /></>
-                )}
-              </button>
+              {ratings.overall <= 2 ? (
+                <div className="space-y-3">
+                  <p className={`text-xs text-center leading-relaxed ${textMuted}`}>
+                    Your review helps others make informed decisions 
+                    and helps this business improve.
+                  </p>
+                  <button 
+                    onClick={handlePostReview}
+                    className="w-full py-4 rounded-xl font-bold text-sm text-white shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] mb-3"
+                    style={{ backgroundColor: isCopied ? '#10b981' : business.primaryColor }}
+                  >
+                    {isCopied ? (
+                      <>✓ Copied!</>
+                    ) : (
+                      <>📋 Copy & Post on Google <ExternalLink className="w-4 h-4" /></>
+                    )}
+                  </button>
+                </div>
+              ) : (
+                <button 
+                  onClick={handlePostReview}
+                  className="w-full py-4 rounded-xl font-bold text-sm text-white shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] mb-3"
+                  style={{ backgroundColor: isCopied ? '#10b981' : business.primaryColor }}
+                >
+                  {isCopied ? (
+                    <>✓ Copied!</>
+                  ) : (
+                    <>📋 Copy & Post Review <ExternalLink className="w-4 h-4" /></>
+                  )}
+                </button>
+              )}
               {isCopied && (
                 <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-4 py-2 rounded-full text-xs font-bold shadow-xl flex items-center gap-2 z-50 animate-in fade-in zoom-in duration-300 whitespace-nowrap">
                   <Check className="w-3 h-3 text-emerald-400" /> Review copied — now paste on Google Maps
@@ -592,9 +617,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
             </div>
             <h2 className="text-3xl font-black mb-3">Thank you!</h2>
             <p className={`text-sm leading-relaxed max-w-[250px] mb-12 ${textMuted}`}>
-              {ratings.overall <= 3 
-                ? `Thank you for your feedback. We appreciate it and will use it to improve ${business.name}.`
-                : `Thank you for choosing ${business.name}. Google Maps should be opening now to paste your review.`}
+              Thank you for choosing {business.name}. Google Maps should be opening now to paste your review.
             </p>
             
             <button 
