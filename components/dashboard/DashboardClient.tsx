@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { UpgradeModal } from "@/components/dashboard/UpgradeModal";
 import { OverviewTab } from "./OverviewTab";
 import { AnalyticsTab } from "./AnalyticsTab";
+import { SettingsTab } from "./SettingsTab";
 import {
   LayoutDashboard,
   QrCode,
@@ -298,9 +299,15 @@ export function DashboardClient({
             },
             {
               id: "subscription",
-              icon: Settings,
+              icon: Star,
               label: "Subscription",
-              action: () => router.push("/subscription"),
+              action: () => setActiveTab("subscription"),
+            },
+            {
+              id: "settings",
+              icon: Settings,
+              label: "Settings",
+              action: () => setActiveTab("settings"),
             },
           ].map((item) => (
             <button
@@ -394,8 +401,24 @@ export function DashboardClient({
                     Upgrade Plan
                   </button>
                 )}
+                {user.plan === "premium" && user.subscription_status === "active" && (
+                  <button
+                    onClick={() => alert("Cancellation flow not yet integrated with Razorpay")}
+                    className="px-6 py-3 bg-red-50 text-red-600 rounded-xl font-bold hover:bg-red-100 transition-all"
+                  >
+                    Cancel Subscription
+                  </button>
+                )}
               </div>
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
+                  <h3 className="font-bold text-slate-700 mb-2">
+                    Status
+                  </h3>
+                  <p className="text-slate-900 text-xl font-black capitalize">
+                    {user.subscription_status || "Trial"}
+                  </p>
+                </div>
                 <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
                   <h3 className="font-bold text-slate-700 mb-2">
                     Billing Cycle
@@ -409,12 +432,18 @@ export function DashboardClient({
                   <p className="text-slate-900 text-xl font-black">
                     {user.plan === "trial"
                       ? "Upgrade required"
-                      : "Oct 24, 2026"}
+                      : user.current_period_end 
+                        ? new Date(user.current_period_end).toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' })
+                        : "N/A"}
                   </p>
                 </div>
               </div>
             </div>
           </div>
+        )}
+
+        {activeTab === "settings" && (
+          <SettingsTab user={user} onUpdate={fetchData} />
         )}
 
         {activeTab === "reviews" && (
