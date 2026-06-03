@@ -233,6 +233,7 @@ export function DashboardClient({
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("glowqr_business_data");
     router.push("/login");
   };
 

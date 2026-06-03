@@ -48,6 +48,7 @@ export function SignUpView() {
 
       const data = await res.json();
       localStorage.setItem('token', data.access_token)
+      localStorage.removeItem('glowqr_business_data')
       localStorage.setItem('onboarding_completed', data.onboarding_completed ? 'true' : 'false')
       
       if (data.onboarding_completed) {
