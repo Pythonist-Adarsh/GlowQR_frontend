@@ -90,7 +90,9 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
   const handleGenerateReview = async () => {
     if (ratings.overall === 0) return;
 
-    if (ratings.overall <= 2) {
+    const isPremium = ['premium', 'trial'].includes(business.plan?.toLowerCase() || '');
+
+    if (ratings.overall <= 2 && isPremium) {
       setShowEmpathy(true);
       setTimeout(() => {
         setShowEmpathy(false);
@@ -187,8 +189,9 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
       });
     } catch (e) {}
 
-    // ADD: If low rating, tell backend to fire owner alert
-    if (ratings.overall <= 2) {
+    const isPremium = ['premium', 'trial'].includes(business.plan?.toLowerCase() || '');
+    // ADD: If low rating and premium, tell backend to fire owner alert
+    if (ratings.overall <= 2 && isPremium) {
       // Fire and forget
       fetch(`${API_BASE_URL}/api/scan/alert-owner`, {
         method: 'POST',
@@ -562,7 +565,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
             </div>
 
             <div className={`p-6 pt-4 shrink-0 border-t ${borderClass} ${isDark ? 'bg-[#111827]' : 'bg-white'} relative`}>
-              {ratings.overall <= 2 ? (
+              {(ratings.overall <= 2 && ['premium', 'trial'].includes(business.plan?.toLowerCase() || '')) ? (
                 <div className="space-y-3">
                   <p className={`text-xs text-center leading-relaxed ${textMuted}`}>
                     Your review helps others make informed decisions 
