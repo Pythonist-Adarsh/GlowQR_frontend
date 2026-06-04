@@ -66,113 +66,115 @@ export function NegativeAlertsInbox({ accessToken }: { accessToken: string }) {
           </p>
         </div>
       ) : (
-        alerts.map(alert => (
-          <div
-            key={alert.id}
-            className={`p-4 rounded-xl border transition-all ${
-              !alert.is_read
-                ? 'bg-red-50 border-red-200'
-                : alert.is_resolved
-                ? 'bg-slate-50 border-slate-100 opacity-60'
-                : 'bg-white border-slate-200'
-            }`}
-          >
-            {/* Top row */}
-            <div className="flex items-start justify-between gap-3 mb-3">
-              <div className="flex items-center gap-2">
-                <span className="text-lg">
-                  {'★'.repeat(alert.overall_rating || alert.rating)}
-                  {'☆'.repeat(5 - (alert.overall_rating || alert.rating))}
-                </span>
-                <div>
-                  <p className="text-xs font-semibold text-slate-900">
-                    {alert.overall_rating || alert.rating} star review
-                  </p>
-                  <p className="text-[10px] text-slate-400">
-                    {new Date(alert.visit_time || alert.created_at)
-                      .toLocaleDateString('en-IN', {
-                        day: 'numeric', month: 'short',
-                        hour: '2-digit', minute: '2-digit'
-                      })}
-                    {alert.meal_type && ` · ${alert.meal_type}`}
-                    {alert.email_sent && (
-                      <span className="ml-2 px-1.5 py-0.5 text-[9px] font-bold bg-blue-100 text-blue-700 rounded-md uppercase tracking-wider">
-                        Mailed
-                      </span>
-                    )}
-                  </p>
+        <div className="space-y-3 max-h-[380px] overflow-y-auto pr-2">
+          {alerts.map(alert => (
+            <div
+              key={alert.id}
+              className={`p-4 rounded-xl border transition-all ${
+                !alert.is_read
+                  ? 'bg-red-50 border-red-200'
+                  : alert.is_resolved
+                  ? 'bg-slate-50 border-slate-100 opacity-60'
+                  : 'bg-white border-slate-200'
+              }`}
+            >
+              {/* Top row */}
+              <div className="flex items-start justify-between gap-3 mb-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">
+                    {'★'.repeat(alert.overall_rating || alert.rating)}
+                    {'☆'.repeat(5 - (alert.overall_rating || alert.rating))}
+                  </span>
+                  <div>
+                    <p className="text-xs font-semibold text-slate-900">
+                      {alert.overall_rating || alert.rating} star review
+                    </p>
+                    <p className="text-[10px] text-slate-400">
+                      {new Date(alert.visit_time || alert.created_at)
+                        .toLocaleDateString('en-IN', {
+                          day: 'numeric', month: 'short',
+                          hour: '2-digit', minute: '2-digit'
+                        })}
+                      {alert.meal_type && ` · ${alert.meal_type}`}
+                      {alert.email_sent && (
+                        <span className="ml-2 px-1.5 py-0.5 text-[9px] font-bold bg-blue-100 text-blue-700 rounded-md uppercase tracking-wider">
+                          Mailed
+                        </span>
+                      )}
+                    </p>
+                  </div>
                 </div>
+                {!alert.is_resolved && (
+                  <button
+                    onClick={() => markResolved(alert.id)}
+                    className="px-3 py-1.5 text-xs font-semibold bg-emerald-600 
+                             text-white rounded-lg hover:bg-emerald-700 
+                             transition-colors whitespace-nowrap"
+                  >
+                    ✓ Fixed
+                  </button>
+                )}
+                {alert.is_resolved && (
+                  <span className="px-2 py-1 text-xs font-medium 
+                                 bg-slate-100 text-slate-500 rounded-lg">
+                    Resolved
+                  </span>
+                )}
               </div>
-              {!alert.is_resolved && (
-                <button
-                  onClick={() => markResolved(alert.id)}
-                  className="px-3 py-1.5 text-xs font-semibold bg-emerald-600 
-                           text-white rounded-lg hover:bg-emerald-700 
-                           transition-colors whitespace-nowrap"
-                >
-                  ✓ Fixed
-                </button>
+
+              {/* What they ordered */}
+              {alert.selected_items?.length > 0 && (
+                <p className="text-xs text-slate-500 mb-2">
+                  <span className="font-medium text-slate-700">Ordered: </span>
+                  {alert.selected_items.join(', ')}
+                  {alert.price_range && ` · ${alert.price_range}/head`}
+                </p>
               )}
-              {alert.is_resolved && (
-                <span className="px-2 py-1 text-xs font-medium 
-                               bg-slate-100 text-slate-500 rounded-lg">
-                  Resolved
-                </span>
+
+              {/* Review text */}
+              {alert.feedback_text && (
+                <p className="text-xs text-slate-600 italic bg-slate-50 
+                            rounded-lg px-3 py-2 border-l-2 border-slate-300
+                            leading-relaxed">
+                  "{alert.feedback_text}"
+                </p>
+              )}
+
+              {/* Sub-ratings if available */}
+              {(alert.food_rating || alert.service_rating || alert.atmosphere_rating) && (
+                <div className="flex gap-3 mt-2">
+                  {alert.food_rating && (
+                    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
+                      alert.food_rating <= 2
+                        ? 'bg-red-100 text-red-700'
+                        : 'bg-slate-100 text-slate-600'
+                    }`}>
+                      Food {alert.food_rating}★
+                    </span>
+                  )}
+                  {alert.service_rating && (
+                    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
+                      alert.service_rating <= 2
+                        ? 'bg-red-100 text-red-700'
+                        : 'bg-slate-100 text-slate-600'
+                    }`}>
+                      Service {alert.service_rating}★
+                    </span>
+                  )}
+                  {alert.atmosphere_rating && (
+                    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
+                      alert.atmosphere_rating <= 2
+                        ? 'bg-red-100 text-red-700'
+                        : 'bg-slate-100 text-slate-600'
+                    }`}>
+                      Atmosphere {alert.atmosphere_rating}★
+                    </span>
+                  )}
+                </div>
               )}
             </div>
-
-            {/* What they ordered */}
-            {alert.selected_items?.length > 0 && (
-              <p className="text-xs text-slate-500 mb-2">
-                <span className="font-medium text-slate-700">Ordered: </span>
-                {alert.selected_items.join(', ')}
-                {alert.price_range && ` · ${alert.price_range}/head`}
-              </p>
-            )}
-
-            {/* Review text */}
-            {alert.feedback_text && (
-              <p className="text-xs text-slate-600 italic bg-slate-50 
-                          rounded-lg px-3 py-2 border-l-2 border-slate-300
-                          leading-relaxed">
-                "{alert.feedback_text}"
-              </p>
-            )}
-
-            {/* Sub-ratings if available */}
-            {(alert.food_rating || alert.service_rating || alert.atmosphere_rating) && (
-              <div className="flex gap-3 mt-2">
-                {alert.food_rating && (
-                  <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
-                    alert.food_rating <= 2
-                      ? 'bg-red-100 text-red-700'
-                      : 'bg-slate-100 text-slate-600'
-                  }`}>
-                    Food {alert.food_rating}★
-                  </span>
-                )}
-                {alert.service_rating && (
-                  <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
-                    alert.service_rating <= 2
-                      ? 'bg-red-100 text-red-700'
-                      : 'bg-slate-100 text-slate-600'
-                  }`}>
-                    Service {alert.service_rating}★
-                  </span>
-                )}
-                {alert.atmosphere_rating && (
-                  <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
-                    alert.atmosphere_rating <= 2
-                      ? 'bg-red-100 text-red-700'
-                      : 'bg-slate-100 text-slate-600'
-                  }`}>
-                    Atmosphere {alert.atmosphere_rating}★
-                  </span>
-                )}
-              </div>
-            )}
-          </div>
-        ))
+          ))}
+        </div>
       )}
     </div>
   )
