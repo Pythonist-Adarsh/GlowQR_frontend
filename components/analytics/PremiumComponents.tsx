@@ -234,30 +234,30 @@ export const NegativeInterceptionCard = ({ data }: any) => {
   return (
     <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-full flex flex-col">
       <h3 className="text-slate-500 font-medium mb-4 flex items-center gap-2">
-        <span className="text-emerald-500">🛡️</span> Negative Review Shield
+        <span className="text-emerald-500">🛡️</span> Negative Review Interception Stats
       </h3>
       
-      <div className="bg-[#EAF3DE] border border-[#97C459] rounded-xl p-4 text-center mb-6">
-        <div className="text-4xl font-black text-[#3B6D11] mb-1">
-          {data?.interceptedCount || 0}
-        </div>
-        <div className="text-sm font-bold text-[#4d861d]">
-          negative reviews intercepted this month
+      <div className="bg-[#f8f9fa] border border-slate-200 rounded-xl p-4 text-center mb-6">
+        <div className="text-sm font-bold text-slate-700">
+          This month intercepted: <span className="font-black text-slate-900 ml-2">{data?.interceptedCount || 0} reviews</span>
         </div>
       </div>
       
-      <div className="space-y-3 flex-1">
-        <div className="flex justify-between items-center text-sm">
-          <span className="text-slate-600">Your current rating:</span>
-          <strong className="text-slate-900 bg-slate-100 px-2 py-1 rounded">{data?.currentRating || 0}★</strong>
+      <div className="space-y-4 flex-1">
+        <p className="text-sm text-slate-500 font-medium mb-2">If these reached Google:</p>
+        <div className="flex justify-between items-center text-sm pl-4 border-l-2 border-slate-200">
+          <span className="text-slate-600">Potential rating damage:</span>
+          <strong className="text-slate-900 bg-slate-100 px-2 py-1 rounded">
+            {data?.currentRating || 0} → {data?.potentialRating || 0} ★
+          </strong>
         </div>
-        <div className="flex justify-between items-center text-sm">
-          <span className="text-slate-600">Rating without shield:</span>
-          <strong className="text-red-600 bg-red-50 px-2 py-1 rounded">{data?.potentialRating || 0}★</strong>
+        <div className="flex justify-between items-center text-sm pl-4 border-l-2 border-slate-200">
+          <span className="text-slate-600">Estimated customer loss:</span>
+          <strong className="text-red-600 bg-red-50 px-2 py-1 rounded">~{data?.customerLoss || 0}/month</strong>
         </div>
-        <div className="flex justify-between items-center text-sm mt-4 pt-4 border-t border-slate-100">
-          <span className="text-slate-900 font-bold">Est. revenue saved:</span>
-          <strong className="text-emerald-600 text-lg">₹{(data?.revenueSaved || 0).toLocaleString('en-IN')}</strong>
+        <div className="flex justify-between items-center text-sm mt-6 pt-4 border-t border-slate-100">
+          <span className="text-slate-900 font-bold">You saved:</span>
+          <strong className="text-emerald-600 text-lg">₹{(data?.revenueSaved || 0).toLocaleString('en-IN')} in revenue</strong>
         </div>
       </div>
     </div>
@@ -367,4 +367,5 @@ export const CompetitorBenchmarkCard = ({ data }: any) => {
     </div>
   );
 };
+
 
