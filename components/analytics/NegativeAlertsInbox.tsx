@@ -95,6 +95,11 @@ export function NegativeAlertsInbox({ accessToken }: { accessToken: string }) {
                         hour: '2-digit', minute: '2-digit'
                       })}
                     {alert.meal_type && ` · ${alert.meal_type}`}
+                    {alert.email_sent && (
+                      <span className="ml-2 px-1.5 py-0.5 text-[9px] font-bold bg-blue-100 text-blue-700 rounded-md uppercase tracking-wider">
+                        Mailed
+                      </span>
+                    )}
                   </p>
                 </div>
               </div>

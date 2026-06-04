@@ -204,7 +204,8 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
           wait_time: waitTime,
           review_variant: activeReviewIndex,
           review_text: generatedReviews[activeReviewIndex],
-          was_negative: ratings.overall <= 2
+          was_negative: ratings.overall <= 2,
+          language: data.review_language || 'english'
         })
       });
     } catch (e) {}
