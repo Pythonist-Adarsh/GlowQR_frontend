@@ -94,10 +94,56 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
 
     if (ratings.overall <= 2 && isPremium) {
       setShowEmpathy(true);
+      
+      // Fire alerts and save to DB immediately in the background
+      Promise.all([
+        fetch(`${API_BASE_URL}/api/scan/alert-owner`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            qr_slug: data.qr_slug || window.location.pathname.split('/').pop() || '',
+            session_id: sessionStorage.getItem('glowqr_scan_session') || undefined,
+            overall_rating: ratings.overall,
+            food_rating: ratings.food,
+            service_rating: ratings.service,
+            atmosphere_rating: ratings.atmosphere,
+            selected_items: menuItems.filter((m: any) => selectedDishes.includes(m.id)).map((m: any) => m.name),
+            meal_type: mealType,
+            price_range: spendRange,
+            wait_time: waitTime,
+            review_text: `Customer gave a ${ratings.overall}-star rating without an AI review.`,
+            action_tip: "Customer rated 1-2 stars. Follow up on this feedback and improve service standards."
+          })
+        }).catch(() => {}),
+        fetch(`${API_BASE_URL}/api/scan/record`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            qr_slug: data.qr_slug || window.location.pathname.split('/').pop() || '',
+            session_id: sessionStorage.getItem('glowqr_scan_session') || undefined,
+            stage: 'completed',
+            device_type: 'mobile',
+            overall_rating: ratings.overall,
+            food_rating: ratings.food,
+            service_rating: ratings.service,
+            atmosphere_rating: ratings.atmosphere,
+            selected_items: selectedDishes.map(String),
+            meal_type: mealType,
+            price_range: spendRange,
+            seating_type: seatingType,
+            wait_time: waitTime,
+            was_negative: true
+          })
+        }).catch(() => {})
+      ]);
+
       setTimeout(() => {
         setShowEmpathy(false);
-        generateReviewRequest();
-      }, 2200);
+        if (business.googleReviewUrl && business.googleReviewUrl !== '#') {
+          window.open(business.googleReviewUrl, '_self');
+        }
+        setStep(STEPS.COPIED);
+      }, 2500);
     } else {
       generateReviewRequest();
     }
@@ -469,7 +515,11 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                 className="w-full py-4 mt-6 rounded-xl font-bold text-sm text-white shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50"
                 style={{ backgroundColor: business.primaryColor }}
               >
-                {isGenerating ? <><Loader2 className="w-4 h-4 animate-spin" /> Generating AI Review...</> : <><Sparkles className="w-4 h-4" /> Generate my review</>}
+                {isGenerating ? <><Loader2 className="w-4 h-4 animate-spin" /> Generating AI Review...</> : (
+                  (ratings.overall <= 2 && ['premium', 'trial'].includes(business.plan?.toLowerCase() || '')) 
+                    ? <>Continue <ArrowRight className="w-4 h-4" /></> 
+                    : <><Sparkles className="w-4 h-4" /> Generate my review</>
+                )}
               </button>
             )}
           </motion.div>
