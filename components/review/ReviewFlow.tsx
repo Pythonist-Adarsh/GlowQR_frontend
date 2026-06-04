@@ -92,7 +92,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
 
     const isPremium = ['premium', 'trial'].includes(business.plan?.toLowerCase() || '');
 
-    if (ratings.overall <= 2 && isPremium) {
+    if (ratings.overall <= 2) {
       setShowEmpathy(true);
       setTimeout(() => {
         setShowEmpathy(false);
@@ -150,7 +150,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
       
       // Ensure alert is sent even if generation failed
       const isPremium = ['premium', 'trial'].includes(business.plan?.toLowerCase() || '');
-      if (ratings.overall <= 2 && isPremium) {
+      if (ratings.overall <= 2) {
         fetch(`${API_BASE_URL}/api/scan/alert-owner`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -192,6 +192,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
           qr_slug: data.qr_slug || window.location.pathname.split('/').pop() || '',
           session_id: sessionStorage.getItem('glowqr_scan_session') || undefined,
           stage: 'completed',
+            redirected_to_google: true,
           device_type: 'mobile',
           overall_rating: ratings.overall,
           food_rating: ratings.food,
@@ -563,7 +564,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
             </div>
 
             <div className={`p-6 pt-4 shrink-0 border-t ${borderClass} ${isDark ? 'bg-[#111827]' : 'bg-white'} relative`}>
-              {(ratings.overall <= 2 && ['premium', 'trial'].includes(business.plan?.toLowerCase() || '')) ? (
+              {(ratings.overall <= 2) ? (
                 <div className="space-y-3">
                   <p className={`text-xs text-center leading-relaxed ${textMuted}`}>
                     Your review helps others make informed decisions 
