@@ -43,6 +43,11 @@ export function SettingsTab({ user, onUpdate }: { user: any; onUpdate?: () => vo
         throw new Error("Failed to update profile");
       }
 
+      const resData = await res.json();
+      if (resData.new_token) {
+        localStorage.setItem("token", resData.new_token);
+      }
+
       setProfileSuccess(true);
       if (onUpdate) onUpdate();
       setTimeout(() => setProfileSuccess(false), 3000);
