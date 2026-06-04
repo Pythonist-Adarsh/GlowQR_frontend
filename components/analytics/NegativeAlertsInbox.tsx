@@ -66,7 +66,7 @@ export function NegativeAlertsInbox({ accessToken }: { accessToken: string }) {
           </p>
         </div>
       ) : (
-        <div className="space-y-3 max-h-[380px] overflow-y-auto pr-2">
+        <div className="space-y-3 max-h-96 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-200">
           {alerts.map(alert => (
             <div
               key={alert.id}
