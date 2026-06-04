@@ -137,28 +137,6 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
           ? json.variants 
           : [`Absolutely loved visiting ${business.name}! Highly recommend!`];
         setGeneratedReviews(generated);
-
-        const isPremium = ['premium', 'trial'].includes(business.plan?.toLowerCase() || '');
-        if (ratings.overall <= 2 && isPremium) {
-          fetch(`${API_BASE_URL}/api/scan/alert-owner`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              qr_slug: data.qr_slug || window.location.pathname.split('/').pop() || '',
-              session_id: sessionStorage.getItem('glowqr_scan_session') || undefined,
-              overall_rating: ratings.overall,
-              food_rating: ratings.food,
-              service_rating: ratings.service,
-              atmosphere_rating: ratings.atmosphere,
-              selected_items: menuItems.filter((m: any) => selectedDishes.includes(m.id)).map((m: any) => m.name),
-              meal_type: mealType,
-              price_range: spendRange,
-              wait_time: waitTime,
-              review_text: generated[0],
-              action_tip: "Customer rated 1-2 stars. Follow up on this feedback and improve service standards."
-            })
-          }).catch(() => {});
-        }
       } else {
         setGeneratedReviews([`Absolutely loved visiting ${business.name}! Highly recommend!`]);
       }
@@ -169,10 +147,31 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
       setIsGenerating(false);
       setActiveReviewIndex(0);
       nextStep();
+      
+      // Ensure alert is sent even if generation failed
+      const isPremium = ['premium', 'trial'].includes(business.plan?.toLowerCase() || '');
+      if (ratings.overall <= 2 && isPremium) {
+        fetch(`${API_BASE_URL}/api/scan/alert-owner`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            qr_slug: data.qr_slug || window.location.pathname.split('/').pop() || '',
+            session_id: sessionStorage.getItem('glowqr_scan_session') || undefined,
+            overall_rating: ratings.overall,
+            food_rating: ratings.food,
+            service_rating: ratings.service,
+            atmosphere_rating: ratings.atmosphere,
+            selected_items: menuItems.filter((m: any) => selectedDishes.includes(m.id)).map((m: any) => m.name),
+            meal_type: mealType,
+            price_range: spendRange,
+            wait_time: waitTime,
+            review_text: generatedReviews.length > 0 ? generatedReviews[0] : `Customer gave a ${ratings.overall}-star rating without an AI review.`,
+            action_tip: "Customer rated 1-2 stars. Follow up on this feedback and improve service standards."
+          })
+        }).catch(() => {});
+      }
     }
   };
-
-
 
   const handlePostReview = async () => {
     navigator.clipboard.writeText(generatedReviews[activeReviewIndex]);
