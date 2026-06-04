@@ -468,8 +468,8 @@ export function DashboardClient({
                 <p className="text-slate-500 text-sm">When customers scan your QR code and leave a review, they will appear here.</p>
               </div>
             ) : (
-              <div className="grid gap-4">
-                {analyticsSummary.all_reviews.map((rev: any, i: number) => {
+                <div className="grid gap-4 max-h-[800px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-200">
+                  {analyticsSummary.all_reviews.map((rev: any, i: number) => {
                   const isPositive = (rev.overall_rating || 5) >= 3;
                   const bgColor = isPositive ? "bg-emerald-50 border-emerald-200" : "bg-red-50 border-red-200";
                   const starColor = isPositive ? "text-emerald-500" : "text-red-500";
