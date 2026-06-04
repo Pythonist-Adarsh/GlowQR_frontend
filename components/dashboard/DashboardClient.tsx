@@ -123,7 +123,7 @@ export function DashboardClient({
             if (allReviewsRes.ok) analyticsData.all_reviews = (await allReviewsRes.json()).reviews;
             if (meRes.ok) {
                const meData = await meRes.json();
-               analyticsData.current_period_end = meData.user.current_period_end;
+               analyticsData.current_period_end = meData.user.current_period_end || meData.user.trial_ends_at;
                analyticsData.plan = meData.user.plan;
                // update business plan
                data.business.plan = meData.user.plan;
@@ -263,19 +263,25 @@ export function DashboardClient({
         {/* Sidebar */}
         <aside className={`bg-white border-r border-slate-200 flex flex-col shadow-sm h-screen overflow-y-auto sticky top-0 transition-all duration-300 ${isSidebarCollapsed ? 'w-20 p-4' : 'w-64 p-6'}`}>
           <div className={`flex items-center mb-10 ${isSidebarCollapsed ? 'justify-center' : 'justify-between'} px-2`}>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-md flex-shrink-0">
-                <QrCode className="w-6 h-6" />
-              </div>
-              {!isSidebarCollapsed && (
-                <span className="text-xl font-black tracking-tight text-slate-900 whitespace-nowrap">
-                  GlowQR
-                </span>
-              )}
-            </div>
-              <button onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} className="text-slate-400 hover:text-slate-600 transition-colors hidden md:block" title={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}>
-                <Menu className="w-5 h-5" />
+            {!isSidebarCollapsed ? (
+              <>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-md flex-shrink-0">
+                    <QrCode className="w-6 h-6" />
+                  </div>
+                  <span className="text-xl font-black tracking-tight text-slate-900 whitespace-nowrap">
+                    GlowQR
+                  </span>
+                </div>
+                <button onClick={() => setIsSidebarCollapsed(true)} className="text-slate-400 hover:text-slate-600 transition-colors hidden md:block" title="Collapse Sidebar">
+                  <Menu className="w-5 h-5" />
+                </button>
+              </>
+            ) : (
+              <button onClick={() => setIsSidebarCollapsed(false)} className="text-slate-700 hover:text-slate-900 transition-colors hidden md:block p-2 bg-slate-100 rounded-xl shadow-sm" title="Expand Sidebar">
+                <Menu className="w-6 h-6" />
               </button>
+            )}
           </div>
 
         <nav className="flex-1 space-y-1">

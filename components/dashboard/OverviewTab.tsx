@@ -457,18 +457,25 @@ export function OverviewTab({
                 {analyticsSummary?.recent_reviews?.length > 0 ? (
                   <>
                     {analyticsSummary.recent_reviews.slice(0, 3).map(
-                      (rev: any, i: number) => (
-                        <div key={i} className="p-4 rounded-2xl bg-[#F0F7F0] border border-emerald-100 shadow-sm flex flex-col gap-2">
-                          <div className="flex items-center gap-1 text-emerald-500">
-                            {Array.from({ length: rev.overall_rating || 5 }).map((_, j) => (
-                              <Star key={j} className="w-3 h-3 fill-current" />
-                            ))}
+                      (rev: any, i: number) => {
+                        const isPositive = (rev.overall_rating || 5) >= 3;
+                        const bgColor = isPositive ? "bg-[#F0F7F0] border-emerald-100" : "bg-red-50 border-red-100";
+                        const textColor = isPositive ? "text-[#085041]" : "text-red-900";
+                        const starColor = isPositive ? "text-emerald-500" : "text-red-500";
+                        
+                        return (
+                          <div key={i} className={`p-4 rounded-2xl border shadow-sm flex flex-col gap-2 ${bgColor}`}>
+                            <div className={`flex items-center gap-1 ${starColor}`}>
+                              {Array.from({ length: rev.overall_rating || 5 }).map((_, j) => (
+                                <Star key={j} className="w-3 h-3 fill-current" />
+                              ))}
+                            </div>
+                            <p className={`text-xs leading-relaxed italic font-medium line-clamp-2 ${textColor}`}>
+                              &quot;{rev.review_text || `Customer left a rating of ${rev.overall_rating || 5} stars.`}&quot;
+                            </p>
                           </div>
-                          <p className="text-xs text-[#085041] leading-relaxed italic font-medium line-clamp-2">
-                            &quot;{rev.review_text || `Customer enjoyed their visit and highlighted the ${rev.selected_items?.join(", ") || "service"}!`}&quot;
-                          </p>
-                        </div>
-                      )
+                        );
+                      }
                     )}
                     {analyticsSummary.recent_reviews.length > 3 && (
                       <button 
