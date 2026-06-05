@@ -108,13 +108,13 @@ export function DashboardClient({
             meRes,
             reviewsDataRes
           ] = await Promise.all([
-            fetch(`${API_BASE_URL}/api/analytics/summary`, { headers }),
-            fetch(`${API_BASE_URL}/api/analytics/category-ratings`, { headers }),
-            fetch(`${API_BASE_URL}/api/analytics/scans-chart`, { headers }),
-            fetch(`${API_BASE_URL}/api/analytics/top-menu-items`, { headers }),
-            fetch(`${API_BASE_URL}/api/analytics/all-reviews`, { headers }),
-            fetch(`${API_BASE_URL}/api/auth/me`, { headers }),
-            fetch(`${API_BASE_URL}/api/analytics/reviews-data`, { headers })
+            fetch(`${API_BASE_URL}/api/analytics/summary`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any)),
+            fetch(`${API_BASE_URL}/api/analytics/category-ratings`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any)),
+            fetch(`${API_BASE_URL}/api/analytics/scans-chart`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any)),
+            fetch(`${API_BASE_URL}/api/analytics/top-menu-items`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any)),
+            fetch(`${API_BASE_URL}/api/analytics/all-reviews`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any)),
+            fetch(`${API_BASE_URL}/api/auth/me`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any)),
+            fetch(`${API_BASE_URL}/api/analytics/reviews-data`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any))
           ]);
           
           if (analyticsRes.ok) {
@@ -138,10 +138,10 @@ export function DashboardClient({
             if (analyticsData.plan === 'premium') {
               try {
                 const [heatmapRes, funnelRes, negAlertsRes, aiInsightsRes] = await Promise.all([
-                   fetch(`${API_BASE_URL}/api/analytics/heatmap`, { headers }),
-                   fetch(`${API_BASE_URL}/api/analytics/funnel`, { headers }),
-                   fetch(`${API_BASE_URL}/api/analytics/negative-alerts`, { headers }),
-                   fetch(`${API_BASE_URL}/api/analytics/ai-insights`, { headers })
+                   fetch(`${API_BASE_URL}/api/analytics/heatmap`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any)),
+                   fetch(`${API_BASE_URL}/api/analytics/funnel`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any)),
+                   fetch(`${API_BASE_URL}/api/analytics/negative-alerts`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any)),
+                   fetch(`${API_BASE_URL}/api/analytics/ai-insights`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any))
                 ]);
                 if (heatmapRes.ok) analyticsData.heatmap = (await heatmapRes.json()).heatmap;
                 if (funnelRes.ok) analyticsData.funnel = (await funnelRes.json()).funnel;
