@@ -151,17 +151,17 @@ export function UpgradeModal({ isOpen, onClose, defaultPlan = 'basic' }: Upgrade
                     <input 
                       required type="text" placeholder="Your Name"
                       value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-900 outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
                     />
                     <input 
                       required type="tel" placeholder="Phone Number"
                       value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-900 outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
                     />
                     <input 
                       required type="text" placeholder="12-digit UTR from UPI app"
                       value={formData.utrNumber} onChange={e => setFormData({...formData, utrNumber: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-900 outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
                     />
 
                     <button 

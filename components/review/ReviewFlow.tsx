@@ -192,7 +192,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
           qr_slug: data.qr_slug || window.location.pathname.split('/').pop() || '',
           session_id: sessionStorage.getItem('glowqr_scan_session') || undefined,
           stage: 'completed',
-            redirected_to_google: true,
+          redirected_to_google: !!(business.googleReviewUrl && business.googleReviewUrl !== '#'),
           device_type: 'mobile',
           overall_rating: ratings.overall,
           food_rating: ratings.food,
