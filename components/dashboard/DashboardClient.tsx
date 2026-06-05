@@ -105,14 +105,16 @@ export function DashboardClient({
             scansChartRes,
             topMenuItemsRes,
             allReviewsRes,
-            meRes
+            meRes,
+            reviewsDataRes
           ] = await Promise.all([
             fetch(`${API_BASE_URL}/api/analytics/summary`, { headers }),
             fetch(`${API_BASE_URL}/api/analytics/category-ratings`, { headers }),
             fetch(`${API_BASE_URL}/api/analytics/scans-chart`, { headers }),
             fetch(`${API_BASE_URL}/api/analytics/top-menu-items`, { headers }),
             fetch(`${API_BASE_URL}/api/analytics/all-reviews`, { headers }),
-            fetch(`${API_BASE_URL}/api/auth/me`, { headers })
+            fetch(`${API_BASE_URL}/api/auth/me`, { headers }),
+            fetch(`${API_BASE_URL}/api/analytics/reviews-data`, { headers })
           ]);
           
           if (analyticsRes.ok) {
@@ -121,6 +123,7 @@ export function DashboardClient({
             if (scansChartRes.ok) analyticsData.scans_chart = await scansChartRes.json();
             if (topMenuItemsRes.ok) analyticsData.top_menu_items = await topMenuItemsRes.json();
             if (allReviewsRes.ok) analyticsData.all_reviews = (await allReviewsRes.json()).reviews;
+            if (reviewsDataRes.ok) analyticsData.reviews_data = await reviewsDataRes.json();
             if (meRes.ok) {
                const meData = await meRes.json();
                analyticsData.current_period_end = meData.user.current_period_end || meData.user.trial_ends_at;

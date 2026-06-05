@@ -108,32 +108,61 @@ export function OverviewTab({
 
   const renderStatCards = () => {
     const isExpired = plan === "expired";
-    const totalScans = analyticsSummary?.total_scans || 0;
-    const redirects = analyticsSummary?.total_redirects || 0;
-    const convRate = analyticsSummary?.conversion_rate || 0;
-    const avgRating = analyticsSummary?.google_rating || 0;
-    const reviewsThisMonth = analyticsSummary?.reviews_this_month || 0;
+    const data = analyticsSummary?.reviews_data;
     
+    // If reviews_data isn't loaded yet, return null or skeleton
+    if (!data) return null;
+
     const cardClass = `bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm flex flex-col ${isExpired ? 'opacity-50 grayscale' : ''}`;
 
     const cards = [
       <div key="scans" className={cardClass}>
         <div className="text-slate-400 mb-4"><Eye className="w-5 h-5" /></div>
         <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Total Scans</p>
-        <p className="text-3xl font-black text-slate-900">{totalScans}</p>
+        <p className="text-3xl font-black text-slate-900">{data.tracking.total_scans}</p>
+        <p className="text-xs text-slate-400 mt-2 font-medium">Customers who scanned QR</p>
       </div>,
-      <div key="redirects" className={cardClass}>
+      <div key="opened" className={cardClass}>
         <div className="text-slate-400 mb-4"><ExternalLink className="w-5 h-5" /></div>
-        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Google Redirects</p>
-        <p className="text-3xl font-black text-slate-900">{redirects}</p>
+        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Opened Google Review</p>
+        <p className="text-3xl font-black text-slate-900">{data.tracking.redirected_to_google}</p>
+        <p className="text-xs text-slate-400 mt-2 font-medium">Redirected to Google Maps</p>
       </div>,
-      <div key="conversion" className={cardClass}>
+      <div key="bounced" className={`${cardClass} border-amber-200 bg-amber-50/30`}>
+        <div className="text-amber-400 mb-4"><BarChart3 className="w-5 h-5" /></div>
+        <p className="text-[10px] font-black text-amber-700 uppercase tracking-widest mb-1">Only Scanned (Not Opened)</p>
+        <p className="text-3xl font-black text-slate-900">{data.tracking.only_scanned_not_opened}</p>
+        <p className="text-xs text-amber-600 mt-2 font-medium">Left without opening review page</p>
+      </div>,
+      <div key="new_reviews" className={`${cardClass} border-emerald-200 bg-emerald-50/30 shadow-md`}>
+        <div className="text-emerald-500 mb-4"><MessageSquare className="w-5 h-5" /></div>
+        <p className="text-[10px] font-black text-emerald-700 uppercase tracking-widest mb-1">New Reviews on Google</p>
+        <p className="text-3xl font-black text-emerald-600">{data.google_data.new_reviews_since_glowqr ?? "—"}</p>
+        <p className="text-xs text-emerald-600 mt-2 font-medium">
+          Baseline: {data.google_data.baseline_review_count ?? 0} → Now: {data.google_data.current_review_count ?? 0}
+        </p>
+      </div>,
+      <div key="rating" className={cardClass}>
+        <div className="text-slate-400 mb-4"><Star className="w-5 h-5" /></div>
+        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Google Rating</p>
+        <p className="text-3xl font-black text-slate-900">{data.google_data.current_rating ? `${data.google_data.current_rating}★` : "—"}</p>
+        <p className="text-xs text-slate-400 mt-2 font-medium">
+          {data.google_data.rating_improvement !== null
+            ? (data.google_data.rating_improvement >= 0
+                ? `+${data.google_data.rating_improvement}★ since joining`
+                : `${data.google_data.rating_improvement}★ since joining`)
+            : `Baseline: ${data.google_data.baseline_rating ?? "—"}★`}
+        </p>
+      </div>,
+      <div key="redirect_rate" className={cardClass}>
         <div className="text-slate-400 mb-4"><TrendingUp className="w-5 h-5" /></div>
-        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Conversion Rate</p>
-        <p className="text-3xl font-black text-slate-900">{convRate}%</p>
-      </div>
+        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Redirect Rate</p>
+        <p className="text-3xl font-black text-slate-900">{data.tracking.redirect_rate_pct}%</p>
+        <p className="text-xs text-slate-400 mt-2 font-medium">Scan → Google page open</p>
+      </div>,
     ];
 
+    // Append Plan Expires / Days Left card if necessary
     if (plan === "trial" || plan === "expired") {
       cards.push(
         <div key="days" className={cardClass}>
@@ -146,20 +175,10 @@ export function OverviewTab({
       );
     } else {
       cards.push(
-        <div key="rating" className={cardClass}>
-          <div className="text-slate-400 mb-4"><Star className="w-5 h-5" /></div>
-          <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Avg Rating</p>
-          <p className="text-3xl font-black text-slate-900">{avgRating > 0 ? Number(avgRating).toFixed(1) : "0.0"}</p>
-        </div>,
-        <div key="reviews" className={cardClass}>
-          <div className="text-slate-400 mb-4"><MessageSquare className="w-5 h-5" /></div>
-          <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Reviews This Month</p>
-          <p className="text-3xl font-black text-slate-900">{reviewsThisMonth}</p>
-        </div>,
         <div key="expiry" className={cardClass}>
           <div className="text-slate-400 mb-4"><BarChart3 className="w-5 h-5" /></div>
           <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Plan Expires</p>
-          <p className={`text-xl font-black ${daysLeft <= 7 ? 'text-red-600' : 'text-slate-900'}`}>
+          <p className={`text-xl font-black mt-2 ${daysLeft <= 7 ? 'text-red-600' : 'text-slate-900'}`}>
             {analyticsSummary?.current_period_end ? new Date(analyticsSummary.current_period_end).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : "N/A"}
           </p>
         </div>
@@ -167,7 +186,7 @@ export function OverviewTab({
     }
 
     return (
-      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${cards.length > 4 ? '3' : '4'} gap-6 mb-8`}>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {cards}
       </div>
     );
@@ -176,10 +195,22 @@ export function OverviewTab({
   const renderDashboardContent = () => {
     const isBasicOrPremium = plan === "basic" || plan === "premium";
     const isPremium = plan === "premium";
+    const data = analyticsSummary?.reviews_data;
     
     return (
-      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="flex flex-col lg:flex-row gap-6 relative">
         <div className="w-full lg:w-2/3 flex flex-col gap-6">
+          {data && (
+            <div className="flex justify-between items-center mb-[-1rem]">
+              <div></div>
+              <div className="text-xs text-slate-500 bg-white px-3 py-1.5 rounded-full border border-slate-200 shadow-sm flex items-center gap-2">
+                <Sparkles className="w-3 h-3 text-blue-500" />
+                {data.google_data.has_place_id 
+                  ? `Last synced: ${data.google_data.last_synced ? new Date(data.google_data.last_synced).toLocaleString('en-GB') : 'Pending'} · Syncs daily at 2 AM` 
+                  : <span className="text-amber-600 font-bold">⚠️ Add your Google Place ID in Setup to enable daily sync</span>}
+              </div>
+            </div>
+          )}
           {/* Business Info Card */}
           <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm flex flex-col md:flex-row items-center gap-6 relative">
             <div className="absolute top-8 right-8 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-black uppercase tracking-widest">
@@ -536,10 +567,23 @@ export function OverviewTab({
   }
 
   return (
-    <div className="w-full">
+    <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
+      <div className="flex items-center justify-between">
+        <div></div>
+        <div className="px-3 py-1 bg-emerald-50 border border-emerald-100 rounded-full text-[10px] font-bold text-emerald-600 uppercase tracking-wider flex items-center gap-1.5">
+          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          Last synced: {new Date().toLocaleDateString()}
+        </div>
+      </div>
       {renderBanner()}
       {renderStatCards()}
       {renderDashboardContent()}
+      
+      <div className="text-center text-[10px] text-slate-400 mt-12 max-w-2xl mx-auto">
+        <p>GlowQR tracks QR scans and Google redirects.</p>
+        <p>"New Reviews on Google" is calculated by comparing your baseline review count (entered at onboarding) with your current Google review count, synced daily.</p>
+        <p>We cannot confirm which specific scans resulted in a posted review.</p>
+      </div>
     </div>
   );
 }
