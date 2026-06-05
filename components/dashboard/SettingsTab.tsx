@@ -135,7 +135,7 @@ export function SettingsTab({ user, onUpdate }: { user: any; onUpdate?: () => vo
                 required
                 value={formData.full_name}
                 onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#1D9E75] focus:border-transparent transition-all outline-none"
+                className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 !text-slate-900 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#1D9E75] focus:border-transparent transition-all outline-none"
               />
             </div>
           </div>
@@ -148,7 +148,7 @@ export function SettingsTab({ user, onUpdate }: { user: any; onUpdate?: () => vo
                 required
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#1D9E75] focus:border-transparent transition-all outline-none"
+                className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 !text-slate-900 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#1D9E75] focus:border-transparent transition-all outline-none"
               />
             </div>
           </div>
@@ -193,7 +193,7 @@ export function SettingsTab({ user, onUpdate }: { user: any; onUpdate?: () => vo
               required
               value={passwords.current_password}
               onChange={(e) => setPasswords({ ...passwords, current_password: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:bg-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all outline-none"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 !text-slate-900 rounded-xl focus:bg-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all outline-none"
             />
           </div>
           <div>
@@ -204,7 +204,7 @@ export function SettingsTab({ user, onUpdate }: { user: any; onUpdate?: () => vo
               minLength={6}
               value={passwords.new_password}
               onChange={(e) => setPasswords({ ...passwords, new_password: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:bg-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all outline-none"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 !text-slate-900 rounded-xl focus:bg-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all outline-none"
             />
           </div>
           <div>
@@ -215,7 +215,7 @@ export function SettingsTab({ user, onUpdate }: { user: any; onUpdate?: () => vo
               minLength={6}
               value={passwords.confirm_password}
               onChange={(e) => setPasswords({ ...passwords, confirm_password: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:bg-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all outline-none"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 !text-slate-900 rounded-xl focus:bg-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all outline-none"
             />
           </div>
           <button
