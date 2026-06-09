@@ -30,6 +30,7 @@ async function getBusinessData(slug: string) {
       primaryColor: data.brand_color || "#1D9E75",
       logoUrl: data.logo_url,
       website: data.website || "",
+      instagram_url: data.instagram_url || "",
       googleReviewUrl: data.google_review_url || "https://search.google.com/local/writereview?placeid=ChIJN1t_tDeuEmsRUsoyG83fYSh",
       plan: data.plan || "trial",
       animationStyle: data.animation_style,
