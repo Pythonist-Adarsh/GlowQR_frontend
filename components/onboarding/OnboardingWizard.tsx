@@ -312,6 +312,7 @@ const Step3 = ({ data, updateData }: any) => {
     { id: 'finedining', name: 'Fine Dining', icon: 'Utensils', enabled: false },
     { id: 'foodtruck', name: 'Food Truck', icon: 'Utensils', enabled: false },
     { id: 'cloudkitchen', name: 'Cloud Kitchen', icon: 'Utensils', enabled: false },
+    { id: 'jewellery', name: 'Bridal & Festive Jewellery', icon: 'Sparkles', enabled: true },
     { id: 'hotel', name: 'Hotel', icon: 'Hotel', enabled: false },
     { id: 'spa', name: 'Spa', icon: 'Sparkles', enabled: false },
     { id: 'salon', name: 'Salon', icon: 'Sparkles', enabled: false },
