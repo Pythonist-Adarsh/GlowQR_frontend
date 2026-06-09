@@ -29,9 +29,10 @@ import {
   SentimentAnalysisCard,
   CompetitorBenchmarkCard
 } from '@/components/analytics/PremiumComponents';
+import { BombAlertsWidget } from '@/components/analytics/BombAlertsWidget';
 import { NegativeAlertsInbox } from '@/components/analytics/NegativeAlertsInbox';
 
-export const AnalyticsTab = () => {
+export const AnalyticsTab = ({ businessId }: { businessId?: number }) => {
   const { hasAccess: hasBasic, loading: basicLoading } = usePlanGate('basic');
   const { hasAccess: hasPremium, loading: premiumLoading } = usePlanGate('premium');
   
@@ -164,6 +165,7 @@ export const AnalyticsTab = () => {
                 
                 <div className="lg:col-span-2"><ScanHeatmap data={premiumData.heatmap} /></div>
                 <div className="lg:col-span-1"><NegativeAlertsInbox accessToken={localStorage.getItem('token') || ''} /></div>
+                <div className="lg:col-span-3"><BombAlertsWidget accessToken={localStorage.getItem('token') || ''} businessId={businessId} /></div>
                 
                 <div className="lg:col-span-1"><ConversionFunnel data={premiumData.funnel} /></div>
                 <div className="lg:col-span-1"><RevenueImpactCard data={premiumData.revenue} /></div>

@@ -137,16 +137,22 @@ export function DashboardClient({
             // premium fetches
             if (analyticsData.plan === 'premium') {
               try {
-                const [heatmapRes, funnelRes, negAlertsRes, aiInsightsRes] = await Promise.all([
+                const [heatmapRes, funnelRes, negAlertsRes, aiInsightsRes, bombAlertsRes] = await Promise.all([
                    fetch(`${API_BASE_URL}/api/analytics/heatmap`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any)),
                    fetch(`${API_BASE_URL}/api/analytics/funnel`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any)),
                    fetch(`${API_BASE_URL}/api/analytics/negative-alerts`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any)),
-                   fetch(`${API_BASE_URL}/api/analytics/ai-insights`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any))
+                   fetch(`${API_BASE_URL}/api/analytics/ai-insights`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any)),
+                   fetch(`${API_BASE_URL}/api/bomb-alerts/${data.business.id}`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any))
                 ]);
                 if (heatmapRes.ok) analyticsData.heatmap = (await heatmapRes.json()).heatmap;
                 if (funnelRes.ok) analyticsData.funnel = (await funnelRes.json()).funnel;
                 if (negAlertsRes.ok) analyticsData.negative_alerts = (await negAlertsRes.json()).alerts;
                 if (aiInsightsRes.ok) analyticsData.ai_insights = (await aiInsightsRes.json()).insights;
+                if (bombAlertsRes.ok) {
+                  const ba = await bombAlertsRes.json();
+                  analyticsData.bomb_alerts = ba.alerts;
+                  analyticsData.flagged_count = ba.flagged_count;
+                }
               } catch (e) { console.error('Premium fetch error', e); }
             }
             setAnalyticsSummary(analyticsData);
@@ -462,6 +468,19 @@ export function DashboardClient({
         {activeTab === "reviews" && (
           <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <h2 className="text-2xl font-black text-slate-900 mb-6">All Reviews</h2>
+            
+            {user.plan === 'premium' && analyticsSummary?.flagged_count > 0 && (
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="font-bold text-amber-900 text-sm">Action Recommended: Review Bomb Intercepted</h4>
+                  <p className="text-sm text-amber-800 mt-1">
+                    {analyticsSummary.flagged_count} sessions were flagged as suspicious and excluded from your organic rating. Check your Analytics tab to download the evidence report to dispute them on Google.
+                  </p>
+                </div>
+              </div>
+            )}
+            
             {(!analyticsSummary?.all_reviews || analyticsSummary.all_reviews.length === 0) ? (
               <div className="p-12 text-center bg-slate-50 rounded-3xl border border-slate-200">
                 <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400">
@@ -530,7 +549,7 @@ export function DashboardClient({
 
         {activeTab === "analytics" && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <AnalyticsTab />
+            <AnalyticsTab businessId={b?.id} />
           </div>
         )}
 
