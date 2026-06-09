@@ -195,6 +195,14 @@ const Step1 = ({ data, updateData }: any) => (
         onChange={(e: any) => updateData({ website: e.target.value })} 
         placeholder="thevelvetlounge.com"
       />
+      <InputField 
+        label="Instagram Profile URL" 
+        badge="optional"
+        value={data.instagramUrl} 
+        onChange={(e: any) => updateData({ instagramUrl: e.target.value })} 
+        placeholder="https://instagram.com/yourbusiness"
+        hint="Used to build follower relationships on premium plans"
+      />
 
       <SectionHeader>Google Review Setup</SectionHeader>
       
@@ -889,7 +897,7 @@ export default function OnboardingWizard() {
   const [showPreview, setShowPreview] = useState(false)
   
   const [data, setData] = useState<any>({
-    name: '', tagline: '', website: '', googleReviewUrl: '', placeId: '',
+    name: '', tagline: '', website: '', instagramUrl: '', googleReviewUrl: '', placeId: '',
     currentRating: 4.5, reviewCount: 120,
     city: '', area: '', address: '', phone: '', whatsapp: '', email: '',
     openTime: '09:00', closeTime: '22:00', daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
@@ -944,7 +952,8 @@ export default function OnboardingWizard() {
               language: parsed.review_language ? parsed.review_language.charAt(0).toUpperCase() + parsed.review_language.slice(1) : prev.language,
               logo: parsed.logo_url || prev.logo,
               plan: parsed.plan || prev.plan,
-              website: parsed.menu_data?.website || prev.website,
+              website: parsed.website_url || prev.website,
+              instagramUrl: parsed.instagram_url || prev.instagramUrl,
               menuCategories: parsed.menu_data && Array.isArray(parsed.menu_data) ? parsed.menu_data : prev.menuCategories,
               signatureDish: parsed.signature_dish || prev.signatureDish,
               highlightDishes: parsed.highlighted_dishes || prev.highlightDishes
@@ -986,6 +995,7 @@ export default function OnboardingWizard() {
             tagline: data.tagline,
             google_review_url: data.googleReviewUrl,
             website: data.website,
+            instagram_url: data.instagramUrl,
             place_id: data.placeId,
             google_rating: parseFloat(data.currentRating) || 4.5,
             review_count: parseInt(data.reviewCount) || 120

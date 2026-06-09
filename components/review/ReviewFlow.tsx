@@ -14,6 +14,7 @@ const STEPS = {
   RATE: 3,    // Rating
   READY: 4,   // AI Reviews
   COPIED: 5,  // Done
+  INSTAGRAM: 6 // Instagram Follow
 };
 
 function getLightenedBrandColor(hex: string, percent: number): string {
@@ -57,6 +58,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
     plan: (data.plan === 'free' || data.theme === 'free') ? 'free' : (data.plan === 'basic' || data.theme === 'classic') ? 'basic' : 'premium',
     city: data.city || "Lucknow",
     area: data.area || data.area_locality || "",
+    instagramUrl: data.instagram_url || data.instagramUrl || "",
     negativeFilterEnabled: data.negativeFilterEnabled ?? true
   };
 
@@ -181,7 +183,11 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
       if (business.googleReviewUrl && business.googleReviewUrl !== '#') {
         window.open(business.googleReviewUrl, '_blank');
       }
-      // setStep(STEPS.COPIED);
+      if (business.plan === 'premium' && business.instagramUrl) {
+        setStep(STEPS.INSTAGRAM);
+      } else {
+        setStep(STEPS.COPIED);
+      }
     }, 2000);
 
     try {
@@ -626,6 +632,41 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
               className={`w-full py-4 rounded-xl font-bold text-sm shadow-md flex items-center justify-center gap-2 transition-all active:scale-[0.98] ${isDark ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-slate-900 text-white hover:bg-slate-800'}`}
             >
               Done <RefreshCw className="w-4 h-4" />
+            </button>
+          </motion.div>
+        )}
+
+        {/* SCREEN 6: INSTAGRAM FOLLOW (Premium Only) */}
+        {step === STEPS.INSTAGRAM && (
+          <motion.div 
+            key="instagram" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={transition}
+            className="flex-1 flex flex-col items-center justify-center p-8 text-center h-full"
+          >
+            <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-500 flex items-center justify-center mb-6 shadow-lg shadow-pink-500/20">
+              <Sparkles className="w-10 h-10 text-white stroke-[2]" />
+            </div>
+            
+            <h2 className="text-2xl font-bold mb-3 leading-tight">Don't forget to build a relationship with us!</h2>
+            
+            <p className={`text-sm leading-relaxed max-w-[260px] mb-10 ${textMuted}`}>
+              Follow us on Instagram for exclusive offers, new arrivals & behind the scenes.
+            </p>
+            
+            <button 
+              onClick={() => {
+                window.open(business.instagramUrl, '_blank');
+                setStep(STEPS.COPIED);
+              }}
+              className="w-full py-4 rounded-xl font-bold text-sm text-white shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] mb-4 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 hover:opacity-90"
+            >
+              Follow us on Instagram <ArrowRight className="w-4 h-4" />
+            </button>
+            
+            <button 
+              onClick={() => setStep(STEPS.COPIED)}
+              className={`text-xs font-semibold underline-offset-4 hover:underline ${textMuted}`}
+            >
+              Maybe later
             </button>
           </motion.div>
         )}
