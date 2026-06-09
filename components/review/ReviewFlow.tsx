@@ -183,7 +183,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
       if (business.googleReviewUrl && business.googleReviewUrl !== '#') {
         window.open(business.googleReviewUrl, '_blank');
       }
-      if (business.plan === 'premium' && business.instagramUrl) {
+      if (['premium', 'trial'].includes(business.plan) && business.instagramUrl) {
         setStep(STEPS.INSTAGRAM);
       } else {
         setStep(STEPS.COPIED);
