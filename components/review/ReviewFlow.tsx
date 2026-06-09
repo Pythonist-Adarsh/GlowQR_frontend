@@ -55,7 +55,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
     address: data.address && data.address.length > 5 ? data.address : defaultAddress,
     primaryColor: data.primaryColor || data.brandColor || "#1D9E75",
     googleReviewUrl: data.googleReviewUrl || "#",
-    plan: (data.plan === 'free' || data.theme === 'free') ? 'free' : (data.plan === 'basic' || data.theme === 'classic') ? 'basic' : 'premium',
+    plan: data.plan || (data.theme === 'free' ? 'free' : data.theme === 'classic' ? 'basic' : 'premium'),
     city: data.city || "Lucknow",
     area: data.area || data.area_locality || "",
     instagramUrl: data.instagram_url || data.instagramUrl || "",
