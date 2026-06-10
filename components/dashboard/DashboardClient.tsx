@@ -117,45 +117,58 @@ export function DashboardClient({
             fetch(`${API_BASE_URL}/api/analytics/reviews-data`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any))
           ]);
           
-          if (analyticsRes.ok) {
-            const analyticsData = await analyticsRes.json();
-            if (catRatingsRes.ok) analyticsData.category_ratings = await catRatingsRes.json();
-            if (scansChartRes.ok) analyticsData.scans_chart = await scansChartRes.json();
-            if (topMenuItemsRes.ok) analyticsData.top_menu_items = await topMenuItemsRes.json();
-            if (allReviewsRes.ok) analyticsData.all_reviews = (await allReviewsRes.json()).reviews;
-            if (reviewsDataRes.ok) analyticsData.reviews_data = await reviewsDataRes.json();
-            if (meRes.ok) {
-               const meData = await meRes.json();
-               analyticsData.current_period_end = meData.user.current_period_end || meData.user.trial_ends_at;
-               analyticsData.plan = meData.user.plan;
-               // update business plan
-               data.business.plan = meData.user.plan;
-               setUserData(meData.user);
-               setBusinessData({...data.business});
-            }
+          if (meRes.ok) {
+            const meData = await meRes.json();
+            // update business plan
+            data.business.plan = meData.user.plan;
+            setUserData(meData.user);
+            setBusinessData({...data.business});
             
-            // premium fetches
-            if (analyticsData.plan === 'premium') {
-              try {
-                const [heatmapRes, funnelRes, negAlertsRes, aiInsightsRes, bombAlertsRes] = await Promise.all([
-                   fetch(`${API_BASE_URL}/api/analytics/heatmap`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any)),
-                   fetch(`${API_BASE_URL}/api/analytics/funnel`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any)),
-                   fetch(`${API_BASE_URL}/api/analytics/negative-alerts`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any)),
-                   fetch(`${API_BASE_URL}/api/analytics/ai-insights`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any)),
-                   fetch(`${API_BASE_URL}/api/bomb-alerts/${data.business.id}`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any))
-                ]);
-                if (heatmapRes.ok) analyticsData.heatmap = (await heatmapRes.json()).heatmap;
-                if (funnelRes.ok) analyticsData.funnel = (await funnelRes.json()).funnel;
-                if (negAlertsRes.ok) analyticsData.negative_alerts = (await negAlertsRes.json()).alerts;
-                if (aiInsightsRes.ok) analyticsData.ai_insights = (await aiInsightsRes.json()).insights;
-                if (bombAlertsRes.ok) {
-                  const ba = await bombAlertsRes.json();
-                  analyticsData.bomb_alerts = ba.alerts;
-                  analyticsData.flagged_count = ba.flagged_count;
-                }
-              } catch (e) { console.error('Premium fetch error', e); }
+            if (analyticsRes.ok) {
+              const analyticsData = await analyticsRes.json();
+              if (catRatingsRes.ok) analyticsData.category_ratings = await catRatingsRes.json();
+              if (scansChartRes.ok) analyticsData.scans_chart = await scansChartRes.json();
+              if (topMenuItemsRes.ok) analyticsData.top_menu_items = await topMenuItemsRes.json();
+              if (allReviewsRes.ok) analyticsData.all_reviews = (await allReviewsRes.json()).reviews;
+              if (reviewsDataRes.ok) analyticsData.reviews_data = await reviewsDataRes.json();
+              
+              analyticsData.current_period_end = meData.user.current_period_end || meData.user.trial_ends_at;
+              analyticsData.plan = meData.user.plan;
+              
+              // premium fetches
+              if (analyticsData.plan === 'premium') {
+                try {
+                  const [heatmapRes, funnelRes, negAlertsRes, aiInsightsRes, bombAlertsRes] = await Promise.all([
+                     fetch(`${API_BASE_URL}/api/analytics/heatmap`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any)),
+                     fetch(`${API_BASE_URL}/api/analytics/funnel`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any)),
+                     fetch(`${API_BASE_URL}/api/analytics/negative-alerts`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any)),
+                     fetch(`${API_BASE_URL}/api/analytics/ai-insights`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any)),
+                     fetch(`${API_BASE_URL}/api/bomb-alerts/${data.business.id}`, { headers }).catch(() => ({ ok: false, json: async () => ({}) } as any))
+                  ]);
+                  if (heatmapRes.ok) analyticsData.heatmap = (await heatmapRes.json()).heatmap;
+                  if (funnelRes.ok) analyticsData.funnel = (await funnelRes.json()).funnel;
+                  if (negAlertsRes.ok) analyticsData.negative_alerts = (await negAlertsRes.json()).alerts;
+                  if (aiInsightsRes.ok) analyticsData.ai_insights = (await aiInsightsRes.json()).insights;
+                  if (bombAlertsRes.ok) {
+                    const ba = await bombAlertsRes.json();
+                    analyticsData.bomb_alerts = ba.alerts;
+                    analyticsData.flagged_count = ba.flagged_count;
+                  }
+                } catch (e) { console.error('Premium fetch error', e); }
+              }
+              setAnalyticsSummary(analyticsData);
             }
-            setAnalyticsSummary(analyticsData);
+          } else {
+             // Fallback if meRes fails but analyticsRes succeeds
+             if (analyticsRes.ok) {
+               const analyticsData = await analyticsRes.json();
+               if (catRatingsRes.ok) analyticsData.category_ratings = await catRatingsRes.json();
+               if (scansChartRes.ok) analyticsData.scans_chart = await scansChartRes.json();
+               if (topMenuItemsRes.ok) analyticsData.top_menu_items = await topMenuItemsRes.json();
+               if (allReviewsRes.ok) analyticsData.all_reviews = (await allReviewsRes.json()).reviews;
+               if (reviewsDataRes.ok) analyticsData.reviews_data = await reviewsDataRes.json();
+               setAnalyticsSummary(analyticsData);
+             }
           }
         } else {
           localStorage.removeItem("glowqr_business_data");
