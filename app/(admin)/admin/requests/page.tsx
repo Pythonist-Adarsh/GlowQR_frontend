@@ -41,7 +41,7 @@ export default function RequestsPage() {
       const res = await fetch(`/api/admin-proxy/upgrade/${id}/${action}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: action === 'reject' ? JSON.stringify({ reason }) : undefined
+        body: JSON.stringify(action === 'reject' ? { reason } : {})
       });
       
       if (res.ok) {
