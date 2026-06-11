@@ -40,7 +40,7 @@ export default function SettingsPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    setSettings(prev => ({
+    setSettings((prev: any) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : type === 'number' ? parseInt(value) || 0 : value
     }));

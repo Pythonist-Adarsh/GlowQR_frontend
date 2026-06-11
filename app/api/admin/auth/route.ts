@@ -17,7 +17,8 @@ export async function POST(req: NextRequest) {
       const data = await backendRes.json();
       
       if (data.token) {
-        cookies().set('admin_session', data.token, {
+        const cookieStore = await cookies();
+        cookieStore.set('admin_session', data.token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'lax',
@@ -36,6 +37,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE() {
-  cookies().delete('admin_session');
+  const cookieStore = await cookies();
+  cookieStore.delete('admin_session');
   return NextResponse.json({ success: true });
 }

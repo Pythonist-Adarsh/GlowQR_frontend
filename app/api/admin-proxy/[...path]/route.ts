@@ -2,9 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { API_BASE_URL } from '@/lib/api-config';
 import { cookies } from 'next/headers';
 
-async function handler(req: NextRequest, { params }: { params: { path: string[] } }) {
-  const token = cookies().get('admin_session')?.value;
-  const path = params.path.join('/');
+async function handler(req: NextRequest, context: { params: Promise<{ path: string[] }> }) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('admin_session')?.value;
+  const { path: pathArray } = await context.params;
+  const path = pathArray.join('/');
   
   const headers = new Headers(req.headers);
   if (token) headers.set('cookie', `admin_session=${token}`);
