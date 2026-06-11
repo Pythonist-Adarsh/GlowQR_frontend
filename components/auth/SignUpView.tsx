@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
+import { Eye, EyeOff } from 'lucide-react'
 import { AuthBrandPanel } from '@/components/auth/AuthBrandPanel'
 import { AuthDivider } from '@/components/auth/AuthDivider'
 import { GoogleContinueButton } from '@/components/auth/GoogleContinueButton'
@@ -22,6 +23,7 @@ export function SignUpView() {
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleSignUp = async (e?: any) => {
     if (e && e.preventDefault) e.preventDefault();
@@ -120,17 +122,29 @@ export function SignUpView() {
               className="w-full rounded-[var(--radius-md)] border border-[#e5e5e5] bg-white px-4 py-3 text-[15px] text-[#111111] outline-none placeholder:text-[#999999] focus:border-[#111111] focus:ring-2 focus:ring-[#111111]/25"
             />
           </label>
-          <label className="block">
+          <div className="block relative">
             <span className="sr-only">Password</span>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               required
               placeholder="Password"
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              className="w-full rounded-[var(--radius-md)] border border-[#e5e5e5] bg-white px-4 py-3 text-[15px] text-[#111111] outline-none placeholder:text-[#999999] focus:border-[#111111] focus:ring-2 focus:ring-[#111111]/25"
+              className="w-full rounded-[var(--radius-md)] border border-[#e5e5e5] bg-white px-4 py-3 pr-12 text-[15px] text-[#111111] outline-none placeholder:text-[#999999] focus:border-[#111111] focus:ring-2 focus:ring-[#111111]/25"
             />
-          </label>
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-slate-500 hover:text-slate-800 focus:outline-none z-10 flex items-center justify-center"
+              title={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? (
+                <EyeOff className="w-5 h-5" />
+              ) : (
+                <Eye className="w-5 h-5" />
+              )}
+            </button>
+          </div>
 
           <div className="space-y-3">
             <motion.button

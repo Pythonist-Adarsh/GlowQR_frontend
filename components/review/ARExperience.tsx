@@ -18,7 +18,7 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
   // Expired plan
   if (plan === 'expired') {
     return (
-      <div className={`min-h-screen flex items-center justify-center bg-slate-900 ${textColor} p-6 text-center`}>
+      <div className={`min-h-screen flex items-center justify-center bg-slate-900 text-white p-6 text-center`}>
         <div>
           <h1 className="text-2xl font-bold mb-2">Scanner Inactive</h1>
           <p className="text-slate-400">This QR code is no longer active.</p>
