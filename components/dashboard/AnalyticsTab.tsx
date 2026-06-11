@@ -195,6 +195,19 @@ export const AnalyticsTab = ({ businessId, businessData }: { businessId?: number
         )}
       </div>
 
+      {/* Print styles applied globally to format the full dashboard for PDF export */}
+      <style dangerouslySetInnerHTML={{__html: `
+        @media print {
+          @page { margin: 0; }
+          body { 
+            -webkit-print-color-adjust: exact; 
+            print-color-adjust: exact; 
+            background: white !important; 
+          }
+          nav, header, .sidebar, button { display: none !important; }
+        }
+      `}} />
+
       <ReportDocument 
         businessData={businessData} 
         basicData={basicData} 

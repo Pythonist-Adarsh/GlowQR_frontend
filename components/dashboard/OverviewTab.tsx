@@ -397,11 +397,11 @@ export function OverviewTab({
               
               {/* Printable Card Area */}
               <div ref={qrCardRef} className="w-full max-w-[260px] bg-white pt-8 pb-6 px-4 rounded-xl flex flex-col items-center justify-center relative overflow-hidden mb-6">
-                <div className="w-16 h-16 rounded-full overflow-hidden mb-3 flex items-center justify-center bg-transparent">
+                <div className="h-16 mb-3 flex items-center justify-center bg-transparent">
                   {b.logo_url ? (
-                    <img src={b.logo_url} alt="Logo" className="w-full h-full object-contain" />
+                    <img src={b.logo_url} alt="Logo" className="max-w-[120px] max-h-16 object-contain" crossOrigin="anonymous" />
                   ) : (
-                    <div className="w-full h-full rounded-full border-2 border-slate-900 border-dashed flex items-center justify-center">
+                    <div className="w-16 h-16 rounded-full border-2 border-slate-900 border-dashed flex items-center justify-center">
                       <span className="text-[10px] font-black text-slate-900 leading-none text-center">YOUR<br/>LOGO</span>
                     </div>
                   )}

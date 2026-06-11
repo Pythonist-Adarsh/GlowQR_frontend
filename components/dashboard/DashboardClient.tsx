@@ -283,7 +283,7 @@ export function DashboardClient({
       `}</style>
   
         {/* Sidebar */}
-        <aside className={`bg-white border-r border-slate-200 flex flex-col shadow-sm h-screen overflow-y-auto sticky top-0 transition-all duration-300 ${isSidebarCollapsed ? 'w-20 p-4' : 'w-64 p-6'}`}>
+        <aside className={`print:hidden bg-white border-r border-slate-200 flex flex-col shadow-sm h-screen overflow-y-auto sticky top-0 transition-all duration-300 ${isSidebarCollapsed ? 'w-20 p-4' : 'w-64 p-6'}`}>
           <div className={`flex items-center mb-10 ${isSidebarCollapsed ? 'justify-center' : 'justify-between'} px-2`}>
             {!isSidebarCollapsed ? (
               <>
