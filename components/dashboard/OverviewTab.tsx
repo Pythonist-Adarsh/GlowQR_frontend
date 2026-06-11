@@ -41,7 +41,7 @@ export function OverviewTab({
   
   const downloadCard = async () => {
     if (qrCardRef.current) {
-      const canvas = await html2canvas(qrCardRef.current, { scale: 3, backgroundColor: '#ffffff' });
+      const canvas = await html2canvas(qrCardRef.current, { scale: 3, backgroundColor: '#ffffff', useCORS: true });
       const pngUrl = canvas.toDataURL("image/png");
       const downloadLink = document.createElement("a");
       downloadLink.href = pngUrl;

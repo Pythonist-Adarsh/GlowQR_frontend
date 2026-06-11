@@ -191,19 +191,30 @@ export const AnalyticsTab = ({ businessId }: { businessId?: number }) => {
         </>
       )}
       
-      {/* Print styles applied globally to hide everything except Monthly Report if needed */}
+      {/* Print styles applied globally to format the full dashboard for PDF export */}
       <style dangerouslySetInnerHTML={{__html: `
         @media print {
-          body * { visibility: hidden; }
-          .bg-slate-900.text-white.p-6, .bg-slate-900.text-white.p-6 * {
-            visibility: visible;
+          @page { margin: 1cm; }
+          body { 
+            -webkit-print-color-adjust: exact; 
+            print-color-adjust: exact; 
+            background: white !important; 
           }
-          .bg-slate-900.text-white.p-6 {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
+          nav, header, .sidebar, button { display: none !important; }
+          
+          .grid { 
+            display: block !important; 
           }
+          .grid > div { 
+            margin-bottom: 24px !important; 
+            page-break-inside: avoid; 
+            width: 100% !important;
+          }
+          
+          .max-w-7xl { max-width: 100% !important; padding: 0 !important; }
+          
+          /* Hide locked sections from the final report */
+          .backdrop-blur-sm, .opacity-40 { display: none !important; }
         }
       `}} />
     </div>
