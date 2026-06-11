@@ -32,7 +32,9 @@ import {
 import { BombAlertsWidget } from '@/components/analytics/BombAlertsWidget';
 import { NegativeAlertsInbox } from '@/components/analytics/NegativeAlertsInbox';
 
-export const AnalyticsTab = ({ businessId }: { businessId?: number }) => {
+import { ReportDocument } from '@/components/analytics/ReportDocument';
+
+export const AnalyticsTab = ({ businessId, businessData }: { businessId?: number, businessData?: any }) => {
   const { hasAccess: hasBasic, loading: basicLoading } = usePlanGate('basic');
   const { hasAccess: hasPremium, loading: premiumLoading } = usePlanGate('premium');
   
@@ -122,101 +124,82 @@ export const AnalyticsTab = ({ businessId }: { businessId?: number }) => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-4 md:p-8 pt-24 min-h-screen">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900">Analytics Dashboard</h1>
-        <p className="text-slate-500 mt-2">Track performance, gather insights, and grow your business.</p>
-      </div>
-      
-      {!hasBasic ? (
-        <div className="h-[60vh]">
-          <LockedSection 
-            title="Analytics Locked" 
-            description="Unlock visitor trends, menu performance, Google connect scores, and Premium AI insights."
-            requiredPlan="basic"
-            price="₹199"
-          />
+    <>
+      <div className="max-w-7xl mx-auto p-4 md:p-8 pt-24 min-h-screen print:hidden">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-slate-900">Analytics Dashboard</h1>
+          <p className="text-slate-500 mt-2">Track performance, gather insights, and grow your business.</p>
         </div>
-      ) : (
-        <>
-          {/* BASIC ANALYTICS SECTION */}
-          <h2 className="text-xl font-bold text-slate-800 mb-4 mt-8 pb-2 border-b border-slate-100">Growth Metrics</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            <div className="lg:col-span-1"><ReviewVelocityCard data={basicData.velocity} /></div>
-            <div className="lg:col-span-2"><BestTimeCard data={basicData.bestTime} /></div>
-            <div className="lg:col-span-1"><RepeatVisitorsCard data={basicData.repeat} /></div>
-            
-            <div className="lg:col-span-2"><RatingTrendChart data={basicData.trend} /></div>
-            <div className="lg:col-span-2"><MenuPerformanceChart data={basicData.menu} /></div>
-            
-            <div className="lg:col-span-1"><LanguageSplitCard data={basicData.language} /></div>
-            <div className="lg:col-span-1"><GoogleConnectScore data={basicData.google} /></div>
-            <div className="lg:col-span-2"><MonthlyReportCard data={basicData.monthly} onDownload={handleDownloadReport} /></div>
+        
+        {!hasBasic ? (
+          <div className="h-[60vh]">
+            <LockedSection 
+              title="Analytics Locked" 
+              description="Unlock visitor trends, menu performance, Google connect scores, and Premium AI insights."
+              requiredPlan="basic"
+              price="₹199"
+            />
           </div>
+        ) : (
+          <>
+            {/* BASIC ANALYTICS SECTION */}
+            <h2 className="text-xl font-bold text-slate-800 mb-4 mt-8 pb-2 border-b border-slate-100">Growth Metrics</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+              <div className="lg:col-span-1"><ReviewVelocityCard data={basicData.velocity} /></div>
+              <div className="lg:col-span-2"><BestTimeCard data={basicData.bestTime} /></div>
+              <div className="lg:col-span-1"><RepeatVisitorsCard data={basicData.repeat} /></div>
+              
+              <div className="lg:col-span-2"><RatingTrendChart data={basicData.trend} /></div>
+              <div className="lg:col-span-2"><MenuPerformanceChart data={basicData.menu} /></div>
+              
+              <div className="lg:col-span-1"><LanguageSplitCard data={basicData.language} /></div>
+              <div className="lg:col-span-1"><GoogleConnectScore data={basicData.google} /></div>
+              <div className="lg:col-span-2"><MonthlyReportCard data={basicData.monthly} onDownload={handleDownloadReport} /></div>
+            </div>
 
-          {/* PREMIUM ANALYTICS SECTION */}
-          <h2 className="text-xl font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
-            <span className="text-amber-500">✨</span> Premium Intelligence
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
-            {hasPremium ? (
-              <>
-                <AIInsightsCard data={premiumData.ai} hoursAgo={1} />
-                
-                <div className="lg:col-span-2"><ScanHeatmap data={premiumData.heatmap} /></div>
-                <div className="lg:col-span-1"><NegativeAlertsInbox accessToken={localStorage.getItem('token') || ''} /></div>
-                <div className="lg:col-span-3"><BombAlertsWidget accessToken={localStorage.getItem('token') || ''} businessId={businessId} /></div>
-                
-                <div className="lg:col-span-1"><ConversionFunnel data={premiumData.funnel} /></div>
-                <div className="lg:col-span-1"><RevenueImpactCard data={premiumData.revenue} /></div>
-                <div className="lg:col-span-1"><NegativeInterceptionCard data={premiumData.negative} /></div>
-                <div className="lg:col-span-1"><StaffPerformanceCard data={premiumData.staff} /></div>
-                
-                <div className="lg:col-span-1"><SentimentAnalysisCard data={premiumData.sentiment} /></div>
-                <div className="lg:col-span-1"><CompetitorBenchmarkCard data={premiumData.competitor} /></div>
-                
-                <div className="lg:col-span-1"><QRPlacementCard data={premiumData.qr} /></div>
-              </>
-            ) : (
-              <div className="col-span-full">
-                <LockedSection 
-                  title="Premium Intelligence Locked" 
-                  description="Unlock AI Problem Detection, Revenue Impact estimators, Heatmaps, and Negative Review Shield analytics."
-                  requiredPlan="premium"
-                  price="₹499"
-                />
-              </div>
-            )}
-          </div>
-        </>
-      )}
-      
-      {/* Print styles applied globally to format the full dashboard for PDF export */}
-      <style dangerouslySetInnerHTML={{__html: `
-        @media print {
-          @page { margin: 1cm; }
-          body { 
-            -webkit-print-color-adjust: exact; 
-            print-color-adjust: exact; 
-            background: white !important; 
-          }
-          nav, header, .sidebar, button { display: none !important; }
-          
-          .grid { 
-            display: block !important; 
-          }
-          .grid > div { 
-            margin-bottom: 24px !important; 
-            page-break-inside: avoid; 
-            width: 100% !important;
-          }
-          
-          .max-w-7xl { max-width: 100% !important; padding: 0 !important; }
-          
-          /* Hide locked sections from the final report */
-          .backdrop-blur-sm, .opacity-40 { display: none !important; }
-        }
-      `}} />
-    </div>
+            {/* PREMIUM ANALYTICS SECTION */}
+            <h2 className="text-xl font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+              <span className="text-amber-500">✨</span> Premium Intelligence
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
+              {hasPremium ? (
+                <>
+                  <AIInsightsCard data={premiumData.ai} hoursAgo={1} />
+                  
+                  <div className="lg:col-span-2"><ScanHeatmap data={premiumData.heatmap} /></div>
+                  <div className="lg:col-span-1"><NegativeAlertsInbox accessToken={localStorage.getItem('token') || ''} /></div>
+                  <div className="lg:col-span-3"><BombAlertsWidget accessToken={localStorage.getItem('token') || ''} businessId={businessId} /></div>
+                  
+                  <div className="lg:col-span-1"><ConversionFunnel data={premiumData.funnel} /></div>
+                  <div className="lg:col-span-1"><RevenueImpactCard data={premiumData.revenue} /></div>
+                  <div className="lg:col-span-1"><NegativeInterceptionCard data={premiumData.negative} /></div>
+                  <div className="lg:col-span-1"><StaffPerformanceCard data={premiumData.staff} /></div>
+                  
+                  <div className="lg:col-span-1"><SentimentAnalysisCard data={premiumData.sentiment} /></div>
+                  <div className="lg:col-span-1"><CompetitorBenchmarkCard data={premiumData.competitor} /></div>
+                  
+                  <div className="lg:col-span-1"><QRPlacementCard data={premiumData.qr} /></div>
+                </>
+              ) : (
+                <div className="col-span-full">
+                  <LockedSection 
+                    title="Premium Intelligence Locked" 
+                    description="Unlock AI Problem Detection, Revenue Impact estimators, Heatmaps, and Negative Review Shield analytics."
+                    requiredPlan="premium"
+                    price="₹499"
+                  />
+                </div>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+
+      <ReportDocument 
+        businessData={businessData} 
+        basicData={basicData} 
+        premiumData={premiumData} 
+      />
+    </>
   );
-}
+};

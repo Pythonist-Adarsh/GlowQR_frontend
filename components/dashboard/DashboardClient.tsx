@@ -210,8 +210,8 @@ export function DashboardClient({
   const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
   const [upgradePlan, setUpgradePlan] = useState<"basic" | "premium">("basic");
   const [activeTab, setActiveTab] = useState<
-    "overview" | "qr" | "analytics" | "reviews" | "subscription"
-  >(initialTab);
+    "overview" | "reviews" | "qr" | "analytics" | "subscription" | "settings"
+  >("overview");
 
   useEffect(() => {
     setActiveTab(initialTab);
@@ -561,8 +561,8 @@ export function DashboardClient({
         )}
 
         {activeTab === "analytics" && (
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <AnalyticsTab businessId={b?.id} />
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 w-full overflow-x-hidden">
+            <AnalyticsTab businessId={b?.id} businessData={b} />
           </div>
         )}
 
