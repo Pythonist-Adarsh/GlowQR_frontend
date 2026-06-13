@@ -71,8 +71,8 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
 
   // Screen 2 States
   const [selectedDishes, setSelectedDishes] = useState<(number | string)[]>([]);
-  const [mealType, setMealType] = useState("Dinner");
-  const [spendRange, setSpendRange] = useState("400-500");
+  const [mealType, setMealType] = useState(data.menuCategories && data.menuCategories.length > 0 ? data.menuCategories[0].category : "Dinner");
+  const [spendRange, setSpendRange] = useState(data.spendRange || data.price_range || "₹200–₹500");
   const [seatingType, setSeatingType] = useState("Indoor");
   const [waitTime, setWaitTime] = useState("No wait");
 
@@ -314,7 +314,9 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
               <div className="mb-8 w-full overflow-hidden">
                 <p className={`text-[9px] font-bold uppercase tracking-widest mb-3 ${textMuted}`}>What did you get?</p>
                 <div className="flex overflow-x-auto gap-2 pb-2 custom-scrollbar pr-6" style={{ width: 'calc(100% + 1.5rem)' }}>
-                  {["Breakfast", "Brunch", "Lunch", "Dinner"].map(type => (
+                  {(data.menuCategories && data.menuCategories.length > 0 
+                    ? data.menuCategories.map((c: any) => c.category) 
+                    : ["Breakfast", "Brunch", "Lunch", "Dinner"]).map((type: string) => (
                     <button 
                       key={type} onClick={() => setMealType(type)}
                       className={`shrink-0 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider border transition-all`}
@@ -329,13 +331,13 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
               <div className="mb-8 w-full overflow-hidden">
                 <p className={`text-[9px] font-bold uppercase tracking-widest mb-3 ${textMuted}`}>How much per person?</p>
                 <div className="flex overflow-x-auto gap-2 pb-2 custom-scrollbar pr-6" style={{ width: 'calc(100% + 1.5rem)' }}>
-                  {["200-400", "400-500", "600-1000", "1000+"].map(type => (
+                  {["Under ₹200", "₹200–₹500", "₹500–₹1000", "₹1000–₹2000", "Above ₹2000"].map(type => (
                     <button 
                       key={type} onClick={() => setSpendRange(type)}
                       className={`shrink-0 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider border transition-all`}
                       style={spendRange === type ? { backgroundColor: business.primaryColor, borderColor: business.primaryColor, color: '#fff' } : { borderColor: isDark ? '#334155' : '#e2e8f0', color: isDark ? '#cbd5e1' : '#64748b' }}
                     >
-                      ₹{type}
+                      {type}
                     </button>
                   ))}
                 </div>
