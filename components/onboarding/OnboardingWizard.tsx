@@ -65,6 +65,7 @@ import { GlowLogo } from '@/components/GlowLogo'
 
 const ReviewPageOrchestrator = lazy(() => import('@/components/review/ReviewPageOrchestrator').then(mod => ({ default: mod.ReviewPageOrchestrator })));
 import { API_BASE_URL } from '@/lib/api-config';
+import { getThemeVariables } from '@/components/review/themeUtils';
 
 // --- Design System Tokens (CSS Variables) ---
 const STYLES = `
@@ -245,69 +246,150 @@ const Step1 = ({ data, updateData }: any) => (
   </div>
 )
 
-const Step2 = ({ data, updateData }: any) => (
-  <div className="space-y-6">
-    <InfoBox 
-      icon={AlertTriangle} 
-      title="SEO Optimization" 
-      description="City and area are included in every AI-generated review for local SEO boost." 
-      variant="warning"
-    />
-    <div className="grid grid-cols-2 gap-4">
-      <InputField label="City" badge="required" value={data.city} onChange={(e: any) => updateData({ city: e.target.value })} placeholder="Lucknow" hint="e.g. Hazratganj" />
-      <InputField label="Area/Locality" badge="optional" value={data.area} onChange={(e: any) => updateData({ area: e.target.value })} placeholder="Hazratganj" />
-    </div>
-    <InputField label="Full Address" badge="optional" value={data.address} onChange={(e: any) => updateData({ address: e.target.value })} placeholder="12/45, Hazratganj Cross Roads" />
-    
-    <SectionHeader>Contact Details</SectionHeader>
-    <div className="grid grid-cols-2 gap-4">
-      <InputField label="Phone Number" badge="production" value={data.phone} onChange={(e: any) => updateData({ phone: e.target.value })} />
-      <InputField label="WhatsApp Number" badge="production" value={data.whatsapp} onChange={(e: any) => updateData({ whatsapp: e.target.value })} hint="For 1-hour nudge" />
-    </div>
-    <InputField label="Manager Email" badge="required" type="email" value={data.email} onChange={(e: any) => updateData({ email: e.target.value })} hint="For alerts & billing" />
+const Step2 = ({ data, updateData }: any) => {
+  const themes = [
+    { id: 'classic', name: 'Basic', price: 'Free', desc: 'Logo glow + smooth drag trails & bursts', bg: '#0a0a1a' },
+    { id: 'premium', name: 'Premium', price: 'Pro', desc: '3D floating + typewriter note & mouse ripples', bg: '#06060F', badge: 'Popular' },
+  ];
+  const colors = ['#6C63FF', '#1a8a3c', '#E8474F', '#F59E0B', '#0EA5E9', '#EC4899', '#111111'];
+  
+  const planForPreview = data.theme === 'classic' ? 'basic' : 'premium';
+  const themeVars = useMemo(() => getThemeVariables(planForPreview, data.primaryColor || '#6C63FF'), [planForPreview, data.primaryColor]);
+  const isDarkText = themeVars['--text-primary'] === '#111111';
 
-    <SectionHeader>Business Hours</SectionHeader>
-    <div className="grid grid-cols-2 gap-4">
-      <InputField label="Opening Time" type="time" value={data.openTime || '09:00'} onChange={(e: any) => updateData({ openTime: e.target.value })} />
-      <InputField label="Closing Time" type="time" value={data.closeTime || '22:00'} onChange={(e: any) => updateData({ closeTime: e.target.value })} />
-    </div>
-    <div>
-      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 block">Days Open</label>
-      <div className="flex gap-2">
-        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
-          <button 
-            key={day}
-            onClick={() => {
-              const current = data.daysOpen || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-              const next = current.includes(day) ? current.filter((d: string) => d !== day) : [...current, day];
-              updateData({ daysOpen: next });
-            }}
-            className={`flex-1 py-2 rounded-lg text-[10px] font-bold border transition-all ${data.daysOpen?.includes(day) ? 'bg-[var(--color-brand-primary)] text-white border-[var(--color-brand-primary)]' : 'bg-white text-slate-400 border-slate-200'}`}
-          >
-            {day}
-          </button>
-        ))}
+  return (
+    <div className="flex flex-col md:flex-row gap-8 items-start">
+      <div className="flex-1 space-y-6 w-full">
+        <InfoBox 
+          icon={AlertTriangle} 
+          title="SEO Optimization" 
+          description="City and area are included in every AI-generated review for local SEO boost." 
+          variant="warning"
+        />
+        <div className="grid grid-cols-2 gap-4">
+          <InputField label="City" badge="required" value={data.city} onChange={(e: any) => updateData({ city: e.target.value })} placeholder="Lucknow" hint="e.g. Hazratganj" />
+          <InputField label="Area/Locality" badge="optional" value={data.area} onChange={(e: any) => updateData({ area: e.target.value })} placeholder="Hazratganj" />
+        </div>
+        <InputField label="Full Address" badge="optional" value={data.address} onChange={(e: any) => updateData({ address: e.target.value })} placeholder="12/45, Hazratganj Cross Roads" />
+        
+        <SectionHeader>Contact Details</SectionHeader>
+        <div className="grid grid-cols-2 gap-4">
+          <InputField label="Phone Number" badge="production" value={data.phone} onChange={(e: any) => updateData({ phone: e.target.value })} />
+          <InputField label="WhatsApp Number" badge="production" value={data.whatsapp} onChange={(e: any) => updateData({ whatsapp: e.target.value })} hint="For 1-hour nudge" />
+        </div>
+        <InputField label="Manager Email" badge="required" type="email" value={data.email} onChange={(e: any) => updateData({ email: e.target.value })} hint="For alerts & billing" />
+
+        <SectionHeader>Business Hours</SectionHeader>
+        <div className="grid grid-cols-2 gap-4">
+          <InputField label="Opening Time" type="time" value={data.openTime || '09:00'} onChange={(e: any) => updateData({ openTime: e.target.value })} />
+          <InputField label="Closing Time" type="time" value={data.closeTime || '22:00'} onChange={(e: any) => updateData({ closeTime: e.target.value })} />
+        </div>
+        <div>
+          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 block">Days Open</label>
+          <div className="flex gap-2">
+            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
+              <button 
+                key={day}
+                onClick={() => {
+                  const current = data.daysOpen || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                  const next = current.includes(day) ? current.filter((d: string) => d !== day) : [...current, day];
+                  updateData({ daysOpen: next });
+                }}
+                className={`flex-1 py-2 rounded-lg text-[10px] font-bold border transition-all ${data.daysOpen?.includes(day) ? 'bg-[var(--color-brand-primary)] text-white border-[var(--color-brand-primary)]' : 'bg-white text-slate-400 border-slate-200'}`}
+              >
+                {day}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <SectionHeader>Branding</SectionHeader>
+        <div className="space-y-6">
+          <div>
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Business Logo</label>
+            <input type="file" accept="image/*" onChange={e => {
+                if (e.target.files?.[0]) {
+                  const reader = new FileReader();
+                  reader.onload = (event) => updateData({ logo: event.target?.result as string });
+                  reader.readAsDataURL(e.target.files[0]);
+                }
+              }} className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100" />
+          </div>
+          
+          <div className="space-y-4">
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Theme Style</label>
+            <div className="grid grid-cols-2 gap-3">
+              {themes.map(theme => (
+                <button 
+                  key={theme.id}
+                  onClick={() => updateData({ theme: theme.id })}
+                  className={`relative p-1 rounded-3xl border-2 transition-all text-left ${data.theme === theme.id ? 'border-[var(--color-brand-primary)] bg-[var(--color-success-bg)]' : 'border-[var(--color-border-default)] bg-[var(--color-bg-primary)] hover:border-[var(--color-text-tertiary)]'}`}
+                >
+                  <div className="relative h-20 rounded-[1.25rem] overflow-hidden mb-3 border border-slate-100" style={{ backgroundColor: theme.bg }}>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className={`w-8 h-8 rounded-xl border ${theme.id === 'premium' ? 'bg-white/10 border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.3)]' : 'bg-white/10 border-white/20'}`} />
+                    </div>
+                  </div>
+                  <div className="px-3 pb-3">
+                    <p className="text-xs font-black text-[var(--color-text-primary)] mb-0.5">{theme.name}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Brand Color</label>
+            <div className="flex flex-wrap gap-4 items-center">
+              {colors.map(c => (
+                <button 
+                  key={c}
+                  onClick={() => updateData({ primaryColor: c })}
+                  className={`w-8 h-8 rounded-full border-2 transition-all shrink-0 ${data.primaryColor === c ? 'scale-125 border-slate-900 shadow-lg' : 'border-transparent shadow-sm'}`}
+                  style={{ backgroundColor: c }}
+                />
+              ))}
+              <div className="flex items-center gap-2 border border-slate-200 rounded-lg p-1 px-2 shrink-0">
+                <span className="text-[10px] font-bold text-slate-500">Custom</span>
+                <input 
+                  type="color" 
+                  value={data.primaryColor || '#6C63FF'} 
+                  onChange={e => updateData({ primaryColor: e.target.value })} 
+                  className="w-6 h-6 p-0 border-0 rounded cursor-pointer"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+            <Info className="w-4 h-4 text-slate-400 shrink-0" />
+            <p className="text-[10px] text-slate-500 font-medium">Text color automatically adapts to: <strong className="text-slate-900">{isDarkText ? 'Black' : 'White'}</strong> based on your background.</p>
+          </div>
+        </div>
+      </div>
+      
+      {/* Live Preview Panel */}
+      <div className="hidden md:flex w-[260px] shrink-0 flex-col sticky top-4">
+        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-3 text-center">Live Preview</label>
+        <div 
+          className="w-full border border-slate-200 rounded-[2rem] overflow-hidden relative shadow-2xl h-[480px] flex flex-col items-center justify-center transition-colors duration-300" 
+          style={{ ...(themeVars as any), backgroundColor: 'var(--bg-primary)' }}
+        >
+          <div className="relative z-10 w-full flex flex-col items-center p-6 text-center">
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-6 transition-colors duration-300" style={{ backgroundColor: 'var(--accent-glow)', color: 'var(--accent)' }}>
+              <Sparkles className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-bold transition-colors duration-300 mb-2 leading-tight" style={{ color: 'var(--text-primary)' }}>Share your experience</h3>
+            <p className="text-xs transition-colors duration-300 mb-6 italic font-medium" style={{ color: 'var(--accent)' }}>{data.tagline || 'Best service in town'}</p>
+            <button className="w-full py-3 rounded-xl font-bold text-xs shadow-lg flex items-center justify-center gap-2 transition-colors duration-300" style={{ backgroundColor: 'var(--accent)', color: 'var(--text-primary)', boxShadow: '0 4px 14px var(--accent-glow)' }}>
+              Get Started <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
       </div>
     </div>
-    <SectionHeader>Branding</SectionHeader>
-    <div className="space-y-4">
-      <div>
-        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Business Logo</label>
-        <input type="file" accept="image/*" onChange={e => {
-            if (e.target.files?.[0]) {
-              const reader = new FileReader();
-              reader.onload = (event) => updateData({ logo: event.target?.result as string });
-              reader.readAsDataURL(e.target.files[0]);
-            }
-          }} className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100" />
-      </div>
-      <div>
-        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Brand Color</label>
-        <input type="color" value={data.primaryColor || '#1a8a3c'} onChange={e => updateData({ primaryColor: e.target.value })} className="h-10 w-20 cursor-pointer rounded border border-slate-200" />
-      </div>
-    </div>
-  </div>
-)
+  );
+}
 
 const Step3 = ({ data, updateData }: any) => {
   const categories = [
@@ -630,102 +712,8 @@ const Step4 = ({ data, updateData }: any) => {
 }
 
 const Step5 = ({ data, updateData }: any) => {
-  const user = { plan: 'basic' }; // Mocked user plan for plan gate
-  const themes = [
-    { id: 'free', name: 'Free Trial', price: '3 days free', desc: 'Premium experience included in trial', bg: '#ffffff' },
-    { id: 'classic', name: 'Basic', price: '₹199 / mo', desc: 'Logo glow + smooth drag trails & bursts', bg: '#0a0a1a' },
-    { id: 'premium', name: 'Premium', price: '₹499 / mo', desc: '3D floating + typewriter note & mouse ripples', bg: '#06060F', badge: 'Popular' },
-  ]
-
-  const colors = ['#6C63FF', '#1a8a3c', '#E8474F', '#F59E0B', '#0EA5E9', '#EC4899', '#111111'];
-
   return (
     <div className="space-y-8 pb-12">
-      <div className="grid grid-cols-3 gap-4">
-        {themes.map(theme => {
-          const isLocked = false; // Unlocked for now so users can select any theme
-          return (
-          <button 
-            key={theme.id}
-            onClick={() => { if (!isLocked) updateData({ theme: theme.id }) }}
-            className={`relative p-1 rounded-3xl border-2 transition-all ${data.theme === theme.id ? 'border-[var(--color-brand-primary)] bg-[var(--color-success-bg)]' : 'border-[var(--color-border-default)] bg-[var(--color-bg-primary)] hover:border-[var(--color-text-tertiary)]'} ${isLocked ? 'cursor-not-allowed opacity-80' : ''}`}
-          >
-            {isLocked && (
-              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/60 backdrop-blur-sm rounded-3xl">
-                <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest px-3 py-1.5 bg-white rounded-full shadow-sm border border-slate-200">Upgrade to Premium</span>
-              </div>
-            )}
-            <div className="relative h-32 rounded-[1.25rem] overflow-hidden mb-4 border border-slate-100" style={{ backgroundColor: theme.bg }}>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className={`w-12 h-12 rounded-xl border ${theme.id === 'premium' ? 'bg-white/10 border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.3)]' : theme.id === 'free' ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-white/10 border-white/20'}`} />
-              </div>
-              {theme.badge && <span className="absolute top-3 right-3 px-2 py-0.5 bg-amber-400 text-white text-[8px] font-black rounded-full uppercase tracking-widest">{theme.badge}</span>}
-            </div>
-            <div className="px-4 pb-4 text-left">
-              <p className="text-xs font-black text-[var(--color-text-primary)] mb-0.5">{theme.name}</p>
-              <p className="text-[9px] font-bold text-[var(--color-text-primary)] mb-2">{theme.price}</p>
-              <p className="text-[8px] text-[var(--color-text-secondary)] leading-tight">{theme.desc}</p>
-            </div>
-          </button>
-        )})}
-      </div>
-
-      <SectionHeader>Branding</SectionHeader>
-      
-      <div className="space-y-3">
-        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Business Logo [Required]</label>
-        <label className="group p-6 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-[var(--color-brand-primary)] hover:bg-slate-50 transition-all">
-          {data.logo ? (
-              <div className="relative group/logo w-full max-w-[200px] h-32 flex items-center justify-center bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 p-4">
-                <div className="absolute inset-0 bg-slate-900/5 opacity-0 group-hover/logo:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
-                  <span className="bg-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm text-slate-700">Click to change</span>
-                </div>
-                <img src={data.logo} alt="Logo" className="w-full h-full object-contain drop-shadow-sm transition-transform group-hover/logo:scale-105" />
-                <button onClick={(e) => { e.preventDefault(); updateData({ logo: null }); }} className="absolute -top-3 -right-3 p-1.5 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-full shadow-sm transition-colors border border-red-100">
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-          ) : (
-            <>
-              <UploadCloud className="w-6 h-6 text-slate-300 group-hover:text-[var(--color-brand-primary)]" />
-              <span className="text-[10px] font-bold text-slate-400">PNG or SVG, square preferred</span>
-            </>
-          )}
-          <input type="file" className="hidden" accept="image/*" onChange={e => {
-            if (e.target.files?.[0]) {
-              const reader = new FileReader();
-              reader.onload = (event) => updateData({ logo: event.target?.result as string });
-              reader.readAsDataURL(e.target.files[0]);
-            }
-          }} />
-        </label>
-        <p className="text-[9px] text-slate-400 italic">Shown in QR center and on review page</p>
-      </div>
-
-      {data.theme !== 'classic' && data.theme !== 'premium' && (
-        <div className="space-y-4">
-          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Brand Color [Optional]</label>
-          <div className="flex flex-wrap gap-4 items-center">
-            {colors.map(c => (
-              <button 
-                key={c}
-                onClick={() => updateData({ primaryColor: c })}
-                className={`w-8 h-8 rounded-full border-2 transition-all shrink-0 ${data.primaryColor === c ? 'scale-125 border-slate-900 shadow-lg' : 'border-transparent shadow-sm'}`}
-                style={{ backgroundColor: c }}
-              />
-            ))}
-            <div className="flex items-center gap-2 border border-slate-200 rounded-lg p-1 px-2 shrink-0">
-              <span className="text-[10px] font-bold text-slate-500">Custom</span>
-              <input 
-                type="color" 
-                value={data.primaryColor || '#6C63FF'} 
-                onChange={e => updateData({ primaryColor: e.target.value })} 
-                className="w-6 h-6 p-0 border-0 rounded cursor-pointer"
-              />
-            </div>
-          </div>
-        </div>
-      )}
 
       <InputField label="Welcome message" badge="optional" value={data.welcomeMsg} onChange={(e: any) => updateData({ welcomeMsg: e.target.value })} hint="Animated text on Premium plan only (Max 60 characters)" maxLength={60} />
 

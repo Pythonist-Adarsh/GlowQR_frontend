@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ExternalLink, ArrowRight } from 'lucide-react';
+import { getThemeVariables } from './themeUtils';
 
 interface ARExperienceProps {
   businessData: any;
@@ -28,12 +29,11 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
   }
 
   const isPremium = plan === 'premium' || plan === 'trial';
-  const animStyle = businessData?.animation_style || 'glow_float';
-  const isLight = animStyle === 'free' || animStyle === 'glow_float';
-  const textColor = isLight ? 'text-slate-800' : 'text-white';
-  const textColorMuted = isLight ? 'text-slate-500' : 'text-white/60';
-  const bgColor = isLight ? 'bg-slate-50' : (animStyle === 'premium' ? 'bg-[#06060F]' : 'bg-slate-900');
-  const brandColor = businessData?.primaryColor || '#1D9E75';
+  
+  // Get computed hex colors for Canvas APIs and React inline styles
+  const themeVars = getThemeVariables(plan, businessData?.primaryColor || businessData?.brandColor);
+  const brandColor = themeVars['--accent'] as string;
+  const isLight = false; // Forced dark theme for the AR experience overlay
 
   useEffect(() => {
     // Welcome message fade-in / typewriter
@@ -243,7 +243,7 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
               <img src={businessData.logo || businessData.logoUrl} alt="Logo" className="max-h-[8rem] max-w-full object-contain drop-shadow-md rounded-2xl" />
             ) : (
               <div className="h-24 w-24 flex items-center justify-center">
-                <span className={`text-4xl font-black ${textColor} text-center uppercase tracking-tighter leading-none`} style={{ color: brandColor }}>
+                <span className={`text-4xl font-black text-white text-center uppercase tracking-tighter leading-none`} style={{ color: 'var(--text-primary)' }}>
                   {businessData.name?.substring(0, 2)}
                 </span>
               </div>
@@ -258,13 +258,13 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
           className="w-full flex flex-col items-center"
         >
           <h2 className="text-2xl font-black mb-2 leading-tight uppercase tracking-wide" style={{ color: brandColor }}>{businessData.name}</h2>
-          <p className={`${textColorMuted} font-medium tracking-wide text-sm mb-6 italic`}>{businessData.tagline}</p>
+          <p className={`text-white/60 font-medium tracking-wide text-sm mb-6 italic`}>{businessData.tagline}</p>
           
           {businessData.website && (
             <a 
               href={businessData.website.startsWith('http') ? businessData.website : `https://${businessData.website}`}
               target="_blank" rel="noopener noreferrer"
-              className={`text-[10px] font-bold uppercase tracking-widest px-5 py-2.5 rounded-full border border-white/20 hover:bg-white/10 ${textColor} flex items-center gap-2 transition-all mb-8`}
+              className={`text-[10px] font-bold uppercase tracking-widest px-5 py-2.5 rounded-full border border-white/20 hover:bg-white/10 text-white flex items-center gap-2 transition-all mb-8`}
             >
               VISIT WEBSITE <ExternalLink className="w-3 h-3" />
             </a>
@@ -280,7 +280,7 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
             showContent && (
               <motion.p 
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} 
-                className={`${textColor} font-bold tracking-widest uppercase text-xs leading-relaxed`}
+                className={`text-white font-bold tracking-widest uppercase text-xs leading-relaxed`}
               >
                 {businessData.welcomeMessage || `Welcome to ${businessData.name}`}
               </motion.p>
@@ -295,7 +295,7 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
               onClick={onComplete}
-              className={`w-full py-4 mt-4 rounded-xl font-bold text-sm ${textColor} shadow-[0_0_20px_rgba(0,0,0,0.3)] flex items-center justify-center gap-2 transition-all active:scale-[0.98]`}
+              className={`w-full py-4 mt-4 rounded-xl font-bold text-sm text-white shadow-[0_0_20px_rgba(0,0,0,0.3)] flex items-center justify-center gap-2 transition-all active:scale-[0.98]`}
               style={{ backgroundColor: brandColor }}
             >
               Share your experience <ArrowRight className="w-4 h-4" />

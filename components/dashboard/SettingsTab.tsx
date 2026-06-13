@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { User, Lock, Mail, CheckCircle2, AlertCircle, Loader2, Palette } from "lucide-react";
+import { useState, useMemo } from "react";
+import { User, Lock, Mail, CheckCircle2, AlertCircle, Loader2, Palette, Sparkles, ArrowRight, Info } from "lucide-react";
+import { getThemeVariables } from "@/components/review/themeUtils";
 import { API_BASE_URL } from "@/lib/api-config";
 
 export function SettingsTab({ user, business, onUpdate }: { user: any; business?: any; onUpdate?: () => void }) {
@@ -21,6 +22,11 @@ export function SettingsTab({ user, business, onUpdate }: { user: any; business?
     new_password: "",
     confirm_password: ""
   });
+
+  const [previewTheme, setPreviewTheme] = useState(() => 
+    business?.animation_style === 'particle_burst' ? 'classic' : business?.animation_style === 'minimal_fade' ? 'premium' : 'free'
+  );
+  const [previewColor, setPreviewColor] = useState(business?.primary_color || "#6C63FF");
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -163,76 +169,127 @@ export function SettingsTab({ user, business, onUpdate }: { user: any; business?
       </div>
 
       {/* Branding Section */}
-      {business && (
-        <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center">
-              <Palette className="w-5 h-5" />
-            </div>
-            <h2 className="text-2xl font-bold text-slate-900">Brand Customization</h2>
-          </div>
+      {business && (() => {
+        const userPlan = business.plan || user?.plan || 'basic';
+        const isBasic = userPlan === 'basic';
+        
+        const currentThemeVars = getThemeVariables(previewTheme, previewColor);
+        const isDarkText = currentThemeVars['--text-primary'] === '#111111';
 
-          <form onSubmit={async (e) => {
-            e.preventDefault();
-            const form = e.target as HTMLFormElement;
-            const theme = (form.elements.namedItem('theme') as HTMLSelectElement).value;
-            const primaryColor = (form.elements.namedItem('primaryColor') as HTMLInputElement).value;
-            
-            try {
-              const token = localStorage.getItem('token');
-              const res = await fetch(`${API_BASE_URL}/api/business/profile`, {
-                method: "PATCH",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                  animation_style: theme === 'classic' ? 'particle_burst' : theme === 'premium' ? 'minimal_fade' : 'none',
-                  primary_color: primaryColor
-                })
-              });
-              
-              if (res.ok) {
-                alert('Brand updated successfully!');
-                if (onUpdate) onUpdate();
-              }
-            } catch (err) {
-              alert('Failed to update branding');
-            }
-          }} className="space-y-6 max-w-lg">
-            <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">Theme Style</label>
-              <select 
-                name="theme"
-                defaultValue={business.animation_style === 'particle_burst' ? 'classic' : business.animation_style === 'minimal_fade' ? 'premium' : 'free'}
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 !text-slate-900 rounded-xl focus:bg-white focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all outline-none"
-              >
-                <option value="free">Free Trial (Default)</option>
-                <option value="classic">Basic (Particle Burst)</option>
-                <option value="premium">Premium (Minimal Fade)</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">Brand Color</label>
-              <div className="flex items-center gap-4">
-                <input
-                  type="color"
-                  name="primaryColor"
-                  defaultValue={business.primary_color || "#6C63FF"}
-                  className="w-12 h-12 p-0 border-0 rounded cursor-pointer"
-                />
-                <span className="text-sm text-slate-500">Pick your business color</span>
+        return (
+        <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 relative overflow-hidden">
+          {isBasic && (
+            <div className="absolute inset-0 z-20 bg-white/60 backdrop-blur-[2px] flex flex-col items-center justify-center rounded-3xl">
+              <div className="bg-white p-6 rounded-2xl shadow-xl border border-slate-200 text-center max-w-sm">
+                <Lock className="w-8 h-8 text-amber-500 mx-auto mb-3" />
+                <h3 className="text-lg font-bold text-slate-900 mb-2">Premium Feature</h3>
+                <p className="text-sm text-slate-500 mb-4">Brand customization is locked on the Basic plan. Upgrade to customize your AR experience.</p>
+                <button className="px-6 py-2.5 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-all text-sm w-full">
+                  Upgrade Plan
+                </button>
               </div>
             </div>
-            <button
-              type="submit"
-              className="px-6 py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-all flex items-center gap-2"
-            >
-              Save Brand Changes
-            </button>
-          </form>
+          )}
+
+          <div className="flex flex-col md:flex-row gap-8">
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center">
+                  <Palette className="w-5 h-5" />
+                </div>
+                <h2 className="text-2xl font-bold text-slate-900">Brand Customization</h2>
+              </div>
+
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                if (isBasic) return;
+                try {
+                  const token = localStorage.getItem('token');
+                  const res = await fetch(`${API_BASE_URL}/api/business/profile`, {
+                    method: "PATCH",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                      animation_style: previewTheme === 'classic' ? 'particle_burst' : previewTheme === 'premium' ? 'minimal_fade' : 'none',
+                      primary_color: previewColor
+                    })
+                  });
+                  
+                  if (res.ok) {
+                    alert('Brand updated successfully!');
+                    if (onUpdate) onUpdate();
+                  }
+                } catch (err) {
+                  alert('Failed to update branding');
+                }
+              }} className="space-y-6 max-w-md">
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Theme Style</label>
+                  <select 
+                    value={previewTheme}
+                    onChange={e => setPreviewTheme(e.target.value)}
+                    disabled={isBasic}
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 !text-slate-900 rounded-xl focus:bg-white focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all outline-none"
+                  >
+                    <option value="free">Free Trial (Default)</option>
+                    <option value="classic">Basic (Particle Burst)</option>
+                    <option value="premium">Premium (Minimal Fade)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Brand Color</label>
+                  <div className="flex items-center gap-4">
+                    <input
+                      type="color"
+                      value={previewColor}
+                      onChange={e => setPreviewColor(e.target.value)}
+                      disabled={isBasic}
+                      className="w-12 h-12 p-0 border-0 rounded cursor-pointer"
+                    />
+                    <span className="text-sm text-slate-500">Pick your business color</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                  <Info className="w-4 h-4 text-slate-400 shrink-0" />
+                  <p className="text-[10px] text-slate-500 font-medium">Text color automatically adapts to: <strong className="text-slate-900">{isDarkText ? 'Black' : 'White'}</strong> based on your background.</p>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isBasic}
+                  className="px-6 py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-all flex items-center gap-2"
+                >
+                  Save Brand Changes
+                </button>
+              </form>
+            </div>
+
+            {/* Live Preview Panel */}
+            <div className="w-[260px] shrink-0 flex flex-col">
+              <label className="text-sm font-bold text-slate-700 mb-3 text-center">Live Preview</label>
+              <div 
+                className="w-full border border-slate-200 rounded-[2rem] overflow-hidden relative shadow-lg h-[400px] flex flex-col items-center justify-center transition-colors duration-300" 
+                style={{ ...(currentThemeVars as any), backgroundColor: 'var(--bg-primary)' }}
+              >
+                <div className="relative z-10 w-full flex flex-col items-center p-6 text-center">
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-6 transition-colors duration-300" style={{ backgroundColor: 'var(--accent-glow)', color: 'var(--accent)' }}>
+                    <Sparkles className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-lg font-bold transition-colors duration-300 mb-2 leading-tight" style={{ color: 'var(--text-primary)' }}>{business.name || 'Your Business'}</h3>
+                  <p className="text-xs transition-colors duration-300 mb-6 italic font-medium" style={{ color: 'var(--accent)' }}>{business.tagline || 'Scan Experience'}</p>
+                  <button className="w-full py-3 rounded-xl font-bold text-xs shadow-lg flex items-center justify-center gap-2 transition-colors duration-300" style={{ backgroundColor: 'var(--accent)', color: 'var(--text-primary)', boxShadow: '0 4px 14px var(--accent-glow)' }}>
+                    Get Started <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      )}
+        );
+      })()}
 
       {/* Security Section */}
       <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">

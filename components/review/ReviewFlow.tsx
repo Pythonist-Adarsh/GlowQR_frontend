@@ -7,6 +7,7 @@ import {
   RefreshCw, Utensils, X, Loader2, Sparkles, ChevronRight, MessageSquare
 } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/api-config';
+import { getThemeVariables } from './themeUtils';
 
 const STEPS = {
   WELCOME: 1, // "Share Your Review"
@@ -17,28 +18,7 @@ const STEPS = {
   INSTAGRAM: 6 // Instagram Follow
 };
 
-function getLightenedBrandColor(hex: string, percent: number): string {
-  let c = hex.replace('#', '');
-  if (c.length === 3) c = c[0] + c[0] + c[1] + c[1] + c[2] + c[2];
-  const r = parseInt(c.substring(0, 2), 16) / 255;
-  const g = parseInt(c.substring(2, 4), 16) / 255;
-  const b = parseInt(c.substring(4, 6), 16) / 255;
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  let h = 0, s = 0, l = (max + min) / 2;
-  if (max !== min) {
-    const d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-    switch (max) {
-      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-      case g: h = (b - r) / d + 2; break;
-      case b: h = (r - g) / d + 4; break;
-    }
-    h /= 6;
-  }
-  const targetL = Math.min(100, Math.round(l * 100) + percent);
-  return `hsl(${Math.round(h * 360)}, ${Math.round(s * 100)}%, ${targetL}%)`;
-}
+
 
 export default function ReviewFlow({ initialData, isPreview = false }: { initialData?: any, isPreview?: boolean }) {
   const [step, setStep] = useState(STEPS.WELCOME);
@@ -68,6 +48,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
   ], [data.menuItems]);
 
   const isDark = business.plan === 'basic' || business.plan === 'premium';
+  const themeVars = useMemo(() => getThemeVariables(business.plan, business.primaryColor), [business.plan, business.primaryColor]);
 
   // Screen 2 States
   const [selectedDishes, setSelectedDishes] = useState<(number | string)[]>([]);
@@ -250,13 +231,13 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
   };
   const transition = { duration: 0.25, ease: "easeOut" };
 
-  const bgClass = isDark ? "bg-[#111827] text-white" : "bg-slate-50 text-slate-800";
-  const textMuted = isDark ? "text-slate-400" : "text-slate-500";
-  const borderClass = isDark ? "border-slate-800" : "border-slate-200";
-  const cardBg = isDark ? "bg-[#1f2937]" : "bg-white";
+  const bgClass = "bg-[var(--bg-primary)] text-[var(--text-primary)]";
+  const textMuted = "text-[var(--text-secondary)]";
+  const borderClass = "border-[var(--border-default)]";
+  const cardBg = "bg-[var(--bg-card)]";
 
   return (
-    <div className={`flex-1 flex flex-col h-full w-full relative ${bgClass}`}>
+    <div className={`flex-1 flex flex-col h-full w-full relative ${bgClass}`} style={themeVars}>
       <AnimatePresence mode="wait">
         
         {/* SCREEN 1: WELCOME (Share Your Review) */}
@@ -270,7 +251,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                 <X className="w-4 h-4" />
               </button>
 
-              <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-6" style={{ backgroundColor: `${business.primaryColor}15`, color: business.primaryColor }}>
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-6" style={{ backgroundColor: 'var(--accent-glow)', color: 'var(--accent)' }}>
                 <Sparkles className="w-6 h-6" />
               </div>
 
@@ -280,7 +261,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                 Loved your time at {business.name}?
               </p>
               
-              <p className="text-sm font-bold italic mb-5" style={{ color: business.primaryColor }}>
+              <p className="text-sm font-bold italic mb-5" style={{ color: 'var(--accent)' }}>
                 "{business.tagline}"
               </p>
 
@@ -290,8 +271,8 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
 
               <button 
                 onClick={nextStep}
-                className="w-full py-3.5 rounded-xl font-bold text-sm text-white shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
-                style={{ backgroundColor: business.primaryColor }}
+                className="w-full py-3.5 rounded-xl font-bold text-sm shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                style={{ backgroundColor: 'var(--accent)', color: 'var(--text-primary)', boxShadow: '0 4px 14px var(--accent-glow)' }}
               >
                 Get Started <ArrowRight className="w-4 h-4" />
               </button>
@@ -327,7 +308,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                         key={item.id}
                         onClick={() => setSelectedDishes(prev => isSelected ? prev.filter(id => id !== item.id) : [...prev, item.id])}
                         className={`shrink-0 px-3 py-2 rounded-lg text-xs font-medium border flex items-center gap-2 transition-all`}
-                        style={isSelected ? { backgroundColor: getLightenedBrandColor(business.primaryColor, isDark ? -10 : 45), borderColor: business.primaryColor, color: isDark ? '#fff' : business.primaryColor } : { borderColor: isDark ? '#334155' : '#e2e8f0', color: isDark ? '#cbd5e1' : '#64748b' }}
+                        style={isSelected ? { backgroundColor: 'var(--accent-glow)', borderColor: 'var(--accent)', color: 'var(--text-primary)' } : { borderColor: 'var(--border-default)', color: 'var(--text-secondary)' }}
                       >
                         <Utensils className="w-3 h-3 opacity-70" /> {item.name}
                       </button>
@@ -345,7 +326,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                     <button 
                       key={type} onClick={() => setMealType(type)}
                       className={`shrink-0 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider border transition-all`}
-                      style={mealType === type ? { backgroundColor: business.primaryColor, borderColor: business.primaryColor, color: '#fff' } : { borderColor: isDark ? '#334155' : '#e2e8f0', color: isDark ? '#cbd5e1' : '#64748b' }}
+                      style={mealType === type ? { backgroundColor: 'var(--accent)', borderColor: 'var(--accent)', color: 'var(--text-primary)' } : { borderColor: 'var(--border-default)', color: 'var(--text-secondary)' }}
                     >
                       {type}
                     </button>
@@ -360,7 +341,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                     <button 
                       key={type} onClick={() => setSpendRange(type)}
                       className={`shrink-0 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider border transition-all`}
-                      style={spendRange === type ? { backgroundColor: business.primaryColor, borderColor: business.primaryColor, color: '#fff' } : { borderColor: isDark ? '#334155' : '#e2e8f0', color: isDark ? '#cbd5e1' : '#64748b' }}
+                      style={spendRange === type ? { backgroundColor: 'var(--accent)', borderColor: 'var(--accent)', color: 'var(--text-primary)' } : { borderColor: 'var(--border-default)', color: 'var(--text-secondary)' }}
                     >
                       {type}
                     </button>
@@ -375,7 +356,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                     <button 
                       key={type} onClick={() => setSeatingType(type)}
                       className={`shrink-0 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider border transition-all`}
-                      style={seatingType === type ? { backgroundColor: business.primaryColor, borderColor: business.primaryColor, color: '#fff' } : { borderColor: isDark ? '#334155' : '#e2e8f0', color: isDark ? '#cbd5e1' : '#64748b' }}
+                      style={seatingType === type ? { backgroundColor: 'var(--accent)', borderColor: 'var(--accent)', color: 'var(--text-primary)' } : { borderColor: 'var(--border-default)', color: 'var(--text-secondary)' }}
                     >
                       {type}
                     </button>
@@ -390,7 +371,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                     <button 
                       key={type} onClick={() => setWaitTime(type)}
                       className={`shrink-0 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider border transition-all`}
-                      style={waitTime === type ? { backgroundColor: business.primaryColor, borderColor: business.primaryColor, color: '#fff' } : { borderColor: isDark ? '#334155' : '#e2e8f0', color: isDark ? '#cbd5e1' : '#64748b' }}
+                      style={waitTime === type ? { backgroundColor: 'var(--accent)', borderColor: 'var(--accent)', color: 'var(--text-primary)' } : { borderColor: 'var(--border-default)', color: 'var(--text-secondary)' }}
                     >
                       {type}
                     </button>
@@ -501,8 +482,8 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
               <button 
                 onClick={handleGenerateReview}
                 disabled={ratings.overall === 0 || isGenerating}
-                className="w-full py-4 mt-6 rounded-xl font-bold text-sm text-white shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50"
-                style={{ backgroundColor: business.primaryColor }}
+                className="w-full py-4 mt-6 rounded-xl font-bold text-sm shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50"
+                style={{ backgroundColor: 'var(--accent)', color: 'var(--text-primary)' }}
               >
                 {isGenerating ? <><Loader2 className="w-4 h-4 animate-spin" /> Generating AI Review...</> : <><Sparkles className="w-4 h-4" /> Generate my review</>}
               </button>
@@ -605,8 +586,8 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                   </p>
                   <button 
                     onClick={handlePostReview}
-                    className="w-full py-4 rounded-xl font-bold text-sm text-white shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] mb-3"
-                    style={{ backgroundColor: isCopied ? '#10b981' : business.primaryColor }}
+                    className="w-full py-4 rounded-xl font-bold text-sm shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] mb-3"
+                    style={isCopied ? { backgroundColor: '#10b981', color: '#fff' } : { backgroundColor: 'var(--accent)', color: 'var(--text-primary)' }}
                   >
                     {isCopied ? (
                       <>✓ Copied!</>
@@ -618,8 +599,8 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
               ) : (
                 <button 
                   onClick={handlePostReview}
-                  className="w-full py-4 rounded-xl font-bold text-sm text-white shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] mb-3"
-                  style={{ backgroundColor: isCopied ? '#10b981' : business.primaryColor }}
+                  className="w-full py-4 rounded-xl font-bold text-sm shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] mb-3"
+                  style={isCopied ? { backgroundColor: '#10b981', color: '#fff' } : { backgroundColor: 'var(--accent)', color: 'var(--text-primary)' }}
                 >
                   {isCopied ? (
                     <>✓ Copied!</>
