@@ -9,7 +9,12 @@ export function hexToRgb(hex: string) {
 
 export function getLuminance(hex: string) {
   const { r, g, b } = hexToRgb(hex);
-  return r * 0.299 + g * 0.587 + b * 0.114;
+  return (r * 299 + g * 587 + b * 114) / 1000;
+}
+
+export function getContrastText(hexColor: string): string {
+  const luminance = getLuminance(hexColor);
+  return luminance > 145 ? '#111111' : '#FFFFFF';
 }
 
 export function mixColorWithBlack(hex: string, percentage: number) {
@@ -23,31 +28,20 @@ export function mixColorWithBlack(hex: string, percentage: number) {
 
 export function getThemeVariables(plan: string, brandColor: string) {
   const isBasic = plan === 'basic' || plan === 'free';
-  const color = brandColor || '#7C3AED';
+  const color = isBasic ? '#E53E3E' : (brandColor || '#7C3AED');
 
-  if (isBasic) {
-    return {
-      '--accent': '#E53E3E',
-      '--accent-glow': '#FF6B6B',
-      '--bg-primary': '#0a0a0a',
-      '--bg-card': '#141414',
-      '--text-primary': '#FFFFFF',
-      '--text-secondary': '#A0A0A0',
-      '--border-default': '#333333'
-    } as React.CSSProperties;
-  }
-
-  const lum = getLuminance(color);
-  const textPrimary = lum > 128 ? '#111111' : '#FFFFFF';
-  const textSecondary = lum > 128 ? 'rgba(17,17,17,0.6)' : 'rgba(255,255,255,0.6)';
+  const { r, g, b } = hexToRgb(color);
 
   return {
     '--accent': color,
+    '--accent-rgb': `${r}, ${g}, ${b}`,
     '--accent-glow': `${color}B3`,
-    '--bg-primary': mixColorWithBlack(color, 85),
-    '--bg-card': mixColorWithBlack(color, 75),
-    '--text-primary': textPrimary,
-    '--text-secondary': textSecondary,
-    '--border-default': mixColorWithBlack(color, 65)
+    '--accent-text': getContrastText(color),
+    '--bg-primary': isBasic ? '#0a0a0a' : mixColorWithBlack(color, 85),
+    '--bg-card': isBasic ? '#141414' : mixColorWithBlack(color, 75),
+    '--text-primary': '#FFFFFF',
+    '--text-secondary': 'rgba(255, 255, 255, 0.65)',
+    '--text-muted': 'rgba(255, 255, 255, 0.40)',
+    '--border-default': isBasic ? '#333333' : mixColorWithBlack(color, 65)
   } as React.CSSProperties;
 }

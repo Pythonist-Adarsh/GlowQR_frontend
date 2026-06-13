@@ -233,8 +233,8 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
 
   const bgClass = "bg-[var(--bg-primary)] text-[var(--text-primary)]";
   const textMuted = "text-[var(--text-secondary)]";
-  const borderClass = "border-[var(--border-default)]";
-  const cardBg = "bg-[var(--bg-card)]";
+  const borderClass = "border-[rgba(255,255,255,0.10)]";
+  const cardBg = "bg-[rgba(255,255,255,0.06)] backdrop-blur-[12px] rounded-2xl";
 
   return (
     <div className={`flex-1 flex flex-col h-full w-full relative ${bgClass}`} style={themeVars}>
@@ -244,35 +244,35 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
         {step === STEPS.WELCOME && (
           <motion.div 
             key="welcome" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={transition}
-            className={`flex-1 flex flex-col items-center justify-center p-6 text-center h-full relative ${isDark ? 'bg-slate-900/50' : 'bg-slate-100/50'}`}
+            className={`flex-1 flex flex-col items-center justify-center p-6 text-center h-full relative`}
           >
-            <div className={`w-full max-w-[340px] ${cardBg} p-8 rounded-[2rem] shadow-2xl relative flex flex-col items-center border ${borderClass}`}>
-              <button className="absolute top-4 right-4 p-2 rounded-full opacity-50 hover:opacity-100">
+            <div className={`w-full max-w-[340px] bg-[rgba(255,255,255,0.07)] border border-[rgba(255,255,255,0.12)] p-8 rounded-2xl shadow-2xl relative flex flex-col items-center backdrop-blur-[12px]`}>
+              <button className="absolute top-4 right-4 p-2 rounded-full opacity-50 hover:opacity-100 text-[#FFFFFF]">
                 <X className="w-4 h-4" />
               </button>
 
-              <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-6" style={{ backgroundColor: 'var(--accent-glow)', color: 'var(--accent)' }}>
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-6 border border-[rgba(var(--accent-rgb),0.30)]" style={{ backgroundColor: 'rgba(var(--accent-rgb), 0.15)', color: 'var(--accent)' }}>
                 <Sparkles className="w-6 h-6" />
               </div>
 
-              <h1 className="text-2xl font-bold mb-3 text-center text-balance leading-tight">Share your experience</h1>
+              <h1 className="text-2xl font-bold mb-3 text-center text-balance leading-tight text-[#FFFFFF]">Share your experience</h1>
               
-              <p className={`text-sm font-medium mb-1 ${textMuted}`}>
+              <p className={`text-sm font-medium mb-1 text-[rgba(255,255,255,0.60)]`}>
                 Loved your time at {business.name}?
               </p>
               
-              <p className="text-sm font-bold italic mb-5" style={{ color: 'var(--accent)' }}>
+              <p className="text-sm font-semibold italic mb-5" style={{ color: 'var(--accent)' }}>
                 "{business.tagline}"
               </p>
 
-              <p className={`text-xs leading-relaxed mb-8 max-w-[220px] ${textMuted}`}>
+              <p className={`text-xs leading-relaxed mb-8 max-w-[220px] text-[rgba(255,255,255,0.50)]`}>
                 Let's craft a beautiful review together in 2 simple steps.
               </p>
 
               <button 
                 onClick={nextStep}
-                className="w-full py-3.5 rounded-xl font-bold text-sm shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
-                style={{ backgroundColor: 'var(--accent)', color: 'var(--text-primary)', boxShadow: '0 4px 14px var(--accent-glow)' }}
+                className="w-full py-3.5 rounded-xl font-semibold text-sm shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-text)', boxShadow: '0 4px 20px rgba(var(--accent-rgb), 0.35)' }}
               >
                 Get Started <ArrowRight className="w-4 h-4" />
               </button>
@@ -287,11 +287,11 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
             className="flex-1 flex flex-col h-full overflow-hidden relative"
           >
             <div className="p-6 pb-2 shrink-0 bg-inherit z-10">
-              <button onClick={prevStep} className="p-2 -ml-2 mb-4"><ChevronLeft className="w-6 h-6" /></button>
+              <button onClick={prevStep} className="p-2 -ml-2 mb-4 text-[#FFFFFF]"><ChevronLeft className="w-6 h-6" /></button>
               <div className="flex items-center gap-2 mb-3">
-                <span className={`px-2.5 py-1 text-[9px] font-bold rounded-full uppercase tracking-wider ${isDark ? 'bg-white/10' : 'bg-slate-200'} ${textMuted}`}>Step 1 of 3</span>
+                <span className={`px-2.5 py-1 text-[9px] font-medium rounded-full uppercase tracking-wider bg-[rgba(255,255,255,0.12)] text-[#FFFFFF] border border-[rgba(255,255,255,0.20)]`}>Step 1 of 3</span>
               </div>
-              <h2 className="text-2xl font-bold mb-1">What did you enjoy?</h2>
+              <h2 className="text-2xl font-bold mb-1 text-[#FFFFFF]">What did you enjoy?</h2>
               <div className={`flex items-center gap-1.5 text-[10px] font-medium tracking-wide ${textMuted}`}>
                 <MapPin className="w-3 h-3" /> {business.address}
               </div>
@@ -307,8 +307,8 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                       <button 
                         key={item.id}
                         onClick={() => setSelectedDishes(prev => isSelected ? prev.filter(id => id !== item.id) : [...prev, item.id])}
-                        className={`shrink-0 px-3 py-2 rounded-lg text-xs font-medium border flex items-center gap-2 transition-all`}
-                        style={isSelected ? { backgroundColor: 'var(--accent-glow)', borderColor: 'var(--accent)', color: 'var(--text-primary)' } : { borderColor: 'var(--border-default)', color: 'var(--text-secondary)' }}
+                        className={`shrink-0 px-3 py-2 rounded-lg text-xs border flex items-center gap-2 transition-all hover:bg-[rgba(255,255,255,0.14)] hover:border-[rgba(255,255,255,0.30)]`}
+                        style={isSelected ? { backgroundColor: 'var(--accent)', borderColor: 'var(--accent)', color: 'var(--accent-text)', fontWeight: 600 } : { backgroundColor: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.18)', color: 'rgba(255,255,255,0.75)' }}
                       >
                         <Utensils className="w-3 h-3 opacity-70" /> {item.name}
                       </button>
@@ -325,8 +325,8 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                     : ["Breakfast", "Brunch", "Lunch", "Dinner"]).map((type: string) => (
                     <button 
                       key={type} onClick={() => setMealType(type)}
-                      className={`shrink-0 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider border transition-all`}
-                      style={mealType === type ? { backgroundColor: 'var(--accent)', borderColor: 'var(--accent)', color: 'var(--text-primary)' } : { borderColor: 'var(--border-default)', color: 'var(--text-secondary)' }}
+                      className={`shrink-0 px-4 py-2 rounded-full text-[10px] uppercase tracking-wider border transition-all hover:bg-[rgba(255,255,255,0.14)] hover:border-[rgba(255,255,255,0.30)]`}
+                      style={mealType === type ? { backgroundColor: 'var(--accent)', borderColor: 'var(--accent)', color: 'var(--accent-text)', fontWeight: 600 } : { backgroundColor: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.18)', color: 'rgba(255,255,255,0.75)' }}
                     >
                       {type}
                     </button>
@@ -340,8 +340,8 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                   {["Under ₹200", "₹200–₹500", "₹500–₹1000", "₹1000–₹2000", "Above ₹2000"].map(type => (
                     <button 
                       key={type} onClick={() => setSpendRange(type)}
-                      className={`shrink-0 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider border transition-all`}
-                      style={spendRange === type ? { backgroundColor: 'var(--accent)', borderColor: 'var(--accent)', color: 'var(--text-primary)' } : { borderColor: 'var(--border-default)', color: 'var(--text-secondary)' }}
+                      className={`shrink-0 px-4 py-2 rounded-full text-[10px] uppercase tracking-wider border transition-all hover:bg-[rgba(255,255,255,0.14)] hover:border-[rgba(255,255,255,0.30)]`}
+                      style={spendRange === type ? { backgroundColor: 'var(--accent)', borderColor: 'var(--accent)', color: 'var(--accent-text)', fontWeight: 600 } : { backgroundColor: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.18)', color: 'rgba(255,255,255,0.75)' }}
                     >
                       {type}
                     </button>
@@ -355,8 +355,8 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                   {["Indoor", "Outdoor", "Bar Area", "Booth"].map(type => (
                     <button 
                       key={type} onClick={() => setSeatingType(type)}
-                      className={`shrink-0 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider border transition-all`}
-                      style={seatingType === type ? { backgroundColor: 'var(--accent)', borderColor: 'var(--accent)', color: 'var(--text-primary)' } : { borderColor: 'var(--border-default)', color: 'var(--text-secondary)' }}
+                      className={`shrink-0 px-4 py-2 rounded-full text-[10px] uppercase tracking-wider border transition-all hover:bg-[rgba(255,255,255,0.14)] hover:border-[rgba(255,255,255,0.30)]`}
+                      style={seatingType === type ? { backgroundColor: 'var(--accent)', borderColor: 'var(--accent)', color: 'var(--accent-text)', fontWeight: 600 } : { backgroundColor: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.18)', color: 'rgba(255,255,255,0.75)' }}
                     >
                       {type}
                     </button>
@@ -370,8 +370,8 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                   {["No wait", "upto 10 min", "10-30 min", "30-60 min"].map(type => (
                     <button 
                       key={type} onClick={() => setWaitTime(type)}
-                      className={`shrink-0 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider border transition-all`}
-                      style={waitTime === type ? { backgroundColor: 'var(--accent)', borderColor: 'var(--accent)', color: 'var(--text-primary)' } : { borderColor: 'var(--border-default)', color: 'var(--text-secondary)' }}
+                      className={`shrink-0 px-4 py-2 rounded-full text-[10px] uppercase tracking-wider border transition-all hover:bg-[rgba(255,255,255,0.14)] hover:border-[rgba(255,255,255,0.30)]`}
+                      style={waitTime === type ? { backgroundColor: 'var(--accent)', borderColor: 'var(--accent)', color: 'var(--accent-text)', fontWeight: 600 } : { backgroundColor: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.18)', color: 'rgba(255,255,255,0.75)' }}
                     >
                       {type}
                     </button>
@@ -380,11 +380,11 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
               </div>
             </div>
 
-            <div className={`p-6 pt-4 shrink-0 border-t z-20 ${borderClass} ${isDark ? 'bg-[#111827]' : 'bg-slate-50'}`}>
+            <div className={`p-6 pt-4 shrink-0 border-t z-20 ${borderClass} bg-[rgba(255,255,255,0.06)] backdrop-blur-[12px]`}>
               <button 
                 onClick={nextStep}
-                className="w-full py-4 rounded-xl font-bold text-sm text-white shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
-                style={{ backgroundColor: business.primaryColor }}
+                className="w-full py-4 rounded-xl font-semibold text-sm shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-text)' }}
               >
                 Continue <ArrowRight className="w-4 h-4" />
               </button>
@@ -398,14 +398,14 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
             key="rate" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={transition}
             className="flex-1 flex flex-col p-6 h-full"
           >
-            <button onClick={prevStep} className="self-start p-2 -ml-2 mb-4"><ChevronLeft className="w-6 h-6" /></button>
+            <button onClick={prevStep} className="self-start p-2 -ml-2 mb-4 text-[#FFFFFF]"><ChevronLeft className="w-6 h-6" /></button>
             <div className="flex items-center gap-2 mb-3">
-              <span className={`px-2.5 py-1 text-[9px] font-bold rounded-full uppercase tracking-wider ${isDark ? 'bg-white/10' : 'bg-slate-100'} ${textMuted}`}>Step 2 of 3</span>
+              <span className={`px-2.5 py-1 text-[9px] font-medium rounded-full uppercase tracking-wider bg-[rgba(255,255,255,0.12)] text-[#FFFFFF] border border-[rgba(255,255,255,0.20)]`}>Step 2 of 3</span>
             </div>
-            <h2 className="text-2xl font-bold mb-1">Rate your time</h2>
+            <h2 className="text-2xl font-bold mb-1 text-[#FFFFFF]">Rate your time</h2>
             <p className={`text-[10px] font-medium tracking-wide mb-8 ${textMuted}`}>How many stars for {business.name}?</p>
 
-            <div className={`w-full ${cardBg} rounded-2xl p-6 flex flex-col items-center justify-center mb-6 border ${borderClass}`}>
+            <div className={`w-full bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.10)] backdrop-blur-[12px] rounded-2xl p-6 flex flex-col items-center justify-center mb-6`}>
               <div className="flex gap-2 mb-2">
                 {[1, 2, 3, 4, 5].map(star => (
                   <button 
@@ -413,7 +413,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                     onClick={() => setRatings(r => ({ ...r, overall: star, food: r.food || star, service: r.service || star, atmosphere: r.atmosphere || star }))}
                     className="p-1 transition-transform hover:scale-110"
                   >
-                    <Star className={`w-8 h-8 ${star <= ratings.overall ? 'fill-amber-400 text-amber-400' : isDark ? 'text-slate-600' : 'text-slate-200'}`} />
+                    <Star className={`w-8 h-8 ${star <= ratings.overall ? 'fill-[var(--accent)] text-[var(--accent)] drop-shadow-[0_0_6px_var(--accent)]' : 'text-[rgba(255,255,255,0.30)] stroke-[rgba(255,255,255,0.40)]'}`} />
                   </button>
                 ))}
               </div>
@@ -427,20 +427,20 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                 {/* Stars showing their low rating */}
                 <div className="flex gap-1 mb-6">
                   {[1,2,3,4,5].map(s => (
-                    <span key={s} className={`text-4xl ${s <= ratings.overall ? 'text-amber-400' : 'text-slate-200 dark:text-slate-700'}`}>
+                    <span key={s} className={`text-4xl ${s <= ratings.overall ? 'text-[var(--accent)] drop-shadow-[0_0_6px_var(--accent)]' : 'text-[rgba(255,255,255,0.30)]'}`}>
                       ★
                     </span>
                   ))}
                 </div>
 
-                <h2 className="text-xl font-bold mb-2">We hear you.</h2>
+                <h2 className="text-xl font-bold mb-2 text-[#FFFFFF]">We hear you.</h2>
                 <p className={`text-sm leading-relaxed max-w-[250px] mb-8 ${textMuted}`}>
                   Your honest feedback helps this business improve. 
                   We'll help you share exactly what happened.
                 </p>
 
                 {/* Auto-progress bar */}
-                <div className="w-full max-w-[200px] h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                <div className="w-full max-w-[200px] h-1.5 bg-[rgba(255,255,255,0.1)] rounded-full overflow-hidden">
                   <motion.div 
                     initial={{ width: '0%' }}
                     animate={{ width: '100%' }}
@@ -457,10 +457,10 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                   { key: 'service', label: 'Service', icon: Sparkles },
                   { key: 'atmosphere', label: 'Atmosphere', icon: Check }
                 ].map(({ key, label, icon: Icon }) => (
-                  <div key={key} className={`flex items-center justify-between p-4 rounded-xl border ${borderClass} ${cardBg}`}>
+                  <div key={key} className={`flex items-center justify-between p-4 rounded-xl border border-[rgba(255,255,255,0.10)] bg-[rgba(255,255,255,0.06)]`}>
                     <div className="flex items-center gap-3">
-                      <Icon className={`w-4 h-4 ${textMuted}`} />
-                      <span className="text-xs font-bold">{label}</span>
+                      <Icon className={`w-4 h-4 text-[var(--accent)]`} />
+                      <span className="text-xs font-medium text-[#FFFFFF]">{label}</span>
                     </div>
                     <div className="flex gap-1">
                       {[1, 2, 3, 4, 5].map(star => (
@@ -469,7 +469,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                           onClick={() => setRatings(r => ({ ...r, [key]: star }))}
                           className="p-1"
                         >
-                          <Star className={`w-4 h-4 ${star <= (ratings as any)[key] ? 'fill-amber-400 text-amber-400' : isDark ? 'text-slate-600' : 'text-slate-200'}`} />
+                          <Star className={`w-4 h-4 ${star <= (ratings as any)[key] ? 'fill-[var(--accent)] text-[var(--accent)]' : 'text-[rgba(255,255,255,0.25)]'}`} />
                         </button>
                       ))}
                     </div>
@@ -482,8 +482,8 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
               <button 
                 onClick={handleGenerateReview}
                 disabled={ratings.overall === 0 || isGenerating}
-                className="w-full py-4 mt-6 rounded-xl font-bold text-sm shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50"
-                style={{ backgroundColor: 'var(--accent)', color: 'var(--text-primary)' }}
+                className="w-full py-4 mt-6 rounded-xl font-semibold text-sm shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-text)' }}
               >
                 {isGenerating ? <><Loader2 className="w-4 h-4 animate-spin" /> Generating AI Review...</> : <><Sparkles className="w-4 h-4" /> Generate my review</>}
               </button>
@@ -500,11 +500,11 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
             className="flex-1 flex flex-col h-full overflow-hidden"
           >
             <div className="p-6 pb-2 shrink-0">
-              <button onClick={prevStep} className="p-2 -ml-2 mb-4"><ChevronLeft className="w-6 h-6" /></button>
+              <button onClick={prevStep} className="p-2 -ml-2 mb-4 text-[#FFFFFF]"><ChevronLeft className="w-6 h-6" /></button>
               <div className="flex items-center gap-2 mb-3">
-                <span className={`px-2.5 py-1 text-[9px] font-bold rounded-full uppercase tracking-wider ${isDark ? 'bg-white/10' : 'bg-slate-100'} ${textMuted}`}>Step 3 of 3</span>
+                <span className={`px-2.5 py-1 text-[9px] font-medium rounded-full uppercase tracking-wider bg-[rgba(255,255,255,0.12)] text-[#FFFFFF] border border-[rgba(255,255,255,0.20)]`}>Step 3 of 3</span>
               </div>
-              <h2 className="text-2xl font-bold mb-1">Your review is ready</h2>
+              <h2 className="text-2xl font-bold mb-1 text-[#FFFFFF]">Your review is ready</h2>
               <p className={`text-[10px] font-medium tracking-wide ${textMuted}`}>Pick one, copy it, paste on Google</p>
             </div>
 
@@ -514,7 +514,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                   <div className="w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center">
                     <span className="text-white text-[9px] font-bold">!</span>
                   </div>
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Enter these exact ratings on Google</span>
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-emerald-400">Enter these exact ratings on Google</span>
                 </div>
                 <div className="grid grid-cols-2 gap-y-2 gap-x-4">
                   {[
@@ -527,7 +527,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                       <span className={`text-[8px] font-bold uppercase ${textMuted}`}>{r.label}</span>
                       <div className="flex gap-[1px]">
                         {[1, 2, 3, 4, 5].map(s => (
-                          <Star key={s} className={`w-2 h-2 ${s <= r.val ? 'fill-amber-400 text-amber-400' : 'text-slate-300 dark:text-slate-700'}`} />
+                          <Star key={s} className={`w-2 h-2 ${s <= r.val ? 'fill-[var(--accent)] text-[var(--accent)]' : 'text-[rgba(255,255,255,0.25)]'}`} />
                         ))}
                       </div>
                     </div>
@@ -541,32 +541,32 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                   <div 
                     key={idx} 
                     onClick={() => setActiveReviewIndex(idx)}
-                    className={`w-full ${cardBg} border-2 ${activeReviewIndex === idx ? 'border-amber-500 shadow-lg ' + (isDark ? 'bg-amber-500/5' : 'bg-amber-50') : (isDark ? 'border-slate-800' : 'border-slate-200')} rounded-2xl p-5 relative cursor-pointer transition-all`}
+                    className={`w-full bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.10)] backdrop-blur-[12px] rounded-2xl p-5 relative cursor-pointer transition-all ${activeReviewIndex === idx ? 'border-[var(--accent)] shadow-[0_0_12px_rgba(var(--accent-rgb),0.3)] bg-[rgba(var(--accent-rgb),0.1)]' : ''}`}
                   >
                     <div className="flex justify-between items-center mb-3">
                       <div className="flex items-center gap-2">
-                        <span className={`text-[9px] font-bold uppercase tracking-widest ${activeReviewIndex === idx ? 'text-amber-500' : 'text-slate-400'}`}>Variant {idx + 1}</span>
+                        <span className={`text-[9px] font-bold uppercase tracking-widest ${activeReviewIndex === idx ? 'text-[var(--accent)]' : 'text-[rgba(255,255,255,0.40)]'}`}>Variant {idx + 1}</span>
                         <div className="flex gap-[2px]">
                           {[1, 2, 3, 4, 5].map(s => (
-                            <Star key={s} className={`w-2.5 h-2.5 ${s <= ratings.overall ? 'fill-amber-400 text-amber-400' : 'text-slate-300 dark:text-slate-700'}`} />
+                            <Star key={s} className={`w-2.5 h-2.5 ${s <= ratings.overall ? 'fill-[var(--accent)] text-[var(--accent)]' : 'text-[rgba(255,255,255,0.25)]'}`} />
                           ))}
                         </div>
                       </div>
-                      {activeReviewIndex === idx && <Check className="w-4 h-4 text-amber-500" />}
+                      {activeReviewIndex === idx && <Check className="w-4 h-4 text-[var(--accent)]" />}
                     </div>
                     <textarea 
-                      className={`w-full bg-transparent text-sm leading-relaxed resize-none focus:outline-none ${isDark ? 'text-white' : 'text-slate-800'}`}
+                      className={`w-full bg-transparent text-sm leading-relaxed resize-none focus:outline-none text-[#FFFFFF]`}
                       value={activeReviewIndex === idx ? generatedReviews[activeReviewIndex] : review}
                       onChange={(e) => {
                         const newReviews = [...generatedReviews];
                         newReviews[idx] = e.target.value;
                         setGeneratedReviews(newReviews);
                       }}
-                      style={{ height: `${Math.max(4, review.split('\\n').length + 3)}rem` }}
+                      style={{ height: `${Math.max(4, review.split('\n').length + 3)}rem` }}
                       onClick={(e) => { if (activeReviewIndex !== idx) { e.preventDefault(); e.stopPropagation(); setActiveReviewIndex(idx); }}}
                     />
                     {activeReviewIndex === idx && (
-                      <div className="absolute bottom-3 right-4 flex items-center gap-1 text-[9px] font-bold text-amber-500 uppercase tracking-widest">
+                      <div className="absolute bottom-3 right-4 flex items-center gap-1 text-[9px] font-bold text-[var(--accent)] uppercase tracking-widest">
                         Editable
                       </div>
                     )}
@@ -577,7 +577,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
               {/* Upgrade Nudges removed from here. They belong on the dashboard outside the simulation. */}
             </div>
 
-            <div className={`p-6 pt-4 shrink-0 border-t ${borderClass} ${isDark ? 'bg-[#111827]' : 'bg-white'} relative`}>
+            <div className={`p-6 pt-4 shrink-0 border-t ${borderClass} bg-[rgba(255,255,255,0.06)] backdrop-blur-[12px] relative`}>
               {(ratings.overall <= 2) ? (
                 <div className="space-y-3">
                   <p className={`text-xs text-center leading-relaxed ${textMuted}`}>
@@ -586,8 +586,8 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                   </p>
                   <button 
                     onClick={handlePostReview}
-                    className="w-full py-4 rounded-xl font-bold text-sm shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] mb-3"
-                    style={isCopied ? { backgroundColor: '#10b981', color: '#fff' } : { backgroundColor: 'var(--accent)', color: 'var(--text-primary)' }}
+                    className="w-full py-4 rounded-xl font-semibold text-sm shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] mb-3"
+                    style={isCopied ? { backgroundColor: '#10b981', color: '#fff' } : { backgroundColor: 'var(--accent)', color: 'var(--accent-text)' }}
                   >
                     {isCopied ? (
                       <>✓ Copied!</>
@@ -599,8 +599,8 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
               ) : (
                 <button 
                   onClick={handlePostReview}
-                  className="w-full py-4 rounded-xl font-bold text-sm shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] mb-3"
-                  style={isCopied ? { backgroundColor: '#10b981', color: '#fff' } : { backgroundColor: 'var(--accent)', color: 'var(--text-primary)' }}
+                  className="w-full py-4 rounded-xl font-semibold text-sm shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] mb-3"
+                  style={isCopied ? { backgroundColor: '#10b981', color: '#fff' } : { backgroundColor: 'var(--accent)', color: 'var(--accent-text)' }}
                 >
                   {isCopied ? (
                     <>✓ Copied!</>
@@ -628,16 +628,16 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
             className="flex-1 flex flex-col items-center justify-center p-8 text-center h-full"
           >
             <div className="w-20 h-20 rounded-full bg-emerald-500 flex items-center justify-center mb-8 shadow-lg shadow-emerald-500/20">
-              <Check className="w-10 h-10 text-white stroke-[4]" />
+              <Check className="w-10 h-10 text-[#FFFFFF] stroke-[4]" />
             </div>
-            <h2 className="text-3xl font-black mb-3">Thank you!</h2>
-            <p className={`text-sm leading-relaxed max-w-[250px] mb-12 ${textMuted}`}>
+            <h2 className="text-3xl font-black mb-3 text-[#FFFFFF]">Thank you!</h2>
+            <p className={`text-sm leading-relaxed max-w-[250px] mb-12 text-[rgba(255,255,255,0.60)]`}>
               Thank you for choosing {business.name}. Google Maps should be opening now to paste your review.
             </p>
             
             <button 
               onClick={() => setStep(STEPS.WELCOME)}
-              className={`w-full py-4 rounded-xl font-bold text-sm shadow-md flex items-center justify-center gap-2 transition-all active:scale-[0.98] ${isDark ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-slate-900 text-white hover:bg-slate-800'}`}
+              className={`w-full py-4 rounded-xl font-semibold text-sm shadow-md flex items-center justify-center gap-2 transition-all active:scale-[0.98] bg-[rgba(255,255,255,0.10)] text-[#FFFFFF] hover:bg-[rgba(255,255,255,0.20)]`}
             >
               Done <RefreshCw className="w-4 h-4" />
             </button>
@@ -654,9 +654,9 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
               <Sparkles className="w-10 h-10 text-white stroke-[2]" />
             </div>
             
-            <h2 className="text-2xl font-bold mb-3 leading-tight">Don't forget to build a relationship with us!</h2>
+            <h2 className="text-[20px] font-bold mb-3 leading-tight text-[#FFFFFF]">Don't forget to build a relationship with us!</h2>
             
-            <p className={`text-sm leading-relaxed max-w-[260px] mb-10 ${textMuted}`}>
+            <p className={`text-sm leading-relaxed max-w-[260px] mb-10 text-[rgba(255,255,255,0.60)]`}>
               Follow us on Instagram for exclusive offers, new arrivals & behind the scenes.
             </p>
             
@@ -665,14 +665,14 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                 window.open(business.instagramUrl, '_blank');
                 setStep(STEPS.COPIED);
               }}
-              className="w-full py-4 rounded-xl font-bold text-sm text-white shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] mb-4 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 hover:opacity-90"
+              className="w-full py-4 rounded-xl font-semibold text-[#FFFFFF] text-sm shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] mb-4 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 hover:opacity-90"
             >
               Follow us on Instagram <ArrowRight className="w-4 h-4" />
             </button>
             
             <button 
               onClick={() => setStep(STEPS.COPIED)}
-              className={`text-xs font-semibold underline-offset-4 hover:underline ${textMuted}`}
+              className={`text-xs font-semibold underline-offset-4 hover:underline text-[rgba(255,255,255,0.60)]`}
             >
               Maybe later
             </button>
