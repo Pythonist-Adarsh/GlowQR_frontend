@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { User, Lock, Mail, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { User, Lock, Mail, CheckCircle2, AlertCircle, Loader2, Palette } from "lucide-react";
 import { API_BASE_URL } from "@/lib/api-config";
 
-export function SettingsTab({ user, onUpdate }: { user: any; onUpdate?: () => void }) {
+export function SettingsTab({ user, business, onUpdate }: { user: any; business?: any; onUpdate?: () => void }) {
   const [profileLoading, setProfileLoading] = useState(false);
   const [profileSuccess, setProfileSuccess] = useState(false);
   const [profileError, setProfileError] = useState("");
@@ -161,6 +161,78 @@ export function SettingsTab({ user, onUpdate }: { user: any; onUpdate?: () => vo
           </button>
         </form>
       </div>
+
+      {/* Branding Section */}
+      {business && (
+        <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center">
+              <Palette className="w-5 h-5" />
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900">Brand Customization</h2>
+          </div>
+
+          <form onSubmit={async (e) => {
+            e.preventDefault();
+            const form = e.target as HTMLFormElement;
+            const theme = (form.elements.namedItem('theme') as HTMLSelectElement).value;
+            const primaryColor = (form.elements.namedItem('primaryColor') as HTMLInputElement).value;
+            
+            try {
+              const token = localStorage.getItem('token');
+              const res = await fetch(`${API_BASE_URL}/api/business/profile`, {
+                method: "PATCH",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  animation_style: theme === 'classic' ? 'particle_burst' : theme === 'premium' ? 'minimal_fade' : 'none',
+                  primary_color: primaryColor
+                })
+              });
+              
+              if (res.ok) {
+                alert('Brand updated successfully!');
+                if (onUpdate) onUpdate();
+              }
+            } catch (err) {
+              alert('Failed to update branding');
+            }
+          }} className="space-y-6 max-w-lg">
+            <div>
+              <label className="block text-sm font-bold text-slate-700 mb-2">Theme Style</label>
+              <select 
+                name="theme"
+                defaultValue={business.animation_style === 'particle_burst' ? 'classic' : business.animation_style === 'minimal_fade' ? 'premium' : 'free'}
+                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 !text-slate-900 rounded-xl focus:bg-white focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all outline-none"
+              >
+                <option value="free">Free Trial (Default)</option>
+                <option value="classic">Basic (Particle Burst)</option>
+                <option value="premium">Premium (Minimal Fade)</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-slate-700 mb-2">Brand Color</label>
+              <div className="flex items-center gap-4">
+                <input
+                  type="color"
+                  name="primaryColor"
+                  defaultValue={business.primary_color || "#6C63FF"}
+                  className="w-12 h-12 p-0 border-0 rounded cursor-pointer"
+                />
+                <span className="text-sm text-slate-500">Pick your business color</span>
+              </div>
+            </div>
+            <button
+              type="submit"
+              className="px-6 py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-all flex items-center gap-2"
+            >
+              Save Brand Changes
+            </button>
+          </form>
+        </div>
+      )}
 
       {/* Security Section */}
       <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">

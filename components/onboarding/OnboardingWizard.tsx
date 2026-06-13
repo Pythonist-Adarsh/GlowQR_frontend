@@ -705,15 +705,24 @@ const Step5 = ({ data, updateData }: any) => {
       {data.theme !== 'classic' && data.theme !== 'premium' && (
         <div className="space-y-4">
           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Brand Color [Optional]</label>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-4 items-center">
             {colors.map(c => (
               <button 
                 key={c}
                 onClick={() => updateData({ primaryColor: c })}
-                className={`w-8 h-8 rounded-full border-2 transition-all ${data.primaryColor === c ? 'scale-125 border-slate-900 shadow-lg' : 'border-transparent shadow-sm'}`}
+                className={`w-8 h-8 rounded-full border-2 transition-all shrink-0 ${data.primaryColor === c ? 'scale-125 border-slate-900 shadow-lg' : 'border-transparent shadow-sm'}`}
                 style={{ backgroundColor: c }}
               />
             ))}
+            <div className="flex items-center gap-2 border border-slate-200 rounded-lg p-1 px-2 shrink-0">
+              <span className="text-[10px] font-bold text-slate-500">Custom</span>
+              <input 
+                type="color" 
+                value={data.primaryColor || '#6C63FF'} 
+                onChange={e => updateData({ primaryColor: e.target.value })} 
+                className="w-6 h-6 p-0 border-0 rounded cursor-pointer"
+              />
+            </div>
           </div>
         </div>
       )}
@@ -898,7 +907,7 @@ export default function OnboardingWizard() {
   
   const [data, setData] = useState<any>({
     name: '', tagline: '', website: '', instagramUrl: '', googleReviewUrl: '', placeId: '',
-    currentRating: 4.5, reviewCount: 120,
+    currentRating: 0.0, reviewCount: 0,
     city: '', area: '', address: '', phone: '', whatsapp: '', email: '',
     openTime: '09:00', closeTime: '22:00', daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
     category: 'restaurant', spendRange: '₹500–₹1000', speciality: '', dietary: [],
@@ -931,8 +940,8 @@ export default function OnboardingWizard() {
               tagline: parsed.tagline || prev.tagline,
               googleReviewUrl: parsed.google_review_url || prev.googleReviewUrl,
               placeId: parsed.place_id || prev.placeId,
-              currentRating: parsed.google_rating || prev.currentRating,
-              reviewCount: parsed.review_count || prev.reviewCount,
+              currentRating: parsed.google_rating !== null ? parsed.google_rating : prev.currentRating,
+              reviewCount: parsed.review_count !== null ? parsed.review_count : prev.reviewCount,
               city: parsed.city || prev.city,
               area: parsed.area_locality || prev.area,
               address: parsed.address || prev.address,
@@ -997,8 +1006,8 @@ export default function OnboardingWizard() {
             website: data.website,
             instagram_url: data.instagramUrl,
             place_id: data.placeId,
-            google_rating: parseFloat(data.currentRating) || 4.5,
-            review_count: parseInt(data.reviewCount) || 120
+            google_rating: parseFloat(data.currentRating) || 0.0,
+            review_count: parseInt(data.reviewCount, 10) || 0
           })
         });
       } else if (currentStep === 1) {

@@ -475,7 +475,7 @@ export function DashboardClient({
         )}
 
         {activeTab === "settings" && (
-          <SettingsTab user={user} onUpdate={() => window.location.reload()} />
+          <SettingsTab user={userData} business={businessData} onUpdate={() => window.location.reload()} />
         )}
 
         {activeTab === "reviews" && (

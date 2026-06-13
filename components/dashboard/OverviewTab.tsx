@@ -206,7 +206,7 @@ export function OverviewTab({
               <div className="text-xs text-slate-500 bg-white px-3 py-1.5 rounded-full border border-slate-200 shadow-sm flex items-center gap-2">
                 <Sparkles className="w-3 h-3 text-blue-500" />
                 {data.google_data.has_place_id 
-                  ? `Last synced: ${data.google_data.last_synced ? new Date(data.google_data.last_synced).toLocaleString('en-GB') : 'Pending'} · Syncs daily at 2 AM` 
+                  ? `Last synced: ${data.google_data.last_synced ? new Date(data.google_data.last_synced).toLocaleString('en-GB') : 'Pending'} · Syncs daily at 7 AM` 
                   : <span className="text-amber-600 font-bold">⚠️ Add your Google Place ID in Setup to enable daily sync</span>}
               </div>
             </div>
@@ -397,12 +397,12 @@ export function OverviewTab({
               
               {/* Printable Card Area */}
               <div ref={qrCardRef} className="w-full max-w-[260px] bg-white pt-8 pb-6 px-4 rounded-xl flex flex-col items-center justify-center relative overflow-hidden mb-6">
-                <div className="h-16 mb-3 flex items-center justify-center bg-transparent">
+                <div className="h-28 w-full mb-3 flex items-center justify-center bg-transparent px-4">
                   {b.logo_url ? (
-                    <img src={b.logo_url} alt="Logo" className="max-w-[120px] max-h-16 object-contain" crossOrigin="anonymous" />
+                    <img src={b.logo_url} alt="Logo" className="w-full h-full object-contain" crossOrigin="anonymous" />
                   ) : (
-                    <div className="w-16 h-16 rounded-full border-2 border-slate-900 border-dashed flex items-center justify-center">
-                      <span className="text-[10px] font-black text-slate-900 leading-none text-center">YOUR<br/>LOGO</span>
+                    <div className="w-20 h-20 rounded-full border-2 border-slate-900 border-dashed flex items-center justify-center">
+                      <span className="text-[12px] font-black text-slate-900 leading-none text-center">YOUR<br/>LOGO</span>
                     </div>
                   )}
                 </div>
