@@ -108,6 +108,31 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
   const generateReviewRequest = async () => {
     setIsGenerating(true);
     
+    // Map category ID to human readable string for LLM
+    const categoryMap: Record<string, string> = {
+      'restaurant': 'Restaurant',
+      'cafe': 'Cafe / Coffee Shop',
+      'fastfood': 'Fast Food / QSR',
+      'bar': 'Bar / Lounge',
+      'bakery': 'Bakery / Dessert Shop',
+      'foodcourt': 'Food Court',
+      'finedining': 'Fine Dining',
+      'foodtruck': 'Food Truck',
+      'cloudkitchen': 'Cloud Kitchen',
+      'jewellery': 'Bridal & Festive Jewellery',
+      'hotel': 'Hotel',
+      'spa': 'Spa',
+      'salon': 'Salon',
+      'retail': 'Retail',
+      'gym': 'Gym',
+      'medical': 'Medical',
+      'education': 'Education',
+      'other': 'Business'
+    };
+    
+    const rawCategory = data.business_category || 'restaurant';
+    const displayCategory = categoryMap[rawCategory.toLowerCase()] || rawCategory || 'Restaurant';
+    
     try {
       const res = await fetch(`${API_BASE_URL}/api/scan/generate-review`, {
         method: 'POST',
@@ -115,7 +140,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
         body: JSON.stringify({
           qr_slug: data.qr_slug || window.location.pathname.split('/').pop() || '',
           business_name: business.name,
-          category: data.business_category || 'Restaurant',
+          category: displayCategory,
           tagline: business.tagline,
           overall_rating: ratings.overall,
           food_rating: ratings.food,
