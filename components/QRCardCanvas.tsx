@@ -27,18 +27,18 @@ export default function QRCardCanvas({
     ctx.fillStyle = '#FFFFFF'
     ctx.fillRect(0, 0, CARD_W, CARD_H)
 
-    let y = 80 // current Y cursor
+    let y = 160 // Top padding
 
     // 2. LOGO CIRCLE
-    const LOGO_SIZE = 260
+    const LOGO_SIZE = 240
     const logoX = CENTER
     const logoY = y + LOGO_SIZE / 2
 
-    // Draw circle border
+    // Draw circle border (very light thin border)
     ctx.save()
     ctx.beginPath()
-    ctx.arc(logoX, logoY, LOGO_SIZE / 2 + 6, 0, Math.PI * 2)
-    ctx.fillStyle = '#EEEEEE'
+    ctx.arc(logoX, logoY, LOGO_SIZE / 2 + 2, 0, Math.PI * 2)
+    ctx.fillStyle = '#F5F5F5'
     ctx.fill()
     ctx.restore()
 
@@ -63,55 +63,48 @@ export default function QRCardCanvas({
     }
     ctx.restore()
 
-    y += LOGO_SIZE + 36
+    y += LOGO_SIZE + 40
 
     // 3. BUSINESS NAME
     ctx.fillStyle = '#111111'
-    ctx.font = 'bold 80px Arial'
+    ctx.font = 'bold 56px Arial'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'top'
     ctx.fillText((businessName || '').toUpperCase(), CENTER, y)
-    y += 80 + 40
+    y += 56 + 50
 
     // 4. QR CODE
-    const QR_SIZE = 700
+    const QR_SIZE = 660
     const qrX = CENTER - QR_SIZE / 2
 
-    // QR border box
+    // QR border box (thin black line, slightly rounded)
     ctx.strokeStyle = '#111111'
-    ctx.lineWidth = 8
-    roundRect(ctx, qrX - 16, y - 16, QR_SIZE + 32, QR_SIZE + 32, 28)
+    ctx.lineWidth = 3
+    roundRect(ctx, qrX - 24, y - 24, QR_SIZE + 48, QR_SIZE + 48, 16)
     ctx.stroke()
 
     // Generate QR as data URL then draw
     const qrDataUrl = await QRCode.toDataURL(scanUrl, {
       width: QR_SIZE,
-      margin: 1,
+      margin: 0,
       errorCorrectionLevel: 'M',
       color: { dark: '#000000', light: '#ffffff' }
     })
     const qrImg = await loadImage(qrDataUrl)
     ctx.drawImage(qrImg, qrX, y, QR_SIZE, QR_SIZE)
-    y += QR_SIZE + 48
+    y += QR_SIZE + 80
 
-    // 5. DIVIDER LINE
-    ctx.strokeStyle = '#EEEEEE'
-    ctx.lineWidth = 2
-    ctx.beginPath()
-    ctx.moveTo(CENTER - 300, y)
-    ctx.lineTo(CENTER + 300, y)
-    ctx.stroke()
-    y += 40
-
-    // 6. SCAN TEXT
-    ctx.fillStyle = '#444444'
-    ctx.font = '36px Arial'
+    // 5. SCAN TEXT (Split into two lines like the image)
+    ctx.fillStyle = '#666666'
+    ctx.font = '32px Arial'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'top'
-    ctx.fillText('Scan the QR code to leave us a review on', CENTER, y)
-    y += 36 + 20 + 16
+    ctx.fillText('Scan the QR code to', CENTER, y)
+    y += 32 + 12
+    ctx.fillText('leave us a review on', CENTER, y)
+    y += 32 + 36
 
-    // 7. GOOGLE COLORED TEXT
+    // 6. GOOGLE COLORED TEXT
     const googleLetters = [
       { char: 'G', color: '#4285F4' },
       { char: 'o', color: '#EA4335' },
@@ -120,7 +113,7 @@ export default function QRCardCanvas({
       { char: 'l', color: '#34A853' },
       { char: 'e', color: '#EA4335' },
     ]
-    const GFONT = 80
+    const GFONT = 76
     ctx.font = `bold ${GFONT}px Arial`
     ctx.textBaseline = 'top'
     
@@ -137,17 +130,17 @@ export default function QRCardCanvas({
       ctx.fillText(l.char, gx, y)
       gx += ctx.measureText(l.char).width
     })
-    y += GFONT + 20
+    y += GFONT + 24
 
-    // 8. GOLD STARS
+    // 7. GOLD STARS
     const STAR = '★'
-    const STAR_SIZE = 80
+    const STAR_SIZE = 56
     ctx.font = `${STAR_SIZE}px Arial`
     ctx.fillStyle = '#FBBC05'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'top'
     
-    const starSpacing = STAR_SIZE + 12
+    const starSpacing = STAR_SIZE + 10
     const starsStartX = CENTER - (5 * starSpacing) / 2 + STAR_SIZE / 2
     for (let i = 0; i < 5; i++) {
       ctx.fillText(STAR, starsStartX + i * starSpacing, y)

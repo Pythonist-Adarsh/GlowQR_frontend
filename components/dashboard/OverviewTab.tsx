@@ -1,5 +1,4 @@
-import React, { useRef } from "react";
-import html2canvas from "html2canvas";
+import React from "react";
 import {
   BarChart3,
   ExternalLink,
@@ -27,6 +26,7 @@ import {
 } from "recharts";
 import { LockedSection, ExpiredOverlay } from "./LockedComponents";
 import { QRCodeCanvas } from "qrcode.react";
+import QRCardCanvas from '@/components/QRCardCanvas';
 
 export function OverviewTab({
   user,
@@ -37,36 +37,6 @@ export function OverviewTab({
   setActiveTab,
   reviewUrl,
 }: any) {
-  const qrCardRef = useRef<HTMLDivElement>(null);
-  
-  const downloadCard = async () => {
-    const card = document.getElementById('qr-card');
-    if (!card) return;
-    
-    const canvas = await html2canvas(card, {
-      scale: 3,                    // ← 3x scale = print quality ~1200px
-      backgroundColor: '#ffffff',
-      useCORS: true,
-      allowTaint: false,
-      logging: false,
-      width: card.offsetWidth,
-      height: card.offsetHeight,
-      onclone: function(clonedDoc) {
-        const cloned = clonedDoc.getElementById('qr-card');
-        if (cloned) {
-          cloned.style.borderRadius = '0';
-          cloned.style.border = 'none';
-          cloned.style.boxShadow = 'none';
-        }
-      }
-    });
-
-    const link = document.createElement('a');
-    link.download = `${b.slug || "glowqr"}_glowqr_card.png`;
-    link.href = canvas.toDataURL('image/png', 1.0);
-    link.click();
-  };
-
   const plan = user.plan || "trial";
   const now = new Date();
   
@@ -412,66 +382,17 @@ export function OverviewTab({
             {/* QR Card */}
             <div className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm flex flex-col items-center">
               
-              {/* Printable Card Area */}
-              <div className="w-[260px] h-[460px] relative rounded-2xl shadow-sm mb-6 border border-slate-200 overflow-hidden bg-slate-50 shrink-0 flex items-center justify-center">
-                <div style={{ transform: 'scale(0.65)', transformOrigin: 'top center', marginTop: '10px' }}>
-                  
-                  <div id="qr-card" style={{ width: '400px', background: '#fff', padding: '32px 28px 28px', display: 'flex', flexDirection: 'column', alignItems: 'center', fontFamily: 'Arial, Helvetica, sans-serif' }}>
-                    
-                    <div style={{ width: '120px', height: '120px', borderRadius: '50%', border: '3px solid #eee', overflow: 'hidden', marginBottom: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fafafa' }}>
-                      {b.logo_url ? (
-                        <img src={b.logo_url} crossOrigin="anonymous" style={{ width: '120px', height: '120px', objectFit: 'cover' }} alt="Logo" />
-                      ) : (
-                        <div style={{ fontSize: '48px', fontWeight: 'bold', color: '#ccc' }}>{b.name?.charAt(0)?.toUpperCase()}</div>
-                      )}
-                    </div>
+              <QRCardCanvas
+                businessName={b.name}
+                logoUrl={b.logo_url}
+                scanUrl={reviewUrl}
+                slug={b.slug}
+              />
 
-                    <p style={{ fontSize: '28px', fontWeight: 900, letterSpacing: '0.1em', color: '#111', margin: '0 0 20px 0', textAlign: 'center' }}>
-                      {b.name}
-                    </p>
-
-                    <div style={{ width: '310px', height: '310px', border: '3px solid #111', borderRadius: '16px', padding: '10px', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      {b.qr_image_url ? (
-                        <img src={b.qr_image_url} crossOrigin="anonymous" style={{ width: '290px', height: '290px', objectFit: 'contain' }} alt="QR" />
-                      ) : (
-                        <QRCodeCanvas value={reviewUrl} size={284} bgColor="#ffffff" fgColor="#000000" level="M" />
-                      )}
-                    </div>
-
-                    <div style={{ width: '100%', height: '1px', background: '#eee', marginBottom: '16px' }}></div>
-
-                    <p style={{ fontSize: '14px', color: '#444', textAlign: 'center', fontWeight: 500, lineHeight: 1.6, margin: '0 0 10px 0' }}>
-                      Scan the QR code to leave us a review on
-                    </p>
-
-                    <div style={{ display: 'flex', marginBottom: '10px' }}>
-                      <span style={{ fontSize: '32px', fontWeight: 800, color: '#4285F4' }}>G</span>
-                      <span style={{ fontSize: '32px', fontWeight: 800, color: '#EA4335' }}>o</span>
-                      <span style={{ fontSize: '32px', fontWeight: 800, color: '#FBBC05' }}>o</span>
-                      <span style={{ fontSize: '32px', fontWeight: 800, color: '#4285F4' }}>g</span>
-                      <span style={{ fontSize: '32px', fontWeight: 800, color: '#34A853' }}>l</span>
-                      <span style={{ fontSize: '32px', fontWeight: 800, color: '#EA4335' }}>e</span>
-                    </div>
-
-                    <div style={{ display: 'flex', gap: '4px', fontSize: '32px', color: '#FBBC05' }}>
-                      <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
-                    </div>
-
-                  </div>
-                  
-                </div>
-              </div>
-
-              <h3 className="text-lg font-black text-slate-900 mb-1">Your Printable QR</h3>
+              <h3 className="text-lg font-black text-slate-900 mb-1 mt-6">Your Printable QR</h3>
               <p className="text-xs text-slate-500 font-medium mb-6">Perfect for tables & counters</p>
               
               <div className="flex w-full gap-3">
-                <button
-                  onClick={downloadCard}
-                  className="flex-1 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all"
-                >
-                  <Download className="w-4 h-4" /> PNG
-                </button>
                 <button
                   onClick={() => {
                     navigator.clipboard.writeText(reviewUrl);
