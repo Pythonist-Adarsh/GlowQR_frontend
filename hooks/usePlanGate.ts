@@ -25,7 +25,7 @@ export const usePlanGate = (requiredPlan: 'trial' | 'basic' | 'premium') => {
         
         if (res.ok) {
           const data = await res.json();
-          const userPlan = data?.user?.plan || 'trial';
+          const userPlan = (data?.user?.plan || 'trial').toLowerCase();
           setCurrentPlan(userPlan);
           
           const planOrder = { expired: 0, trial: 0, basic: 1, premium: 2 };
