@@ -406,22 +406,21 @@ export function OverviewTab({
             <div className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm flex flex-col items-center">
               
               {/* Printable Card Area */}
-              <div className="w-[260px] h-[462px] relative rounded-2xl shadow-sm mb-6 border border-slate-200 overflow-hidden bg-slate-50 shrink-0">
+              <div className="w-[260px] h-[378px] relative rounded-2xl shadow-sm mb-6 border border-slate-200 overflow-hidden bg-white shrink-0">
                 <div 
                   id="qr-card-export-node"
                   ref={qrCardRef} 
                   className="bg-white flex flex-col items-center absolute top-0 left-0"
                   style={{ 
                     width: '1080px', 
-                    height: '1920px', 
                     transform: 'scale(0.24074)', 
                     transformOrigin: 'top left' 
                   }}
                 >
-                  <div className="w-full h-full flex flex-col items-center justify-center pt-[160px] pb-[120px] px-[60px]">
+                  <div className="w-full flex flex-col items-center pt-[80px] pb-[80px] px-[60px] bg-[#FFFFFF]">
                     
                     {/* Logo */}
-                    <div className="w-[260px] h-[260px] mb-[20px] flex items-center justify-center shrink-0 rounded-full border-[4px] border-[#F0F0F0] overflow-hidden bg-white">
+                    <div className="w-[280px] h-[280px] mb-[20px] flex items-center justify-center shrink-0 rounded-full border-[4px] border-[#EEEEEE] overflow-hidden bg-white">
                       {b.logo_url ? (
                         <img src={b.logo_url} alt="Logo" className="w-full h-full object-cover" crossOrigin="anonymous" />
                       ) : (
@@ -432,18 +431,18 @@ export function OverviewTab({
                     </div>
 
                     {/* Business Name */}
-                    <h4 className="text-[64px] font-[800] text-[#1A1A1A] mb-[28px] text-center leading-tight tracking-[0.06em]">
+                    <h4 className="text-[72px] font-[900] text-[#111111] mb-[32px] text-center leading-tight tracking-[0.08em]">
                       {b.name}
                     </h4>
 
                     {/* QR Box */}
-                    <div className="w-[720px] h-[720px] bg-[#000000] rounded-[32px] p-[24px] mb-[36px] flex items-center justify-center shadow-lg">
+                    <div className="w-[700px] h-[700px] bg-[#FFFFFF] rounded-[28px] p-[16px] mb-[28px] flex items-center justify-center border-[6px] border-[#111111]">
                       {b.qr_image_url ? (
-                        <img src={b.qr_image_url} alt="QR Code" className="w-[672px] h-[672px] object-contain bg-white" crossOrigin="anonymous" />
+                        <img src={b.qr_image_url} alt="QR Code" className="w-[656px] h-[656px] object-contain bg-white" crossOrigin="anonymous" />
                       ) : (
                         <QRCodeCanvas
                           value={reviewUrl}
-                          size={672}
+                          size={656}
                           bgColor="#ffffff"
                           fgColor="#000000"
                           level="M"
@@ -451,30 +450,33 @@ export function OverviewTab({
                       )}
                     </div>
 
-                    {/* Bottom Section */}
-                    <p className="text-[32px] text-center text-[#555555] leading-[1.5] mb-[24px]">
+                    {/* Divider */}
+                    <div className="w-[600px] h-[2px] bg-[#EEEEEE] mb-[28px]"></div>
+
+                    {/* Scan Text */}
+                    <p className="text-[36px] font-[500] text-center text-[#333333] leading-[1.5] mb-[18px]">
                       Scan the QR code to<br />leave us a review on
                     </p>
 
                     {/* Google Text Logo */}
-                    <div className="h-[80px] flex items-center justify-center mb-[20px]">
-                      <span className="inline-flex items-center">
-                        <span className="text-[#4285F4] font-bold text-[80px] tracking-tighter leading-none">G</span>
-                        <span className="text-[#EA4335] font-bold text-[80px] tracking-tighter leading-none">o</span>
-                        <span className="text-[#FBBC05] font-bold text-[80px] tracking-tighter leading-none">o</span>
-                        <span className="text-[#4285F4] font-bold text-[80px] tracking-tighter leading-none">g</span>
-                        <span className="text-[#34A853] font-bold text-[80px] tracking-tighter leading-none">l</span>
-                        <span className="text-[#EA4335] font-bold text-[80px] tracking-tighter leading-none">e</span>
+                    <div className="flex items-center justify-center mb-[14px]">
+                      <span className="inline-flex items-center text-[72px] font-[800] tracking-tighter leading-none">
+                        <span className="text-[#4285F4]">G</span>
+                        <span className="text-[#EA4335]">o</span>
+                        <span className="text-[#FBBC05]">o</span>
+                        <span className="text-[#4285F4]">g</span>
+                        <span className="text-[#34A853]">l</span>
+                        <span className="text-[#EA4335]">e</span>
                       </span>
                     </div>
 
                     {/* Stars */}
-                    <div className="flex gap-[12px] text-[#FBBC05]">
-                      <Star className="w-[56px] h-[56px] fill-current" />
-                      <Star className="w-[56px] h-[56px] fill-current" />
-                      <Star className="w-[56px] h-[56px] fill-current" />
-                      <Star className="w-[56px] h-[56px] fill-current" />
-                      <Star className="w-[56px] h-[56px] fill-current" />
+                    <div className="flex gap-[10px] text-[#FBBC05]">
+                      <Star className="w-[72px] h-[72px] fill-current" />
+                      <Star className="w-[72px] h-[72px] fill-current" />
+                      <Star className="w-[72px] h-[72px] fill-current" />
+                      <Star className="w-[72px] h-[72px] fill-current" />
+                      <Star className="w-[72px] h-[72px] fill-current" />
                     </div>
 
                   </div>
