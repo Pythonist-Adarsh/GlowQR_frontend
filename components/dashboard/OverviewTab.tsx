@@ -418,34 +418,34 @@ export function OverviewTab({
                     transformOrigin: 'top left' 
                   }}
                 >
-                  <div className="w-full h-full flex flex-col items-center pt-[60px] pb-[40px] px-[60px]">
+                  <div className="w-full h-full flex flex-col items-center pt-[120px] pb-[80px] px-[60px]">
                     
                     {/* Logo */}
-                    <div className="w-[200px] h-[200px] mb-[16px] flex items-center justify-center shrink-0">
+                    <div className="w-[220px] h-[220px] mb-[32px] flex items-center justify-center shrink-0 rounded-full border-[6px] border-[#F0F0F0] overflow-hidden bg-white">
                       {b.logo_url ? (
-                        <img src={b.logo_url} alt="Logo" className="w-full h-full object-contain" crossOrigin="anonymous" />
+                        <img src={b.logo_url} alt="Logo" className="w-full h-full object-cover" crossOrigin="anonymous" />
                       ) : (
-                        <div className="w-full h-full rounded-full border-[6px] border-slate-900 border-dashed flex items-center justify-center">
+                        <div className="w-full h-full flex items-center justify-center bg-slate-50">
                           <span className="text-[32px] font-black text-slate-900 leading-none text-center">YOUR<br/>LOGO</span>
                         </div>
                       )}
                     </div>
 
                     {/* Business Name */}
-                    <h4 className="text-[52px] font-[800] text-slate-900 mb-[24px] text-center leading-[1.1] tracking-tight">
+                    <h4 className="text-[64px] font-[800] text-[#1A1A1A] mb-[40px] text-center leading-tight tracking-[0.06em]">
                       {b.name}
                     </h4>
 
                     <div className="flex-1 min-h-[20px]"></div>
 
                     {/* QR Box */}
-                    <div className="bg-white p-[24px] rounded-[20px] shadow-[0_12px_48px_rgba(0,0,0,0.12)] border border-slate-100 flex items-center justify-center">
+                    <div className="w-[720px] h-[720px] bg-[#000000] rounded-[32px] p-[24px] mb-[40px] flex items-center justify-center shadow-lg">
                       {b.qr_image_url ? (
-                        <img src={b.qr_image_url} alt="QR Code" className="w-[720px] h-[720px] object-contain" crossOrigin="anonymous" />
+                        <img src={b.qr_image_url} alt="QR Code" className="w-[672px] h-[672px] object-contain bg-white" crossOrigin="anonymous" />
                       ) : (
                         <QRCodeCanvas
                           value={reviewUrl}
-                          size={720}
+                          size={672}
                           bgColor="#ffffff"
                           fgColor="#000000"
                           level="M"
@@ -456,29 +456,29 @@ export function OverviewTab({
                     <div className="flex-1 min-h-[20px]"></div>
 
                     {/* Bottom Section */}
-                    <p className="text-[26px] text-center font-bold text-[#444444] leading-tight mt-[20px]">
+                    <p className="text-[32px] text-center text-[#555555] leading-[1.5] mb-[24px]">
                       Scan the QR code to<br />leave us a review on
                     </p>
 
                     {/* Google Text Logo */}
-                    <div className="h-[72px] flex items-center justify-center mt-[20px]">
+                    <div className="h-[96px] flex items-center justify-center mb-[20px]">
                       <span className="inline-flex items-center">
-                        <span className="text-[#4285F4] font-bold text-[72px] tracking-tighter leading-none">G</span>
-                        <span className="text-[#EA4335] font-bold text-[72px] tracking-tighter leading-none">o</span>
-                        <span className="text-[#FBBC05] font-bold text-[72px] tracking-tighter leading-none">o</span>
-                        <span className="text-[#4285F4] font-bold text-[72px] tracking-tighter leading-none">g</span>
-                        <span className="text-[#34A853] font-bold text-[72px] tracking-tighter leading-none">l</span>
-                        <span className="text-[#EA4335] font-bold text-[72px] tracking-tighter leading-none">e</span>
+                        <span className="text-[#4285F4] font-bold text-[96px] tracking-tighter leading-none">G</span>
+                        <span className="text-[#EA4335] font-bold text-[96px] tracking-tighter leading-none">o</span>
+                        <span className="text-[#FBBC05] font-bold text-[96px] tracking-tighter leading-none">o</span>
+                        <span className="text-[#4285F4] font-bold text-[96px] tracking-tighter leading-none">g</span>
+                        <span className="text-[#34A853] font-bold text-[96px] tracking-tighter leading-none">l</span>
+                        <span className="text-[#EA4335] font-bold text-[96px] tracking-tighter leading-none">e</span>
                       </span>
                     </div>
 
                     {/* Stars */}
-                    <div className="flex gap-[8px] text-[#FBBC05] mt-[16px]">
-                      <Star className="w-[52px] h-[52px] fill-current" />
-                      <Star className="w-[52px] h-[52px] fill-current" />
-                      <Star className="w-[52px] h-[52px] fill-current" />
-                      <Star className="w-[52px] h-[52px] fill-current" />
-                      <Star className="w-[52px] h-[52px] fill-current" />
+                    <div className="flex gap-[12px] text-[#FBBC05]">
+                      <Star className="w-[64px] h-[64px] fill-current" />
+                      <Star className="w-[64px] h-[64px] fill-current" />
+                      <Star className="w-[64px] h-[64px] fill-current" />
+                      <Star className="w-[64px] h-[64px] fill-current" />
+                      <Star className="w-[64px] h-[64px] fill-current" />
                     </div>
 
                   </div>
