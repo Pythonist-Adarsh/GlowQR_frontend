@@ -41,11 +41,21 @@ export function OverviewTab({
   
   const downloadCard = async () => {
     if (qrCardRef.current) {
-      const canvas = await html2canvas(qrCardRef.current, { scale: 3, backgroundColor: '#ffffff', useCORS: true });
+      const canvas = await html2canvas(qrCardRef.current, { 
+        scale: 1, 
+        backgroundColor: '#ffffff', 
+        useCORS: true,
+        onclone: (doc) => {
+          const el = doc.getElementById('qr-card-export-node');
+          if (el) {
+            el.style.transform = 'none';
+          }
+        }
+      });
       const pngUrl = canvas.toDataURL("image/png");
       const downloadLink = document.createElement("a");
       downloadLink.href = pngUrl;
-      downloadLink.download = `${b.slug || "glowqr"}-printable-card.png`;
+      downloadLink.download = `${b.slug || "glowqr"}_glowqr_card.png`;
       downloadLink.click();
     }
   };
@@ -396,50 +406,82 @@ export function OverviewTab({
             <div className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm flex flex-col items-center">
               
               {/* Printable Card Area */}
-              <div ref={qrCardRef} className="w-full max-w-[260px] bg-white pt-8 pb-6 px-4 rounded-xl flex flex-col items-center justify-center relative overflow-hidden mb-6">
-                <div className="h-28 w-full mb-3 flex items-center justify-center bg-transparent px-4">
-                  {b.logo_url ? (
-                    <img src={b.logo_url} alt="Logo" className="w-full h-full object-contain" crossOrigin="anonymous" />
-                  ) : (
-                    <div className="w-20 h-20 rounded-full border-2 border-slate-900 border-dashed flex items-center justify-center">
-                      <span className="text-[12px] font-black text-slate-900 leading-none text-center">YOUR<br/>LOGO</span>
+              <div className="w-[260px] h-[462px] relative rounded-2xl shadow-sm mb-6 border border-slate-200 overflow-hidden bg-slate-50 shrink-0">
+                <div 
+                  id="qr-card-export-node"
+                  ref={qrCardRef} 
+                  className="bg-white flex flex-col items-center absolute top-0 left-0"
+                  style={{ 
+                    width: '1080px', 
+                    height: '1920px', 
+                    transform: 'scale(0.24074)', 
+                    transformOrigin: 'top left' 
+                  }}
+                >
+                  <div className="w-full h-full flex flex-col items-center pt-[60px] pb-[40px] px-[60px]">
+                    
+                    {/* Logo */}
+                    <div className="w-[200px] h-[200px] mb-[16px] flex items-center justify-center shrink-0">
+                      {b.logo_url ? (
+                        <img src={b.logo_url} alt="Logo" className="w-full h-full object-contain" crossOrigin="anonymous" />
+                      ) : (
+                        <div className="w-full h-full rounded-full border-[6px] border-slate-900 border-dashed flex items-center justify-center">
+                          <span className="text-[32px] font-black text-slate-900 leading-none text-center">YOUR<br/>LOGO</span>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-                <h4 className="text-[19px] font-black text-slate-900 mb-4 text-center leading-tight tracking-tight px-2">{b.name}</h4>
-                
-                <div className="bg-white p-1 mb-4 border border-slate-100 rounded-xl shadow-sm">
-                  {b.qr_image_url ? (
-                    <img src={b.qr_image_url} alt="QR Code" className="w-40 h-40 object-contain" />
-                  ) : (
-                    <QRCodeCanvas
-                      value={reviewUrl}
-                      size={160}
-                      bgColor="#ffffff"
-                      fgColor="#000000"
-                      level="H"
-                    />
-                  )}
-                </div>
-                
-                <p className="text-[12px] text-center font-bold text-slate-800 leading-tight mb-3 px-2">
-                  Scan the QR code to<br />leave us a review on<br />
-                  <span className="inline-flex mt-2">
-                    <span className="text-blue-500 font-black text-xl tracking-tighter">G</span>
-                    <span className="text-red-500 font-black text-xl tracking-tighter">o</span>
-                    <span className="text-yellow-500 font-black text-xl tracking-tighter">o</span>
-                    <span className="text-blue-500 font-black text-xl tracking-tighter">g</span>
-                    <span className="text-green-500 font-black text-xl tracking-tighter">l</span>
-                    <span className="text-red-500 font-black text-xl tracking-tighter">e</span>
-                  </span>
-                </p>
-                
-                <div className="flex gap-1.5 text-yellow-400 mt-1">
-                  <Star className="w-6 h-6 fill-current" />
-                  <Star className="w-6 h-6 fill-current" />
-                  <Star className="w-6 h-6 fill-current" />
-                  <Star className="w-6 h-6 fill-current" />
-                  <Star className="w-6 h-6 fill-current" />
+
+                    {/* Business Name */}
+                    <h4 className="text-[52px] font-[800] text-slate-900 mb-[24px] text-center leading-[1.1] tracking-tight">
+                      {b.name}
+                    </h4>
+
+                    <div className="flex-1 min-h-[20px]"></div>
+
+                    {/* QR Box */}
+                    <div className="bg-white p-[24px] rounded-[20px] shadow-[0_12px_48px_rgba(0,0,0,0.12)] border border-slate-100 flex items-center justify-center">
+                      {b.qr_image_url ? (
+                        <img src={b.qr_image_url} alt="QR Code" className="w-[720px] h-[720px] object-contain" crossOrigin="anonymous" />
+                      ) : (
+                        <QRCodeCanvas
+                          value={reviewUrl}
+                          size={720}
+                          bgColor="#ffffff"
+                          fgColor="#000000"
+                          level="M"
+                        />
+                      )}
+                    </div>
+
+                    <div className="flex-1 min-h-[20px]"></div>
+
+                    {/* Bottom Section */}
+                    <p className="text-[26px] text-center font-bold text-[#444444] leading-tight mt-[20px]">
+                      Scan the QR code to<br />leave us a review on
+                    </p>
+
+                    {/* Google Text Logo */}
+                    <div className="h-[72px] flex items-center justify-center mt-[20px]">
+                      <span className="inline-flex items-center">
+                        <span className="text-[#4285F4] font-bold text-[72px] tracking-tighter leading-none">G</span>
+                        <span className="text-[#EA4335] font-bold text-[72px] tracking-tighter leading-none">o</span>
+                        <span className="text-[#FBBC05] font-bold text-[72px] tracking-tighter leading-none">o</span>
+                        <span className="text-[#4285F4] font-bold text-[72px] tracking-tighter leading-none">g</span>
+                        <span className="text-[#34A853] font-bold text-[72px] tracking-tighter leading-none">l</span>
+                        <span className="text-[#EA4335] font-bold text-[72px] tracking-tighter leading-none">e</span>
+                      </span>
+                    </div>
+
+                    {/* Stars */}
+                    <div className="flex gap-[8px] text-[#FBBC05] mt-[16px]">
+                      <Star className="w-[52px] h-[52px] fill-current" />
+                      <Star className="w-[52px] h-[52px] fill-current" />
+                      <Star className="w-[52px] h-[52px] fill-current" />
+                      <Star className="w-[52px] h-[52px] fill-current" />
+                      <Star className="w-[52px] h-[52px] fill-current" />
+                    </div>
+
+                  </div>
                 </div>
               </div>
 
