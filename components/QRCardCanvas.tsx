@@ -23,26 +23,21 @@ export default function QRCardCanvas({
     canvas.width = CARD_W
     canvas.height = CARD_H
 
-    // 1. WHITE BACKGROUND
+    // 1. WHITE BACKGROUND WITH ROUNDED BORDER
     ctx.fillStyle = '#FFFFFF'
-    ctx.fillRect(0, 0, CARD_W, CARD_H)
+    ctx.strokeStyle = '#DDDDDD'
+    ctx.lineWidth = 2
+    roundRect(ctx, 1, 1, CARD_W - 2, CARD_H - 2, 60)
+    ctx.fill()
+    ctx.stroke()
 
-    let y = 100 // Top padding
+    let y = 80 // Top margin
 
     // 2. LOGO CIRCLE
-    const LOGO_SIZE = 480 // 160px * 3
+    const LOGO_SIZE = 380
     const logoX = CENTER
     const logoY = y + LOGO_SIZE / 2
 
-    // Draw circle border (very light thin border)
-    ctx.save()
-    ctx.beginPath()
-    ctx.arc(logoX, logoY, LOGO_SIZE / 2 + 2, 0, Math.PI * 2)
-    ctx.fillStyle = '#F5F5F5'
-    ctx.fill()
-    ctx.restore()
-
-    // Draw circular clip for logo
     ctx.save()
     ctx.beginPath()
     ctx.arc(logoX, logoY, LOGO_SIZE / 2, 0, Math.PI * 2)
@@ -52,7 +47,6 @@ export default function QRCardCanvas({
       const logoImg = await loadImage(logoUrl)
       ctx.drawImage(logoImg, logoX - LOGO_SIZE/2, logoY - LOGO_SIZE/2, LOGO_SIZE, LOGO_SIZE)
     } catch {
-      // Fallback: colored circle with first letter
       ctx.fillStyle = '#c0392b'
       ctx.fillRect(logoX - LOGO_SIZE/2, logoY - LOGO_SIZE/2, LOGO_SIZE, LOGO_SIZE)
       ctx.fillStyle = '#fff'
@@ -63,48 +57,47 @@ export default function QRCardCanvas({
     }
     ctx.restore()
 
-    y += LOGO_SIZE + 36 // 12px gap
+    y += LOGO_SIZE + 48 // Bottom margin to business name
 
     // 3. BUSINESS NAME
-    ctx.fillStyle = '#111111'
-    ctx.font = 'bold 56px Arial'
+    ctx.fillStyle = '#1a2340'
+    ctx.font = 'bold 120px Arial'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'top'
     ctx.fillText((businessName || '').toUpperCase(), CENTER, y)
-    y += 56 + 48 // 16px gap
+    y += 120 + 40 // Bottom margin to QR (font size approx 120)
 
-    // 4. QR CODE
-    const QR_SIZE = 660
+    // 4. QR CODE BOX
+    const QR_SIZE = 780
     const qrX = CENTER - QR_SIZE / 2
 
-    // QR border box (thin black line, slightly rounded)
-    ctx.strokeStyle = '#111111'
-    ctx.lineWidth = 3
-    roundRect(ctx, qrX - 24, y - 24, QR_SIZE + 48, QR_SIZE + 48, 16)
-    ctx.stroke()
+    // Light shadow rounded rect behind QR
+    ctx.fillStyle = 'rgba(0,0,0,0.06)'
+    roundRect(ctx, qrX, y, QR_SIZE, QR_SIZE, 24)
+    ctx.fill()
 
-    // Generate QR as data URL then draw
+    // Generate QR
     const qrDataUrl = await QRCode.toDataURL(scanUrl, {
       width: QR_SIZE,
-      margin: 0,
+      margin: 2,
       errorCorrectionLevel: 'M',
       color: { dark: '#000000', light: '#ffffff' }
     })
     const qrImg = await loadImage(qrDataUrl)
     ctx.drawImage(qrImg, qrX, y, QR_SIZE, QR_SIZE)
-    y += QR_SIZE + 80 // original gap
+    y += QR_SIZE + 72 // Bottom margin to scan text
 
     // 5. SCAN TEXT
-    ctx.fillStyle = '#666666'
-    ctx.font = '54px Arial' // 18px * 3
+    ctx.fillStyle = '#222222'
+    ctx.font = 'bold 52px Arial'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'top'
     ctx.fillText('Scan the QR code to', CENTER, y)
-    y += 54 + 8
+    y += 72 // Line height 72px
     ctx.fillText('leave us a review on', CENTER, y)
-    y += 54 + 24 // 8px gap
+    y += 72 + 40 // Bottom margin to Google text
 
-    // 6. GOOGLE COLORED TEXT
+    // 6. GOOGLE COLORED LETTERS
     const googleLetters = [
       { char: 'G', color: '#4285F4' },
       { char: 'o', color: '#EA4335' },
@@ -113,11 +106,9 @@ export default function QRCardCanvas({
       { char: 'l', color: '#34A853' },
       { char: 'e', color: '#EA4335' },
     ]
-    const GFONT = 126 // 42px * 3
-    ctx.font = `bold ${GFONT}px Arial`
+    ctx.font = 'bold 110px Arial'
     ctx.textBaseline = 'top'
     
-    // Measure total width first
     let totalW = 0
     googleLetters.forEach(l => {
       totalW += ctx.measureText(l.char).width
@@ -130,20 +121,22 @@ export default function QRCardCanvas({
       ctx.fillText(l.char, gx, y)
       gx += ctx.measureText(l.char).width
     })
-    y += GFONT + 24 // 8px gap
+    y += 110 + 48 // Bottom margin to stars
 
     // 7. GOLD STARS
     const STAR = '★'
-    const STAR_SIZE = 126 // 42px * 3
-    ctx.font = `${STAR_SIZE}px Arial`
+    ctx.font = '120px Arial'
     ctx.fillStyle = '#FBBC05'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'top'
     
-    const starSpacing = STAR_SIZE + 10
-    const starsStartX = CENTER - (5 * starSpacing) / 2 + STAR_SIZE / 2
+    const starW = ctx.measureText(STAR).width
+    const gap = 16
+    const totalStarW = 5 * starW + 4 * gap
+    const starsStartX = CENTER - totalStarW / 2 + starW / 2
+    
     for (let i = 0; i < 5; i++) {
-      ctx.fillText(STAR, starsStartX + i * starSpacing, y)
+      ctx.fillText(STAR, starsStartX + i * (starW + gap), y)
     }
   }
 
@@ -196,7 +189,7 @@ export default function QRCardCanvas({
       <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '24px', border: '1px solid #e2e8f0', width: '100%', display: 'flex', justifyContent: 'center', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' }}>
         <canvas
           ref={previewRef}
-          style={{ width: '100%', maxWidth: '280px', height: 'auto', borderRadius: 12, border: '1px solid #e2e8f0' }}
+          style={{ width: 340, height: 604, borderRadius: 20, border: '1px solid #eee' }}
         />
       </div>
       <button onClick={handleDownload}
