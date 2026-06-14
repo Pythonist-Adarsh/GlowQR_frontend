@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
   BarChart3,
   ExternalLink,
@@ -26,7 +26,7 @@ import {
 } from "recharts";
 import { LockedSection, ExpiredOverlay } from "./LockedComponents";
 import { QRCodeCanvas } from "qrcode.react";
-import QRCardCanvas from '@/components/QRCardCanvas';
+import QRCardCanvas, { QRCardRef } from '@/components/QRCardCanvas';
 
 export function OverviewTab({
   user,
@@ -37,6 +37,7 @@ export function OverviewTab({
   setActiveTab,
   reviewUrl,
 }: any) {
+  const qrCardRef = useRef<QRCardRef>(null);
   const plan = user.plan || "trial";
   const now = new Date();
   
@@ -383,6 +384,7 @@ export function OverviewTab({
             <div className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm flex flex-col items-center">
               
               <QRCardCanvas
+                ref={qrCardRef}
                 businessName={b.name}
                 logoUrl={b.logo_url}
                 scanUrl={reviewUrl}
@@ -392,23 +394,29 @@ export function OverviewTab({
               <h3 className="text-lg font-black text-slate-900 mb-1 mt-6">Your Printable QR</h3>
               <p className="text-xs text-slate-500 font-medium mb-6">Perfect for tables & counters</p>
               
-              <div className="flex w-full gap-3">
+              <div className="flex flex-col w-full gap-3">
+                <button
+                  onClick={() => qrCardRef.current?.download()}
+                  className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all shadow-sm"
+                >
+                  <Download className="w-4 h-4" /> Download Print Card
+                </button>
                 <button
                   onClick={() => {
                     navigator.clipboard.writeText(reviewUrl);
                     alert("Link copied!");
                   }}
-                  className="flex-1 py-3 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all"
+                  className="w-full py-3 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all"
                 >
-                  <ExternalLink className="w-4 h-4" /> Link
+                  <ExternalLink className="w-4 h-4" /> Copy Direct Link
+                </button>
+                <button
+                  onClick={() => window.open(reviewUrl, "_blank")}
+                  className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all shadow-md"
+                >
+                  <Sparkles className="w-4 h-4" /> Test AR Simulation
                 </button>
               </div>
-              <button
-                onClick={() => window.open(reviewUrl, "_blank")}
-                className="w-full mt-3 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all shadow-md"
-              >
-                <Sparkles className="w-4 h-4" /> Test AR Simulation
-              </button>
             </div>
 
             {/* AI Review Generation preview */}

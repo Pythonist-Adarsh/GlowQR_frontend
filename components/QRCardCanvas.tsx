@@ -1,6 +1,10 @@
 'use client'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, forwardRef, useImperativeHandle } from 'react'
 import QRCode from 'qrcode'
+
+export interface QRCardRef {
+  download: () => void
+}
 
 interface QRCardCanvasProps {
   businessName: string
@@ -9,9 +13,9 @@ interface QRCardCanvasProps {
   slug: string
 }
 
-export default function QRCardCanvas({ 
+const QRCardCanvas = forwardRef<QRCardRef, QRCardCanvasProps>(({ 
   businessName, logoUrl, scanUrl, slug 
-}: QRCardCanvasProps) {
+}, ref) => {
   const previewRef = useRef<HTMLCanvasElement>(null)
 
   const CARD_W = 1080
@@ -197,6 +201,10 @@ export default function QRCardCanvas({
     link.click()
   }
 
+  useImperativeHandle(ref, () => ({
+    download: handleDownload
+  }))
+
   return (
     <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:16, width: '100%' }}>
       <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '24px', border: '1px solid #e2e8f0', width: '100%', display: 'flex', justifyContent: 'center', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' }}>
@@ -205,23 +213,8 @@ export default function QRCardCanvas({
           style={{ width: '100%', maxWidth: '340px', height: 'auto', borderRadius: 20, border: '1px solid #eee' }}
         />
       </div>
-      <button onClick={handleDownload}
-        className="w-full"
-        style={{
-          background:'#0f172a', color:'#fff',
-          border:'none', borderRadius: 12,
-          padding:'14px 24px', fontSize: 13,
-          fontWeight:800, cursor:'pointer',
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '8px'
-        }}>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-        Download Print Card
-      </button>
     </div>
   )
-}
+})
+
+export default QRCardCanvas
