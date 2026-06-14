@@ -15,7 +15,7 @@ export default function QRCardCanvas({
   const previewRef = useRef<HTMLCanvasElement>(null)
 
   const CARD_W = 1080
-  const CARD_H = 1920
+  const CARD_H = 2160
   const CENTER = CARD_W / 2
 
   async function drawCard(canvas: HTMLCanvasElement) {
@@ -45,7 +45,20 @@ export default function QRCardCanvas({
 
     try {
       const logoImg = await loadImage(logoUrl)
-      ctx.drawImage(logoImg, logoX - LOGO_SIZE/2, logoY - LOGO_SIZE/2, LOGO_SIZE, LOGO_SIZE)
+      // Implement object-fit: cover to center and clearly show the logo
+      const aspect = logoImg.width / logoImg.height
+      let drawW = LOGO_SIZE
+      let drawH = LOGO_SIZE
+      let dx = 0
+      let dy = 0
+      if (aspect > 1) { // wider
+        drawW = LOGO_SIZE * aspect
+        dx = (drawW - LOGO_SIZE) / 2
+      } else if (aspect < 1) { // taller
+        drawH = LOGO_SIZE / aspect
+        dy = (drawH - LOGO_SIZE) / 2
+      }
+      ctx.drawImage(logoImg, logoX - LOGO_SIZE/2 - dx, logoY - LOGO_SIZE/2 - dy, drawW, drawH)
     } catch {
       ctx.fillStyle = '#c0392b'
       ctx.fillRect(logoX - LOGO_SIZE/2, logoY - LOGO_SIZE/2, LOGO_SIZE, LOGO_SIZE)
@@ -189,7 +202,7 @@ export default function QRCardCanvas({
       <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '24px', border: '1px solid #e2e8f0', width: '100%', display: 'flex', justifyContent: 'center', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' }}>
         <canvas
           ref={previewRef}
-          style={{ width: 340, height: 604, borderRadius: 20, border: '1px solid #eee' }}
+          style={{ width: '100%', maxWidth: '340px', height: 'auto', borderRadius: 20, border: '1px solid #eee' }}
         />
       </div>
       <button onClick={handleDownload}
