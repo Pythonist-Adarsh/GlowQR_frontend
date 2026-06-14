@@ -15,7 +15,7 @@ export default function QRCardCanvas({
   const previewRef = useRef<HTMLCanvasElement>(null)
 
   const CARD_W = 1080
-  const CARD_H = 1620
+  const CARD_H = 1920
   const CENTER = CARD_W / 2
 
   async function drawCard(canvas: HTMLCanvasElement) {
@@ -27,10 +27,10 @@ export default function QRCardCanvas({
     ctx.fillStyle = '#FFFFFF'
     ctx.fillRect(0, 0, CARD_W, CARD_H)
 
-    let y = 160 // Top padding
+    let y = 100 // Top padding
 
     // 2. LOGO CIRCLE
-    const LOGO_SIZE = 240
+    const LOGO_SIZE = 480 // 160px * 3
     const logoX = CENTER
     const logoY = y + LOGO_SIZE / 2
 
@@ -63,7 +63,7 @@ export default function QRCardCanvas({
     }
     ctx.restore()
 
-    y += LOGO_SIZE + 40
+    y += LOGO_SIZE + 36 // 12px gap
 
     // 3. BUSINESS NAME
     ctx.fillStyle = '#111111'
@@ -71,7 +71,7 @@ export default function QRCardCanvas({
     ctx.textAlign = 'center'
     ctx.textBaseline = 'top'
     ctx.fillText((businessName || '').toUpperCase(), CENTER, y)
-    y += 56 + 50
+    y += 56 + 48 // 16px gap
 
     // 4. QR CODE
     const QR_SIZE = 660
@@ -92,17 +92,17 @@ export default function QRCardCanvas({
     })
     const qrImg = await loadImage(qrDataUrl)
     ctx.drawImage(qrImg, qrX, y, QR_SIZE, QR_SIZE)
-    y += QR_SIZE + 80
+    y += QR_SIZE + 80 // original gap
 
-    // 5. SCAN TEXT (Split into two lines like the image)
+    // 5. SCAN TEXT
     ctx.fillStyle = '#666666'
-    ctx.font = '32px Arial'
+    ctx.font = '54px Arial' // 18px * 3
     ctx.textAlign = 'center'
     ctx.textBaseline = 'top'
     ctx.fillText('Scan the QR code to', CENTER, y)
-    y += 32 + 12
+    y += 54 + 8
     ctx.fillText('leave us a review on', CENTER, y)
-    y += 32 + 36
+    y += 54 + 24 // 8px gap
 
     // 6. GOOGLE COLORED TEXT
     const googleLetters = [
@@ -113,7 +113,7 @@ export default function QRCardCanvas({
       { char: 'l', color: '#34A853' },
       { char: 'e', color: '#EA4335' },
     ]
-    const GFONT = 76
+    const GFONT = 126 // 42px * 3
     ctx.font = `bold ${GFONT}px Arial`
     ctx.textBaseline = 'top'
     
@@ -130,11 +130,11 @@ export default function QRCardCanvas({
       ctx.fillText(l.char, gx, y)
       gx += ctx.measureText(l.char).width
     })
-    y += GFONT + 24
+    y += GFONT + 24 // 8px gap
 
     // 7. GOLD STARS
     const STAR = '★'
-    const STAR_SIZE = 56
+    const STAR_SIZE = 126 // 42px * 3
     ctx.font = `${STAR_SIZE}px Arial`
     ctx.fillStyle = '#FBBC05'
     ctx.textAlign = 'center'
