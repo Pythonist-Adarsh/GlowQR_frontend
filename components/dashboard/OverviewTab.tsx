@@ -40,24 +40,31 @@ export function OverviewTab({
   const qrCardRef = useRef<HTMLDivElement>(null);
   
   const downloadCard = async () => {
-    if (qrCardRef.current) {
-      const canvas = await html2canvas(qrCardRef.current, { 
-        scale: 1, 
-        backgroundColor: '#ffffff', 
-        useCORS: true,
-        onclone: (doc) => {
-          const el = doc.getElementById('qr-card-export-node');
-          if (el) {
-            el.style.transform = 'none';
-          }
+    const card = document.getElementById('qr-card');
+    if (!card) return;
+    
+    const canvas = await html2canvas(card, {
+      scale: 3,                    // ← 3x scale = print quality ~1200px
+      backgroundColor: '#ffffff',
+      useCORS: true,
+      allowTaint: false,
+      logging: false,
+      width: card.offsetWidth,
+      height: card.offsetHeight,
+      onclone: function(clonedDoc) {
+        const cloned = clonedDoc.getElementById('qr-card');
+        if (cloned) {
+          cloned.style.borderRadius = '0';
+          cloned.style.border = 'none';
+          cloned.style.boxShadow = 'none';
         }
-      });
-      const pngUrl = canvas.toDataURL("image/png");
-      const downloadLink = document.createElement("a");
-      downloadLink.href = pngUrl;
-      downloadLink.download = `${b.slug || "glowqr"}_glowqr_card.png`;
-      downloadLink.click();
-    }
+      }
+    });
+
+    const link = document.createElement('a');
+    link.download = `${b.slug || "glowqr"}_glowqr_card.png`;
+    link.href = canvas.toDataURL('image/png', 1.0);
+    link.click();
   };
 
   const plan = user.plan || "trial";
@@ -406,80 +413,52 @@ export function OverviewTab({
             <div className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm flex flex-col items-center">
               
               {/* Printable Card Area */}
-              <div className="w-[260px] h-[378px] relative rounded-2xl shadow-sm mb-6 border border-slate-200 overflow-hidden bg-white shrink-0">
-                <div 
-                  id="qr-card-export-node"
-                  ref={qrCardRef} 
-                  className="bg-white flex flex-col items-center absolute top-0 left-0"
-                  style={{ 
-                    width: '1080px', 
-                    transform: 'scale(0.24074)', 
-                    transformOrigin: 'top left' 
-                  }}
-                >
-                  <div className="w-full flex flex-col items-center pt-[80px] pb-[80px] px-[60px] bg-[#FFFFFF]">
+              <div className="w-[260px] h-[460px] relative rounded-2xl shadow-sm mb-6 border border-slate-200 overflow-hidden bg-slate-50 shrink-0 flex items-center justify-center">
+                <div style={{ transform: 'scale(0.65)', transformOrigin: 'top center', marginTop: '10px' }}>
+                  
+                  <div id="qr-card" style={{ width: '400px', background: '#fff', padding: '32px 28px 28px', display: 'flex', flexDirection: 'column', alignItems: 'center', fontFamily: 'Arial, Helvetica, sans-serif' }}>
                     
-                    {/* Logo */}
-                    <div className="w-[280px] h-[280px] mb-[20px] flex items-center justify-center shrink-0 rounded-full border-[4px] border-[#EEEEEE] overflow-hidden bg-white">
+                    <div style={{ width: '120px', height: '120px', borderRadius: '50%', border: '3px solid #eee', overflow: 'hidden', marginBottom: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fafafa' }}>
                       {b.logo_url ? (
-                        <img src={b.logo_url} alt="Logo" className="w-full h-full object-cover" crossOrigin="anonymous" />
+                        <img src={b.logo_url} crossOrigin="anonymous" style={{ width: '120px', height: '120px', objectFit: 'cover' }} alt="Logo" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-slate-50">
-                          <span className="text-[32px] font-black text-slate-900 leading-none text-center">YOUR<br/>LOGO</span>
-                        </div>
+                        <div style={{ fontSize: '48px', fontWeight: 'bold', color: '#ccc' }}>{b.name?.charAt(0)?.toUpperCase()}</div>
                       )}
                     </div>
 
-                    {/* Business Name */}
-                    <h4 className="text-[72px] font-[900] text-[#111111] mb-[32px] text-center leading-tight tracking-[0.08em]">
+                    <p style={{ fontSize: '28px', fontWeight: 900, letterSpacing: '0.1em', color: '#111', margin: '0 0 20px 0', textAlign: 'center' }}>
                       {b.name}
-                    </h4>
-
-                    {/* QR Box */}
-                    <div className="w-[700px] h-[700px] bg-[#FFFFFF] rounded-[28px] p-[16px] mb-[28px] flex items-center justify-center border-[6px] border-[#111111]">
-                      {b.qr_image_url ? (
-                        <img src={b.qr_image_url} alt="QR Code" className="w-[656px] h-[656px] object-contain bg-white" crossOrigin="anonymous" />
-                      ) : (
-                        <QRCodeCanvas
-                          value={reviewUrl}
-                          size={656}
-                          bgColor="#ffffff"
-                          fgColor="#000000"
-                          level="M"
-                        />
-                      )}
-                    </div>
-
-                    {/* Divider */}
-                    <div className="w-[600px] h-[2px] bg-[#EEEEEE] mb-[28px]"></div>
-
-                    {/* Scan Text */}
-                    <p className="text-[36px] font-[500] text-center text-[#333333] leading-[1.5] mb-[18px]">
-                      Scan the QR code to<br />leave us a review on
                     </p>
 
-                    {/* Google Text Logo */}
-                    <div className="flex items-center justify-center mb-[14px]">
-                      <span className="inline-flex items-center text-[72px] font-[800] tracking-tighter leading-none">
-                        <span className="text-[#4285F4]">G</span>
-                        <span className="text-[#EA4335]">o</span>
-                        <span className="text-[#FBBC05]">o</span>
-                        <span className="text-[#4285F4]">g</span>
-                        <span className="text-[#34A853]">l</span>
-                        <span className="text-[#EA4335]">e</span>
-                      </span>
+                    <div style={{ width: '310px', height: '310px', border: '3px solid #111', borderRadius: '16px', padding: '10px', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {b.qr_image_url ? (
+                        <img src={b.qr_image_url} crossOrigin="anonymous" style={{ width: '290px', height: '290px', objectFit: 'contain' }} alt="QR" />
+                      ) : (
+                        <QRCodeCanvas value={reviewUrl} size={284} bgColor="#ffffff" fgColor="#000000" level="M" />
+                      )}
                     </div>
 
-                    {/* Stars */}
-                    <div className="flex gap-[10px] text-[#FBBC05]">
-                      <Star className="w-[72px] h-[72px] fill-current" />
-                      <Star className="w-[72px] h-[72px] fill-current" />
-                      <Star className="w-[72px] h-[72px] fill-current" />
-                      <Star className="w-[72px] h-[72px] fill-current" />
-                      <Star className="w-[72px] h-[72px] fill-current" />
+                    <div style={{ width: '100%', height: '1px', background: '#eee', marginBottom: '16px' }}></div>
+
+                    <p style={{ fontSize: '14px', color: '#444', textAlign: 'center', fontWeight: 500, lineHeight: 1.6, margin: '0 0 10px 0' }}>
+                      Scan the QR code to leave us a review on
+                    </p>
+
+                    <div style={{ display: 'flex', marginBottom: '10px' }}>
+                      <span style={{ fontSize: '32px', fontWeight: 800, color: '#4285F4' }}>G</span>
+                      <span style={{ fontSize: '32px', fontWeight: 800, color: '#EA4335' }}>o</span>
+                      <span style={{ fontSize: '32px', fontWeight: 800, color: '#FBBC05' }}>o</span>
+                      <span style={{ fontSize: '32px', fontWeight: 800, color: '#4285F4' }}>g</span>
+                      <span style={{ fontSize: '32px', fontWeight: 800, color: '#34A853' }}>l</span>
+                      <span style={{ fontSize: '32px', fontWeight: 800, color: '#EA4335' }}>e</span>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '4px', fontSize: '32px', color: '#FBBC05' }}>
+                      <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
                     </div>
 
                   </div>
+                  
                 </div>
               </div>
 
