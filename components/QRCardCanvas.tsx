@@ -72,11 +72,22 @@ const QRCardCanvas = forwardRef<QRCardRef, QRCardCanvasProps>(({
 
     // 3. BUSINESS NAME
     ctx.fillStyle = '#1a2340'
-    ctx.font = 'bold 120px Arial'
+    let fontSize = 120
+    ctx.font = `bold ${fontSize}px Arial`
+    const maxTextWidth = CARD_W - 120 // 60px padding on each side
+    const bizText = (businessName || '').toUpperCase()
+
+    // Shrink font if text is too wide
+    while (ctx.measureText(bizText).width > maxTextWidth && fontSize > 50) {
+      fontSize -= 5
+      ctx.font = `bold ${fontSize}px Arial`
+    }
+
     ctx.textAlign = 'center'
     ctx.textBaseline = 'top'
-    ctx.fillText((businessName || '').toUpperCase(), CENTER, y)
-    y += 120 + 40 // Bottom margin to QR (font size approx 120)
+    // Fallback: squeeze horizontally if it's still too wide even at 50px
+    ctx.fillText(bizText, CENTER, y, maxTextWidth)
+    y += 120 + 40 // Keep y spacing consistent based on the original 120px font
 
     // 4. QR CODE BOX
     const QR_SIZE = 780
