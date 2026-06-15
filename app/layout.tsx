@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
 import './globals.css'
-
+import { WhatsAppButton } from '@/components/WhatsAppButton'
 export const metadata: Metadata = {
   title: 'GlowQR — AI-Powered QR Review Platform',
   description:
@@ -28,6 +28,7 @@ export default function RootLayout({
           {`(function(){try{var t=localStorage.getItem('glowqr-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`}
         </Script>
         {children}
+        <WhatsAppButton />
       </body>
     </html>
   )
