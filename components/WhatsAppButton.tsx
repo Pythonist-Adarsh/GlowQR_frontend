@@ -1,9 +1,25 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 export function WhatsAppButton() {
+  const pathname = usePathname()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // List of allowed paths where the button should appear
+  // Use exact match for home, and prefix for others if needed, but exact is safer based on request
+  const allowedPaths = ['/', '/features', '/about', '/contact']
+  
+  if (mounted && !allowedPaths.includes(pathname || '')) {
+    return null;
+  }
+
   const message = "Hi GlowQR Team! 👋 I'm interested in getting an AI-powered QR review system for my business. Can you help me get started?"
   const encodedMessage = encodeURIComponent(message)
   const whatsappUrl = `https://wa.me/919236398836?text=${encodedMessage}`
