@@ -38,6 +38,7 @@ export function OverviewTab({
   reviewUrl,
 }: any) {
   const qrCardRef = useRef<QRCardRef>(null);
+  const [isSyncing, setIsSyncing] = React.useState(false);
   const plan = user.plan || "trial";
   const now = new Date();
   
@@ -107,45 +108,38 @@ export function OverviewTab({
       <div key="scans" className={cardClass}>
         <div className="text-slate-400 mb-4"><Eye className="w-5 h-5" /></div>
         <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Total Scans</p>
-        <p className="text-3xl font-black text-slate-900">{data.tracking.total_scans}</p>
+        <p className="text-3xl font-black text-slate-900">{data.total_scans}</p>
         <p className="text-xs text-slate-400 mt-2 font-medium">Customers who scanned QR</p>
       </div>,
       <div key="opened" className={cardClass}>
         <div className="text-slate-400 mb-4"><ExternalLink className="w-5 h-5" /></div>
         <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Opened Google Review</p>
-        <p className="text-3xl font-black text-slate-900">{data.tracking.redirected_to_google}</p>
+        <p className="text-3xl font-black text-slate-900">{data.redirected_to_google}</p>
         <p className="text-xs text-slate-400 mt-2 font-medium">Redirected to Google Maps</p>
       </div>,
       <div key="bounced" className={`${cardClass} border-amber-200 bg-amber-50/30`}>
         <div className="text-amber-400 mb-4"><BarChart3 className="w-5 h-5" /></div>
         <p className="text-[10px] font-black text-amber-700 uppercase tracking-widest mb-1">Only Scanned (Not Opened)</p>
-        <p className="text-3xl font-black text-slate-900">{data.tracking.only_scanned_not_opened}</p>
+        <p className="text-3xl font-black text-slate-900">{data.only_scanned_not_opened}</p>
         <p className="text-xs text-amber-600 mt-2 font-medium">Left without opening review page</p>
       </div>,
-      <div key="new_reviews" className={`${cardClass} border-emerald-200 bg-emerald-50/30 shadow-md`}>
-        <div className="text-emerald-500 mb-4"><MessageSquare className="w-5 h-5" /></div>
-        <p className="text-[10px] font-black text-emerald-700 uppercase tracking-widest mb-1">New Reviews on Google</p>
-        <p className="text-3xl font-black text-emerald-600">{data.google_data.new_reviews_since_glowqr ?? "—"}</p>
-        <p className="text-xs text-emerald-600 mt-2 font-medium">
-          Baseline: {data.google_data.baseline_review_count ?? 0} → Now: {data.google_data.current_review_count ?? 0}
+      <div key="new_reviews" className={`${cardClass} border-emerald-200 ${data.reviews_gained > 0 ? 'bg-emerald-50/30' : 'bg-slate-50/50'} shadow-md transition-all duration-500`} id="card-new-reviews">
+        <div className={`${data.reviews_gained > 0 ? 'text-emerald-500' : 'text-slate-400'} mb-4`}><MessageSquare className="w-5 h-5" /></div>
+        <p className={`text-[10px] font-black ${data.reviews_gained > 0 ? 'text-emerald-700' : 'text-slate-500'} uppercase tracking-widest mb-1`}>New Reviews on Google</p>
+        <p className={`text-3xl font-black ${data.reviews_gained > 0 ? 'text-emerald-600' : 'text-slate-500'}`}>{data.reviews_gained ?? "—"}</p>
+        <p className={`text-xs ${data.reviews_gained > 0 ? 'text-emerald-600' : 'text-slate-400'} mt-2 font-medium`}>
+          Baseline: {data.baseline_review_count ?? 0} → Now: {data.review_count_now ?? 0}
         </p>
       </div>,
-      <div key="rating" className={cardClass}>
+      <div key="rating" className={cardClass} id="card-rating">
         <div className="text-slate-400 mb-4"><Star className="w-5 h-5" /></div>
         <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Google Rating</p>
-        <p className="text-3xl font-black text-slate-900">{data.google_data.current_rating ? `${data.google_data.current_rating}★` : "—"}</p>
-        <p className="text-xs text-slate-400 mt-2 font-medium">
-          {data.google_data.rating_improvement !== null
-            ? (data.google_data.rating_improvement >= 0
-                ? `+${data.google_data.rating_improvement}★ since joining`
-                : `${data.google_data.rating_improvement}★ since joining`)
-            : `Baseline: ${data.google_data.baseline_rating ?? "—"}★`}
-        </p>
+        <p className="text-3xl font-black text-slate-900">{data.google_rating ? `${data.google_rating}★` : "—"}</p>
       </div>,
       <div key="redirect_rate" className={cardClass}>
         <div className="text-slate-400 mb-4"><TrendingUp className="w-5 h-5" /></div>
         <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Redirect Rate</p>
-        <p className="text-3xl font-black text-slate-900">{data.tracking.redirect_rate_pct}%</p>
+        <p className="text-3xl font-black text-slate-900">{data.redirect_rate}%</p>
         <p className="text-xs text-slate-400 mt-2 font-medium">Scan → Google page open</p>
       </div>,
     ];
@@ -180,6 +174,33 @@ export function OverviewTab({
     );
   };
 
+  const handleSyncNow = async () => {
+    if (isSyncing) return;
+    setIsSyncing(true);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/admin/sync-now`, {
+        method: "POST",
+        headers: { "X-Admin-Key": "super-secret-admin-key" } // Ideally from env or config
+      });
+      if (res.ok) {
+        // Show subtle flash animation
+        document.getElementById('card-new-reviews')?.classList.add('bg-emerald-100');
+        document.getElementById('card-rating')?.classList.add('bg-emerald-100');
+        setTimeout(() => {
+          document.getElementById('card-new-reviews')?.classList.remove('bg-emerald-100');
+          document.getElementById('card-rating')?.classList.remove('bg-emerald-100');
+        }, 1000);
+        setTimeout(() => window.location.reload(), 1500); // Reload dashboard
+      } else {
+        alert("Sync failed, try again");
+      }
+    } catch (e) {
+      alert("Sync failed, try again");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   const renderDashboardContent = () => {
     const isBasicOrPremium = plan === "basic" || plan === "premium";
     const isPremium = plan === "premium";
@@ -193,9 +214,18 @@ export function OverviewTab({
               <div></div>
               <div className="text-xs text-slate-500 bg-white px-3 py-1.5 rounded-full border border-slate-200 shadow-sm flex items-center gap-2">
                 <Sparkles className="w-3 h-3 text-blue-500" />
-                {data.google_data.has_place_id 
-                  ? `Last synced: ${data.google_data.last_synced ? new Date(data.google_data.last_synced).toLocaleString('en-GB') : 'Pending'} · Syncs daily at 7 AM` 
+                {data.has_place_id 
+                  ? `● LAST SYNCED: ${data.last_synced_at ? new Date(data.last_synced_at).toLocaleString('en-GB') : 'Pending'}` 
                   : <span className="text-amber-600 font-bold">⚠️ Add your Google Place ID in Setup to enable daily sync</span>}
+                {data.has_place_id && (
+                  <button 
+                    onClick={handleSyncNow} 
+                    disabled={isSyncing}
+                    className="ml-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded-md font-bold text-[10px] uppercase transition-colors"
+                  >
+                    {isSyncing ? "Syncing..." : "Sync Now"}
+                  </button>
+                )}
               </div>
             </div>
           )}
