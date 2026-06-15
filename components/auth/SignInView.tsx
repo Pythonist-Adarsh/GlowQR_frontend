@@ -145,6 +145,12 @@ export function SignInView() {
             />
             {loading ? 'Signing in...' : 'Sign in'}
           </motion.button>
+
+          <div className="text-center mt-5 lg:text-left">
+            <Link href="/forgot-password" className="text-sm font-medium text-slate-500 hover:text-[#111111] hover:underline underline-offset-4 transition-colors">
+              Forgot password?
+            </Link>
+          </div>
         </div>
 
         <p className="mt-10 text-center text-sm text-[#444444] lg:text-left">
