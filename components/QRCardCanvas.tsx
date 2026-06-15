@@ -29,40 +29,34 @@ const QRCardCanvas = forwardRef<QRCardRef, QRCardCanvasProps>(({
 
     // 1. WHITE BACKGROUND WITH ROUNDED BORDER
     ctx.fillStyle = '#FFFFFF'
-    ctx.strokeStyle = '#DDDDDD'
-    ctx.lineWidth = 2
-    roundRect(ctx, 1, 1, CARD_W - 2, CARD_H - 2, 60)
+    ctx.strokeStyle = '#E2E8F0' // nice light gray border
+    ctx.lineWidth = 6 // thicker border
+    roundRect(ctx, 3, 3, CARD_W - 6, CARD_H - 6, 60)
     ctx.fill()
     ctx.stroke()
 
     let y = 80 // Top margin
 
-    // 2. LOGO CIRCLE
+    // 2. LOGO
     const LOGO_SIZE = 380
     const logoX = CENTER
     const logoY = y + LOGO_SIZE / 2
 
     ctx.save()
-    ctx.beginPath()
-    ctx.arc(logoX, logoY, LOGO_SIZE / 2, 0, Math.PI * 2)
-    ctx.clip()
 
     try {
       const logoImg = await loadImage(logoUrl)
-      // Implement object-fit: cover to center and clearly show the logo
+      // Implement object-fit: contain to fit any shape without cropping
       const aspect = logoImg.width / logoImg.height
       let drawW = LOGO_SIZE
       let drawH = LOGO_SIZE
-      let dx = 0
-      let dy = 0
+      
       if (aspect > 1) { // wider
-        drawW = LOGO_SIZE * aspect
-        dx = (drawW - LOGO_SIZE) / 2
-      } else if (aspect < 1) { // taller
         drawH = LOGO_SIZE / aspect
-        dy = (drawH - LOGO_SIZE) / 2
+      } else if (aspect < 1) { // taller
+        drawW = LOGO_SIZE * aspect
       }
-      ctx.drawImage(logoImg, logoX - LOGO_SIZE/2 - dx, logoY - LOGO_SIZE/2 - dy, drawW, drawH)
+      ctx.drawImage(logoImg, logoX - drawW/2, logoY - drawH/2, drawW, drawH)
     } catch {
       ctx.fillStyle = '#c0392b'
       ctx.fillRect(logoX - LOGO_SIZE/2, logoY - LOGO_SIZE/2, LOGO_SIZE, LOGO_SIZE)
@@ -86,23 +80,31 @@ const QRCardCanvas = forwardRef<QRCardRef, QRCardCanvasProps>(({
 
     // 4. QR CODE BOX
     const QR_SIZE = 780
-    const qrX = CENTER - QR_SIZE / 2
+    
+    // Add padding and border around QR to match reference design
+    const PADDING = 40;
+    const BOX_SIZE = QR_SIZE + PADDING * 2;
+    const boxX = CENTER - BOX_SIZE / 2;
+    const boxY = y;
 
-    // Light shadow rounded rect behind QR
-    ctx.fillStyle = 'rgba(0,0,0,0.06)'
-    roundRect(ctx, qrX, y, QR_SIZE, QR_SIZE, 24)
+    // Draw white box with border
+    ctx.fillStyle = '#FFFFFF'
+    ctx.strokeStyle = '#E2E8F0' // nice light gray border
+    ctx.lineWidth = 6
+    roundRect(ctx, boxX, boxY, BOX_SIZE, BOX_SIZE, 40)
     ctx.fill()
+    ctx.stroke()
 
     // Generate QR
     const qrDataUrl = await QRCode.toDataURL(scanUrl, {
       width: QR_SIZE,
-      margin: 2,
+      margin: 0,
       errorCorrectionLevel: 'M',
       color: { dark: '#000000', light: '#ffffff' }
     })
     const qrImg = await loadImage(qrDataUrl)
-    ctx.drawImage(qrImg, qrX, y, QR_SIZE, QR_SIZE)
-    y += QR_SIZE + 72 // Bottom margin to scan text
+    ctx.drawImage(qrImg, boxX + PADDING, boxY + PADDING, QR_SIZE, QR_SIZE)
+    y += BOX_SIZE + 72 // Bottom margin to scan text
 
     // 5. SCAN TEXT
     ctx.fillStyle = '#222222'
