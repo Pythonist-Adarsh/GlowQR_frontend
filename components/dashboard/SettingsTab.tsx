@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { User, Lock, Mail, CheckCircle2, AlertCircle, Loader2, Palette, Sparkles, ArrowRight, Info } from "lucide-react";
+import { User, Lock, Mail, CheckCircle2, AlertCircle, Loader2, Palette, Sparkles, ArrowRight, Info, Eye, EyeOff } from "lucide-react";
 import { getThemeVariables } from "@/components/review/themeUtils";
 import { API_BASE_URL } from "@/lib/api-config";
 
@@ -22,6 +22,7 @@ export function SettingsTab({ user, business, onUpdate }: { user: any; business?
     new_password: "",
     confirm_password: ""
   });
+  const [showPasswords, setShowPasswords] = useState(false);
 
   const [previewTheme, setPreviewTheme] = useState(() => 
     business?.animation_style === 'particle_burst' ? 'classic' : business?.animation_style === 'minimal_fade' ? 'premium' : 'free'
@@ -317,35 +318,62 @@ export function SettingsTab({ user, business, onUpdate }: { user: any; business?
         <form onSubmit={handlePasswordSubmit} className="space-y-6 max-w-lg">
           <div>
             <label className="block text-sm font-bold text-slate-700 mb-2">Current Password</label>
-            <input
-              type="password"
-              required
-              value={passwords.current_password}
-              onChange={(e) => setPasswords({ ...passwords, current_password: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 !text-slate-900 rounded-xl focus:bg-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all outline-none"
-            />
+            <div className="relative">
+              <input
+                type={showPasswords ? "text" : "password"}
+                required
+                value={passwords.current_password}
+                onChange={(e) => setPasswords({ ...passwords, current_password: e.target.value })}
+                className="w-full pl-4 pr-12 py-3 bg-slate-50 border border-slate-200 !text-slate-900 rounded-xl focus:bg-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all outline-none"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPasswords(!showPasswords)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none"
+              >
+                {showPasswords ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
           </div>
           <div>
             <label className="block text-sm font-bold text-slate-700 mb-2">New Password</label>
-            <input
-              type="password"
-              required
-              minLength={6}
-              value={passwords.new_password}
-              onChange={(e) => setPasswords({ ...passwords, new_password: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 !text-slate-900 rounded-xl focus:bg-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all outline-none"
-            />
+            <div className="relative">
+              <input
+                type={showPasswords ? "text" : "password"}
+                required
+                minLength={6}
+                value={passwords.new_password}
+                onChange={(e) => setPasswords({ ...passwords, new_password: e.target.value })}
+                className="w-full pl-4 pr-12 py-3 bg-slate-50 border border-slate-200 !text-slate-900 rounded-xl focus:bg-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all outline-none"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPasswords(!showPasswords)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none"
+              >
+                {showPasswords ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
           </div>
           <div>
             <label className="block text-sm font-bold text-slate-700 mb-2">Confirm New Password</label>
-            <input
-              type="password"
-              required
-              minLength={6}
-              value={passwords.confirm_password}
-              onChange={(e) => setPasswords({ ...passwords, confirm_password: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 !text-slate-900 rounded-xl focus:bg-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all outline-none"
-            />
+            <div className="relative">
+              <input
+                type={showPasswords ? "text" : "password"}
+                required
+                minLength={6}
+                value={passwords.confirm_password}
+                onChange={(e) => setPasswords({ ...passwords, confirm_password: e.target.value })}
+                className="w-full pl-4 pr-12 py-3 bg-slate-50 border border-slate-200 !text-slate-900 rounded-xl focus:bg-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all outline-none"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPasswords(!showPasswords)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none"
+              >
+                {showPasswords ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
           </div>
           <button
             type="submit"
