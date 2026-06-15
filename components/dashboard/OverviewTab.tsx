@@ -178,12 +178,12 @@ export function OverviewTab({
     if (isSyncing) return;
     setIsSyncing(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/admin/sync-now`, {
+      // @ts-ignore
+      const res = await fetch(`${window.location.hostname.includes('localhost') ? 'http://localhost:8000' : 'https://glowqr.onrender.com'}/api/admin/sync-now`, {
         method: "POST",
         headers: { "X-Admin-Key": "super-secret-admin-key" } // Ideally from env or config
       });
       if (res.ok) {
-        // Show subtle flash animation
         document.getElementById('card-new-reviews')?.classList.add('bg-emerald-100');
         document.getElementById('card-rating')?.classList.add('bg-emerald-100');
         setTimeout(() => {
