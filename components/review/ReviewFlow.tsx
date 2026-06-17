@@ -111,8 +111,11 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
       'other': 'Business'
     };
     
-    const rawCategory = data.business_category || 'restaurant';
-    const displayCategory = categoryMap[rawCategory.toLowerCase()] || rawCategory || 'Restaurant';
+    const rawCategory = data.business_category || '';
+    if (!rawCategory) {
+      console.error('[CRITICAL] business_category is missing from data — review will use raw category as-is. Check onboarding/API response.');
+    }
+    const displayCategory = categoryMap[rawCategory.toLowerCase()] || rawCategory;
     
     try {
       const res = await fetch(`${API_BASE_URL}/api/scan/generate-review`, {
