@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { API_BASE_URL } from '@/lib/api-config';
 import { format } from 'date-fns';
-import { Search, Eye, Edit2, ShieldAlert, ExternalLink } from 'lucide-react';
+import { Search, Eye, Edit2, ShieldAlert, ExternalLink, Trash2, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 
@@ -19,6 +19,9 @@ export default function UsersPage() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [newPlan, setNewPlan] = useState('');
   const [newExpiry, setNewExpiry] = useState('');
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<any>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchUsers = async () => {
     try {
@@ -79,6 +82,32 @@ export default function UsersPage() {
       }
     } catch (e) {
       toast.error('Failed to update plan');
+    }
+  };
+
+  const openDelete = (u: any) => {
+    setUserToDelete(u);
+    setDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!userToDelete) return;
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`/api/admin-proxy/user/${userToDelete.id}`, {
+        method: 'DELETE'
+      });
+      if (res.ok) {
+        toast.success('User deleted successfully');
+        setUsers(users.filter(u => u.id !== userToDelete.id));
+        setDeleteModalOpen(false);
+      } else {
+        toast.error('Failed to delete user. Please try again.');
+      }
+    } catch (e) {
+      toast.error('Failed to delete user. Please try again.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -182,6 +211,9 @@ export default function UsersPage() {
                             <ExternalLink className="w-5 h-5" />
                           </Link>
                         )}
+                        <button onClick={() => openDelete(u)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Delete User">
+                          <Trash2 className="w-5 h-5" />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -259,6 +291,48 @@ export default function UsersPage() {
                 </div>
               </div>
 
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deleteModalOpen && userToDelete && (
+        <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 text-center">
+            <div className="mx-auto w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
+              <AlertTriangle className="w-6 h-6 text-red-600" />
+            </div>
+            <h2 className="text-xl font-bold text-slate-900 mb-2">Delete User?</h2>
+            <p className="text-slate-500 mb-6">
+              This will permanently delete <strong className="text-slate-900">{userToDelete.full_name || userToDelete.email}</strong> 
+              {userToDelete.business?.name ? <span> and their business <strong className="text-slate-900">{userToDelete.business.name}</strong></span> : ''}
+              {' '}and all their data including business, scan history, reviews, and analytics. This cannot be undone.
+            </p>
+            <div className="flex gap-3 justify-center">
+              <button 
+                onClick={() => setDeleteModalOpen(false)} 
+                disabled={isDeleting}
+                className="px-4 py-2 font-medium text-slate-600 hover:bg-slate-100 rounded-lg disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={confirmDelete} 
+                disabled={isDeleting}
+                className="px-4 py-2 font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg disabled:opacity-50 flex items-center gap-2"
+              >
+                {isDeleting ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Deleting...
+                  </>
+                ) : (
+                  'Delete Permanently'
+                )}
+              </button>
             </div>
           </div>
         </div>
