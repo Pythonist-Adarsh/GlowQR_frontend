@@ -27,7 +27,7 @@ import {
 import { LockedSection, ExpiredOverlay } from "./LockedComponents";
 import { QRCodeCanvas } from "qrcode.react";
 import QRCardCanvas, { QRCardRef } from '@/components/QRCardCanvas';
-
+import { API_BASE_URL } from "@/lib/api-config";
 export function OverviewTab({
   user,
   b,
@@ -178,10 +178,10 @@ export function OverviewTab({
     if (isSyncing) return;
     setIsSyncing(true);
     try {
-      // @ts-ignore
-      const res = await fetch(`${window.location.hostname.includes('localhost') ? 'http://localhost:8000' : 'https://glowqr.onrender.com'}/api/admin/sync-now`, {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_BASE_URL}/api/business/sync-now`, {
         method: "POST",
-        headers: { "X-Admin-Key": "super-secret-admin-key" } // Ideally from env or config
+        headers: { "Authorization": `Bearer ${token}` }
       });
       if (res.ok) {
         document.getElementById('card-new-reviews')?.classList.add('bg-emerald-100');
@@ -215,7 +215,7 @@ export function OverviewTab({
               <div className="text-xs text-slate-500 bg-white px-3 py-1.5 rounded-full border border-slate-200 shadow-sm flex items-center gap-2">
                 <Sparkles className="w-3 h-3 text-blue-500" />
                 {data.has_place_id 
-                  ? `● LAST SYNCED: ${data.last_synced_at ? new Date(data.last_synced_at).toLocaleString('en-GB') : 'Pending'}` 
+                  ? `● LAST SYNCED: ${data.last_synced_at ? new Date(data.last_synced_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'Pending'}` 
                   : <span className="text-amber-600 font-bold">⚠️ Add your Google Place ID in Setup to enable daily sync</span>}
                 {data.has_place_id && (
                   <button 
