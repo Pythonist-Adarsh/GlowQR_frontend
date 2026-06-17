@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react';
 import { API_BASE_URL } from '@/lib/api-config';
 import { format } from 'date-fns';
-import { Search, Eye, Edit2, ShieldAlert } from 'lucide-react';
+import { Search, Eye, Edit2, ShieldAlert, ExternalLink } from 'lucide-react';
 import toast from 'react-hot-toast';
+import Link from 'next/link';
 
 export default function UsersPage() {
   const [users, setUsers] = useState<any[]>([]);
@@ -176,6 +177,11 @@ export default function UsersPage() {
                         <button onClick={() => openEdit(u)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Edit plan">
                           <Edit2 className="w-5 h-5" />
                         </button>
+                        {u.business?.id && (
+                          <Link href={`/admin/business/${u.business.id}`} className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition" title="View Business Dashboard">
+                            <ExternalLink className="w-5 h-5" />
+                          </Link>
+                        )}
                       </div>
                     </td>
                   </tr>

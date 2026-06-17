@@ -5,9 +5,11 @@ import { API_BASE_URL } from '@/lib/api-config';
 import { Users, CreditCard, Activity, Clock, LogOut, CheckCircle, AlertTriangle } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar } from 'recharts';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function AdminOverview() {
   const [data, setData] = useState<any>(null);
+  const [topBusinesses, setTopBusinesses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -22,6 +24,11 @@ export default function AdminOverview() {
         if (res.ok) {
           const json = await res.json();
           setData(json);
+        }
+        const tbRes = await fetch(`/api/admin-proxy/top-businesses`);
+        if (tbRes.ok) {
+          const tbJson = await tbRes.json();
+          setTopBusinesses(tbJson.top_businesses || []);
         }
       } catch (err) {
         console.error(err);
@@ -139,6 +146,57 @@ export default function AdminOverview() {
               </BarChart>
             </ResponsiveContainer>
           </div>
+        </div>
+      </div>
+
+      {/* Top Businesses Table */}
+      <div className="mt-8 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div className="p-6 border-b border-slate-200 flex justify-between items-center">
+          <h3 className="text-lg font-bold text-slate-900">Top 10 Businesses by Scans</h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-sm">
+                <th className="p-4 font-medium">Rank</th>
+                <th className="p-4 font-medium">Business</th>
+                <th className="p-4 font-medium">Category / City</th>
+                <th className="p-4 font-medium">Plan</th>
+                <th className="p-4 font-medium">Total Scans</th>
+                <th className="p-4 font-medium">Google Redirects</th>
+                <th className="p-4 font-medium">Redirect Rate</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {topBusinesses.map((b) => (
+                <tr key={b.id} className="hover:bg-slate-50 transition">
+                  <td className="p-4 text-slate-500 font-bold">#{b.rank}</td>
+                  <td className="p-4">
+                    <Link href={`/admin/business/${b.id}`} className="font-medium text-blue-600 hover:text-blue-800 hover:underline">
+                      {b.name}
+                    </Link>
+                  </td>
+                  <td className="p-4">
+                    <div className="text-sm text-slate-900">{b.category || '-'}</div>
+                    <div className="text-xs text-slate-500">{b.city || '-'}</div>
+                  </td>
+                  <td className="p-4">
+                    <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase ${b.plan === 'premium' ? 'bg-purple-100 text-purple-700' : b.plan === 'basic' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}`}>
+                      {b.plan}
+                    </span>
+                  </td>
+                  <td className="p-4 font-medium text-slate-900">{b.total_scans}</td>
+                  <td className="p-4 text-emerald-600 font-medium">{b.google_redirects}</td>
+                  <td className="p-4 text-slate-600">{b.redirect_rate_percent}%</td>
+                </tr>
+              ))}
+              {topBusinesses.length === 0 && (
+                <tr>
+                  <td colSpan={7} className="p-8 text-center text-slate-500">No scan data available yet.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
