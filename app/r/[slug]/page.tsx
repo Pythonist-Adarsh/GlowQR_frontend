@@ -27,6 +27,8 @@ async function getBusinessData(slug: string) {
       name: data.business_name,
       tagline: data.tagline || "Experience the excellence with us",
       location: data.city || "Downtown Area",
+      business_category: data.business_category || "",
+      category: data.business_category || "Restaurant",
       primaryColor: data.brand_color || "#1D9E75",
       logoUrl: data.logo_url,
       website: data.website || "",
