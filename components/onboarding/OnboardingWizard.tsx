@@ -722,26 +722,26 @@ const Step5 = ({ data, updateData }: any) => {
         <div className="space-y-1.5">
           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">AI review variants</label>
           <select 
-            value={data.variants || (data.plan === 'trial' ? '1 variant' : data.plan === 'basic' ? '3 variants' : '5 variants')} 
+            value={data.variants || (data.plan === 'basic' ? '3 variants' : '5 variants')} 
             onChange={e => updateData({ variants: e.target.value })} 
             className="w-full bg-[var(--color-bg-secondary)] border border-[var(--color-border-default)] rounded-xl px-4 py-3 text-sm outline-none"
-            disabled={data.plan === 'trial' || data.plan === 'basic'}
+            disabled={data.plan === 'basic'}
           >
-            {data.plan === 'trial' && <option value="1 variant">1 variant (Free Trial)</option>}
-            {(data.plan === 'basic' || data.plan === 'premium') && (
+            {data.plan === 'basic' && (
               <>
                 <option value="2 variants">2 variants (Classic)</option>
-                <option value="3 variants">3 variants (Basic/Premium)</option>
+                <option value="3 variants">3 variants (Basic)</option>
               </>
             )}
-            {data.plan === 'premium' && (
+            {(data.plan === 'premium' || data.plan === 'trial') && (
               <>
-                <option value="4 variants">4 variants (Premium)</option>
-                <option value="5 variants">5 variants (Premium)</option>
+                <option value="3 variants">3 variants</option>
+                <option value="4 variants">4 variants</option>
+                <option value="5 variants">5 variants (Included in Trial / Premium)</option>
               </>
             )}
           </select>
-          {data.plan !== 'premium' && <p className="text-[9px] text-slate-400 italic">Upgrade to Premium for 5 variants</p>}
+          {data.plan === 'basic' && <p className="text-[9px] text-slate-400 italic">Upgrade to Premium for 5 variants</p>}
         </div>
         <div className="space-y-1.5">
           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Review language</label>
