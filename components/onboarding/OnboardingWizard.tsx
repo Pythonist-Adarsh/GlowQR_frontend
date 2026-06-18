@@ -509,13 +509,23 @@ const Step4 = ({ data, updateData }: any) => {
       });
       if (res.ok) {
         const extractedData = await res.json();
-        updateData(extractedData);
+        if (extractedData.error) {
+          alert("AI Extraction Failed: " + extractedData.error);
+          setFileDetails(null);
+        } else {
+          updateData(extractedData);
+          setParsed(true);
+        }
+      } else {
+        alert("Server error during extraction.");
+        setFileDetails(null);
       }
     } catch (err) {
       console.error("Failed to extract menu", err);
+      alert("Network error during extraction.");
+      setFileDetails(null);
     } finally {
       setParsing(false);
-      setParsed(true);
     }
   };
 
@@ -540,13 +550,23 @@ const Step4 = ({ data, updateData }: any) => {
       });
       if (res.ok) {
         const extractedData = await res.json();
-        updateData(extractedData);
+        if (extractedData.error) {
+          alert("AI Extraction Failed: " + extractedData.error);
+          setFileDetails(null);
+        } else {
+          updateData(extractedData);
+          setParsed(true);
+        }
+      } else {
+        alert("Server error during extraction.");
+        setFileDetails(null);
       }
     } catch (err) {
       console.error("Failed to extract menu", err);
+      alert("Network error during extraction.");
+      setFileDetails(null);
     } finally {
       setParsing(false);
-      setParsed(true);
     }
   };
 
