@@ -40,6 +40,7 @@ async function getBusinessData(slug: string) {
       particleIntensity: data.particle_intensity,
       seasonalTheme: data.seasonal_theme,
       negativeFilterEnabled: data.negative_filter_enabled,
+      highlighted_dishes: data.highlighted_dishes,
       menuItems: data.menu_items && data.menu_items.length > 0 
         ? data.menu_items.map((item: string, idx: number) => ({
             id: String(idx + 1),
