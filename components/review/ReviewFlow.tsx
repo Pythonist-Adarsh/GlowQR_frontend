@@ -42,10 +42,30 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
     negativeFilterEnabled: data.negativeFilterEnabled ?? true
   };
 
-  const menuItems = useMemo(() => data.menuItems || [
-    { id: 1, name: "Signature Pizza" },
-    { id: 2, name: "Pasta Carbonara" }
-  ], [data.menuItems]);
+  const isTaxFirm = data.business_category?.toLowerCase() === 'tax / ca firm' || data.category?.toLowerCase() === 'tax / ca firm';
+
+  const menuItems = useMemo(() => {
+    if (isTaxFirm) {
+      const servicesStr = data.highlighted_dishes || data.highlightDishes || "";
+      if (servicesStr) {
+        return servicesStr.split('\n').filter(Boolean).map((name: string, i: number) => ({ id: `tax_${i}`, name: name.trim() }));
+      }
+    }
+    
+    if (data.menuItems && Array.isArray(data.menuItems) && data.menuItems.length > 0 && typeof data.menuItems[0] === 'object') {
+      return data.menuItems;
+    }
+    
+    const items = data.menu_items || data.menuItems || [];
+    if (items.length > 0) {
+      return items.map((name: string, i: number) => ({ id: i, name: typeof name === 'object' ? name.name : name }));
+    }
+
+    return [
+      { id: 1, name: "Signature Pizza" },
+      { id: 2, name: "Pasta Carbonara" }
+    ];
+  }, [data.menuItems, data.menu_items, data.highlighted_dishes, data.highlightDishes, isTaxFirm]);
 
   const isDark = business.plan === 'basic' || business.plan === 'premium';
   const themeVars = useMemo(() => getThemeVariables(business.plan, business.primaryColor), [business.plan, business.primaryColor]);
@@ -302,7 +322,9 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
 
             <div className="flex-1 overflow-y-auto px-6 pb-6 custom-scrollbar">
               <div className="mt-6 mb-8 w-full overflow-hidden">
-                <p className={`text-[9px] font-bold uppercase tracking-widest mb-3 ${textMuted}`}>Select dishes you tried</p>
+                <p className={`text-[9px] font-bold uppercase tracking-widest mb-3 ${textMuted}`}>
+                  {isTaxFirm ? "Which services did you use?" : "Select dishes you tried"}
+                </p>
                 <div className="flex overflow-x-auto gap-2 pb-2 custom-scrollbar pr-6" style={{ width: 'calc(100% + 1.5rem)' }}>
                   {menuItems.map((item: any) => {
                     const isSelected = selectedDishes.includes(item.id);
@@ -320,6 +342,8 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                 </div>
               </div>
 
+              {!isTaxFirm && (
+                <>
               <div className="mb-8 w-full overflow-hidden">
                 <p className={`text-[9px] font-bold uppercase tracking-widest mb-3 ${textMuted}`}>What did you get?</p>
                 <div className="flex overflow-x-auto gap-2 pb-2 custom-scrollbar pr-6" style={{ width: 'calc(100% + 1.5rem)' }}>
@@ -381,6 +405,8 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                   ))}
                 </div>
               </div>
+                </>
+              )}
             </div>
 
             <div className={`p-6 pt-4 shrink-0 border-t z-20 ${borderClass} bg-[rgba(255,255,255,0.06)] backdrop-blur-[12px]`}>

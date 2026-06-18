@@ -484,6 +484,7 @@ const Step4 = ({ data, updateData }: any) => {
   const [parsing, setParsing] = useState(false);
   const [parsed, setParsed] = useState(false);
   const [fileDetails, setFileDetails] = useState<{ name: string; size: string; type: string } | null>(null);
+  const [newService, setNewService] = useState("");
   
   const pdfInputRef = useRef<HTMLInputElement | null>(null);
   const photoInputRef = useRef<HTMLInputElement | null>(null);
@@ -741,7 +742,7 @@ const Step4 = ({ data, updateData }: any) => {
           <p className="text-xs text-slate-500 mb-2">Add the services you offer — these help generate more relevant reviews</p>
           
           <div className="flex flex-wrap gap-2 mb-4">
-            {["ITR Filing", "GST Registration", "TDS Filing", "Company Registration", "Tax Consultation", "Accounting Services", "Audit Services"].map(svc => {
+            {["ITR Filing", "GST Registration", "Company Registration"].map(svc => {
               const currentServices = data.highlightDishes ? data.highlightDishes.split('\n').filter(Boolean) : [];
               const isSelected = currentServices.includes(svc);
               return (
@@ -762,15 +763,51 @@ const Step4 = ({ data, updateData }: any) => {
             })}
           </div>
 
-          <div className="space-y-1.5">
+          <div className="space-y-2">
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Add Custom Service</label>
+            <div className="flex gap-2">
+              <input 
+                type="text"
+                className="flex-1 bg-[var(--color-bg-secondary)] border border-[var(--color-border-default)] rounded-xl px-4 py-3 text-sm focus:border-[var(--color-brand-primary)] outline-none transition-all"
+                placeholder="e.g. Payroll Management"
+                value={newService}
+                onChange={e => setNewService(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (newService.trim()) {
+                      const currentServices = data.highlightDishes ? data.highlightDishes.split('\n').filter(Boolean) : [];
+                      updateData({ highlightDishes: [...currentServices, newService.trim()].join('\n') });
+                      setNewService("");
+                    }
+                  }
+                }}
+              />
+              <button 
+                type="button"
+                className="px-6 py-3 bg-[var(--color-brand-primary)] text-white font-bold text-xs rounded-xl shadow-md hover:opacity-90 transition-all whitespace-nowrap"
+                onClick={() => {
+                  if (newService.trim()) {
+                    const currentServices = data.highlightDishes ? data.highlightDishes.split('\n').filter(Boolean) : [];
+                    updateData({ highlightDishes: [...currentServices, newService.trim()].join('\n') });
+                    setNewService("");
+                  }
+                }}
+              >
+                Add
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-1.5 mt-6">
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Selected Services</label>
             <textarea 
               className="w-full bg-[var(--color-bg-secondary)] border border-[var(--color-border-default)] rounded-xl px-4 py-3 text-sm focus:border-[var(--color-brand-primary)] outline-none transition-all h-24"
-              placeholder="Add service (e.g. ITR Filing, GST Registration...)"
+              placeholder="Your added services will appear here..."
               value={data.highlightDishes || ''}
               onChange={e => updateData({ highlightDishes: e.target.value })}
             />
-            <p className="text-[9px] text-slate-400 italic">One per line. Edit manually if needed.</p>
+            <p className="text-[9px] text-slate-400 italic">One service per line. You can manually edit this list.</p>
           </div>
         </div>
       )}
