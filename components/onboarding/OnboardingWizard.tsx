@@ -404,6 +404,7 @@ const Step3 = ({ data, updateData }: any) => {
     { id: 'foodtruck', name: 'Food Truck', icon: 'Utensils', enabled: false },
     { id: 'cloudkitchen', name: 'Cloud Kitchen', icon: 'Utensils', enabled: false },
     { id: 'jewellery', name: 'Bridal & Festive Jewellery', icon: 'Sparkles', enabled: true },
+    { id: 'tax / ca firm', name: 'Tax / CA Firm', icon: 'FileText', enabled: true },
     { id: 'hotel', name: 'Hotel', icon: 'Hotel', enabled: false },
     { id: 'spa', name: 'Spa', icon: 'Sparkles', enabled: false },
     { id: 'salon', name: 'Salon', icon: 'Sparkles', enabled: false },
@@ -576,8 +577,12 @@ const Step4 = ({ data, updateData }: any) => {
     setParsing(false);
   };
 
+  const isTaxCategory = data.category === 'tax / ca firm';
+
   return (
     <div className="space-y-6">
+      {!isTaxCategory && (
+        <>
       <InfoBox 
         icon={CheckCircle2} 
         title="AI Magic Enabled" 
@@ -728,6 +733,47 @@ const Step4 = ({ data, updateData }: any) => {
         />
         <p className="text-[9px] text-slate-400 italic">AI will never include these. For discontinued items.</p>
       </div>
+      </>)}
+
+      {isTaxCategory && (
+        <div className="space-y-6">
+          <SectionHeader>Your Services</SectionHeader>
+          <p className="text-xs text-slate-500 mb-2">Add the services you offer — these help generate more relevant reviews</p>
+          
+          <div className="flex flex-wrap gap-2 mb-4">
+            {["ITR Filing", "GST Registration", "TDS Filing", "Company Registration", "Tax Consultation", "Accounting Services", "Audit Services"].map(svc => {
+              const currentServices = data.highlightDishes ? data.highlightDishes.split('\n').filter(Boolean) : [];
+              const isSelected = currentServices.includes(svc);
+              return (
+                <button
+                  key={svc}
+                  type="button"
+                  onClick={() => {
+                    const newServices = isSelected 
+                      ? currentServices.filter((s: string) => s !== svc)
+                      : [...currentServices, svc];
+                    updateData({ highlightDishes: newServices.join('\n') });
+                  }}
+                  className={`px-3 py-1.5 rounded-full text-[10px] font-bold border transition-all ${isSelected ? 'bg-[var(--color-brand-primary)] text-white border-[var(--color-brand-primary)]' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'}`}
+                >
+                  {isSelected ? "✓ " : "+ "}{svc}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Selected Services</label>
+            <textarea 
+              className="w-full bg-[var(--color-bg-secondary)] border border-[var(--color-border-default)] rounded-xl px-4 py-3 text-sm focus:border-[var(--color-brand-primary)] outline-none transition-all h-24"
+              placeholder="Add service (e.g. ITR Filing, GST Registration...)"
+              value={data.highlightDishes || ''}
+              onChange={e => updateData({ highlightDishes: e.target.value })}
+            />
+            <p className="text-[9px] text-slate-400 italic">One per line. Edit manually if needed.</p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

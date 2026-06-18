@@ -192,10 +192,11 @@ export function OverviewTab({
         }, 1000);
         setTimeout(() => window.location.reload(), 1500); // Reload dashboard
       } else {
-        alert("Sync failed, try again");
+        const errData = await res.json().catch(() => ({}));
+        alert(`Sync failed: ${errData.detail || "Server error"}`);
       }
-    } catch (e) {
-      alert("Sync failed, try again");
+    } catch (e: any) {
+      alert(`Sync failed: ${e.message}`);
     } finally {
       setIsSyncing(false);
     }
