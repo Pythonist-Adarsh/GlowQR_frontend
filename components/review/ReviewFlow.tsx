@@ -50,6 +50,11 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
       if (servicesStr) {
         return servicesStr.split('\n').filter(Boolean).map((name: string, i: number) => ({ id: `tax_${i}`, name: name.trim() }));
       }
+      return [
+        { id: "tax_def_1", name: "ITR Filing" },
+        { id: "tax_def_2", name: "GST Registration" },
+        { id: "tax_def_3", name: "Tax Consultation" }
+      ];
     }
     
     if (data.menuItems && Array.isArray(data.menuItems) && data.menuItems.length > 0 && typeof data.menuItems[0] === 'object') {
@@ -335,7 +340,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                         className={`shrink-0 px-3 py-2 rounded-lg text-xs border flex items-center gap-2 transition-all hover:bg-[rgba(255,255,255,0.14)] hover:border-[rgba(255,255,255,0.30)]`}
                         style={isSelected ? { backgroundColor: 'var(--accent)', borderColor: 'var(--accent)', color: 'var(--accent-text)', fontWeight: 600 } : { backgroundColor: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.18)', color: 'rgba(255,255,255,0.75)' }}
                       >
-                        <Utensils className="w-3 h-3 opacity-70" /> {item.name}
+                        {isTaxFirm ? <Briefcase className="w-3 h-3 opacity-70" /> : <Utensils className="w-3 h-3 opacity-70" />} {item.name}
                       </button>
                     )
                   })}
