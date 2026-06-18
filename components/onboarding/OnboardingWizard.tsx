@@ -253,7 +253,7 @@ const Step2 = ({ data, updateData }: any) => {
   ];
   const colors = ['#6C63FF', '#1a8a3c', '#E8474F', '#F59E0B', '#0EA5E9', '#EC4899', '#111111'];
   
-  const planForPreview = data.theme === 'classic' ? 'basic' : 'premium';
+  const planForPreview = (data.theme === 'classic' || data.theme === 'free') ? 'basic' : 'premium';
   const themeVars = useMemo(() => getThemeVariables(planForPreview, data.primaryColor || '#6C63FF'), [planForPreview, data.primaryColor]);
   const isDarkText = themeVars['--text-primary'] === '#111111';
 
@@ -344,8 +344,9 @@ const Step2 = ({ data, updateData }: any) => {
               {colors.map(c => (
                 <button 
                   key={c}
+                  type="button"
                   onClick={() => updateData({ primaryColor: c })}
-                  className={`w-8 h-8 rounded-full border-2 transition-all shrink-0 ${data.primaryColor === c ? 'scale-125 border-slate-900 shadow-lg' : 'border-transparent shadow-sm'}`}
+                  className={`w-8 h-8 rounded-full border-2 transition-all shrink-0 ${(data.primaryColor || '').toLowerCase() === c.toLowerCase() ? 'scale-125 border-slate-900 shadow-lg' : 'border-transparent shadow-sm'}`}
                   style={{ backgroundColor: c }}
                 />
               ))}
