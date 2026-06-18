@@ -1043,10 +1043,10 @@ export default function OnboardingWizard() {
         });
       } else if (currentStep === 4) {
         const formData = new FormData();
-        formData.append('theme', data.theme || 'classic');
+        formData.append('theme', data.theme || (data.plan === 'basic' ? 'classic' : 'premium'));
         formData.append('language', data.language || 'English');
         formData.append('primary_color', data.primaryColor || '#6C63FF');
-        formData.append('variants', data.variants || '3 variants');
+        formData.append('variants', data.variants || (data.plan === 'basic' ? '3 variants' : '5 variants'));
         formData.append('welcome_msg', data.welcomeMsg || '');
         if (data.logo && typeof data.logo === 'string' && data.logo.startsWith('data:image')) {
             const blobRes = await fetch(data.logo);
