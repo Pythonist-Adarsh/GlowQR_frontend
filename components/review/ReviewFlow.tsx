@@ -134,7 +134,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
           meal_type: mealType,
           price_range: spendRange,
           language: data.review_language || 'english',
-          variant_count: business.plan === 'free' ? 1 : (business.plan === 'basic' ? 3 : 5),
+          variant_count: data.ai_variant_count || (business.plan === 'free' ? 1 : (business.plan === 'basic' ? 3 : 5)),
           plan: business.plan,
           seating_type: seatingType,
           wait_time: waitTime,

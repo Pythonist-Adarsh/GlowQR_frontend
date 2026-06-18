@@ -1006,6 +1006,11 @@ export default function OnboardingWizard() {
         formData.append('address', data.address || '');
         formData.append('phone_number', data.phone || '');
         formData.append('whatsapp_number', data.whatsapp || '');
+        formData.append('owner_email', data.email || '');
+        formData.append('opening_time', data.openTime || '09:00');
+        formData.append('closing_time', data.closeTime || '22:00');
+        formData.append('days_open', JSON.stringify(data.daysOpen || ["Mon","Tue","Wed","Thu","Fri","Sat"]));
+        formData.append('primary_color', data.primaryColor || '#6C63FF');
         if (data.logo && typeof data.logo === 'string' && data.logo.startsWith('data:image')) {
             const blobRes = await fetch(data.logo);
             const blob = await blobRes.blob();
