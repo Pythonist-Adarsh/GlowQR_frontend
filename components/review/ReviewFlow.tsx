@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Star, ChevronLeft, Check, MapPin, ExternalLink, ArrowRight,
-  RefreshCw, Utensils, X, Loader2, Sparkles, ChevronRight, MessageSquare
+  RefreshCw, Utensils, X, Loader2, Sparkles, ChevronRight, MessageSquare, Briefcase, Shield
 } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/api-config';
 import { getThemeVariables } from './themeUtils';
@@ -482,9 +482,9 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
             ) : (
               <div className="space-y-4 mb-auto">
                 {[
-                  { key: 'food', label: 'Food', icon: Utensils },
+                  { key: 'food', label: isTaxFirm ? 'Expertise' : 'Food', icon: isTaxFirm ? Briefcase : Utensils },
                   { key: 'service', label: 'Service', icon: Sparkles },
-                  { key: 'atmosphere', label: 'Atmosphere', icon: Check }
+                  { key: 'atmosphere', label: isTaxFirm ? 'Professionalism' : 'Atmosphere', icon: isTaxFirm ? Shield : Check }
                 ].map(({ key, label, icon: Icon }) => (
                   <div key={key} className={`flex items-center justify-between p-4 rounded-xl border border-[rgba(255,255,255,0.10)] bg-[rgba(255,255,255,0.06)]`}>
                     <div className="flex items-center gap-3">
