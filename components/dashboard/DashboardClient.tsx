@@ -5,6 +5,7 @@ import { QRCodeCanvas } from "qrcode.react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { UpgradeModal } from "@/components/dashboard/UpgradeModal";
+import { RenewalModal } from "@/components/renewal/RenewalModal";
 import { OverviewTab } from "./OverviewTab";
 import { AnalyticsTab } from "./AnalyticsTab";
 import { SettingsTab } from "./SettingsTab";
@@ -58,6 +59,11 @@ export function DashboardClient({
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [linkCopied, setLinkCopied] = useState(false);
+  
+  // Renewal system state
+  const [renewalStatus, setRenewalStatus] = useState<any>(null);
+  const [adminSettings, setAdminSettings] = useState<any>(null);
+  const [isRenewalModalOpen, setIsRenewalModalOpen] = useState(false);
   const [analyticsSummary, setAnalyticsSummary] = useState<any>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
@@ -97,6 +103,14 @@ export function DashboardClient({
             const qrData = await qrRes.json();
             setQrCodes(qrData.qr_codes || []);
           }
+
+          // Fetch renewal status & admin settings
+          const [renewalRes, settingsRes] = await Promise.all([
+            fetch(`${API_BASE_URL}/api/renewal/status`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => null),
+            fetch(`${API_BASE_URL}/api/admin/settings`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => null)
+          ]);
+          if (renewalRes && renewalRes.ok) setRenewalStatus(await renewalRes.json());
+          if (settingsRes && settingsRes.ok) setAdminSettings(await settingsRes.json());
 
           const headers = { Authorization: `Bearer ${token}` };
           const [
@@ -370,7 +384,51 @@ export function DashboardClient({
       {/* Main Content */}
       <main className="flex-1 p-10 overflow-y-auto relative">
         
+        {/* Renewal Banners */}
+        {renewalStatus && (
+          <div className="w-full mb-6">
+            {renewalStatus.pending_renewal && (
+              <div className="w-full bg-blue-50 border border-blue-200 rounded-xl px-6 py-4 flex items-center justify-between shadow-sm">
+                <div className="flex items-center gap-3">
+                  <AlertCircle className="w-5 h-5 text-blue-600" />
+                  <p className="text-blue-800 font-medium">🕐 Renewal request received. We'll activate your plan within a few hours.</p>
+                </div>
+              </div>
+            )}
+            
+            {!renewalStatus.pending_renewal && renewalStatus.is_expired && (
+              <div className="w-full bg-red-50 border border-red-200 rounded-xl px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <AlertCircle className="w-5 h-5 text-red-600" />
+                  <p className="text-red-800 font-medium">🔴 Your plan has expired. Your QR code is currently inactive.</p>
+                </div>
+                <button 
+                  onClick={() => setIsRenewalModalOpen(true)}
+                  className="whitespace-nowrap px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-colors"
+                >
+                  Renew Now
+                </button>
+              </div>
+            )}
 
+            {!renewalStatus.pending_renewal && !renewalStatus.is_expired && renewalStatus.is_expiring_soon && (
+              <div className="w-full bg-yellow-50 border border-yellow-200 rounded-xl px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <AlertCircle className="w-5 h-5 text-yellow-600" />
+                  <p className="text-yellow-800 font-medium">
+                    ⚠️ Your {renewalStatus.plan} plan expires in {renewalStatus.days_remaining} days.
+                  </p>
+                </div>
+                <button 
+                  onClick={() => setIsRenewalModalOpen(true)}
+                  className="whitespace-nowrap px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-bold rounded-lg transition-colors"
+                >
+                  Renew Now
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
         <UpgradeModal
           isOpen={upgradeModalOpen}
@@ -567,6 +625,17 @@ export function DashboardClient({
         )}
 
               </main>
+      
+      {/* Renewal Modal */}
+      {isRenewalModalOpen && (
+        <RenewalModal 
+          isOpen={isRenewalModalOpen} 
+          onClose={() => setIsRenewalModalOpen(false)} 
+          currentPlan={renewalStatus?.plan}
+          upiId={adminSettings?.upi_id}
+          upiQrUrl={adminSettings?.upi_qr_url}
+        />
+      )}
     </div>
   );
 }

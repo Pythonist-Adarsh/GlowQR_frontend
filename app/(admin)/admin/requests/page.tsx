@@ -118,9 +118,16 @@ export default function RequestsPage() {
                       </div>
                     </td>
                     <td className="p-4">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${req.plan_requested === 'premium' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
-                        {req.plan_requested}
-                      </span>
+                      <div className="flex flex-col gap-1 items-start">
+                        <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${req.plan_requested === 'premium' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
+                          {req.plan_requested}
+                        </span>
+                        {req.request_type === 'renewal' && (
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-purple-100 text-purple-700">
+                            Renewal
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="p-4 font-medium text-slate-900">₹{(req.amount_paid/100).toFixed(2)}</td>
                     <td className="p-4">
