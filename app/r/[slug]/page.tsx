@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Clock } from "lucide-react";
 import { ReviewPageOrchestrator } from "@/components/review/ReviewPageOrchestrator";
 import { API_BASE_URL } from "@/lib/api-config";
 
@@ -75,13 +76,11 @@ export default async function BusinessReviewPage({ params }: { params: Promise<{
       <main className="min-h-screen bg-slate-50 flex items-center justify-center p-6 font-sans">
         <div className="bg-white p-10 rounded-[2.5rem] shadow-xl max-w-md w-full text-center border border-slate-200">
           <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg className="w-10 h-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+            <Clock className="w-10 h-10 text-slate-400" />
           </div>
-          <h1 className="text-2xl font-black text-slate-900 mb-3 tracking-tight">Service Paused</h1>
+          <h1 className="text-2xl font-black text-slate-900 mb-3 tracking-tight">Service Temporarily Unavailable</h1>
           <p className="text-slate-500 leading-relaxed font-medium">
-            This QR code is temporarily unavailable. Please ask the staff for assistance.
+            This business is currently not accepting reviews. Please check back later.
           </p>
         </div>
       </main>

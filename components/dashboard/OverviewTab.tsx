@@ -537,7 +537,6 @@ export function OverviewTab({
   if (plan === "expired") {
     return (
       <div className="w-full">
-        {renderBanner()}
         {renderStatCards()}
         <ExpiredOverlay>
           {renderDashboardContent()}
@@ -555,7 +554,6 @@ export function OverviewTab({
           Last synced: {new Date().toLocaleDateString()}
         </div>
       </div>
-      {renderBanner()}
       {renderStatCards()}
       {renderDashboardContent()}
       
