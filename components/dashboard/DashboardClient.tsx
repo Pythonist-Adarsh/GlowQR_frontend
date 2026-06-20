@@ -242,7 +242,7 @@ export function DashboardClient({
   const reviewUrl =
     typeof window !== "undefined"
       ? `${window.location.origin}/r/${b.slug || b.qr_slug || fallbackSlug}`
-      : `https://glow-qr-frontend.vercel.app/r/${b.slug || b.qr_slug || fallbackSlug}`;
+      : `https://glowqr.com/r/${b.slug || b.qr_slug || fallbackSlug}`;
 
   useEffect(() => {
     // Legacy qr-code-styling removed in favor of qrcode.react

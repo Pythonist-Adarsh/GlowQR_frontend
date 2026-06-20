@@ -873,7 +873,7 @@ const Step5 = ({ data, updateData }: any) => {
 
 const Step6 = ({ data, onPreview }: { data: any, onPreview: () => void }) => {
   const [copiedLink, setCopiedLink] = useState(false);
-  const reviewUrl = data.scanUrl || (typeof window !== 'undefined' ? `${window.location.origin}/r/${data.slug || data.qr_slug || data.name?.toLowerCase().replace(/\s+/g, '-') || 'business'}` : `https://glow-qr-frontend.vercel.app/r/${data.slug || data.qr_slug || data.name?.toLowerCase().replace(/\s+/g, '-') || 'business'}`);
+  const reviewUrl = data.scanUrl || (typeof window !== 'undefined' ? `${window.location.origin}/r/${data.slug || data.qr_slug || data.name?.toLowerCase().replace(/\s+/g, '-') || 'business'}` : `https://glowqr.com/r/${data.slug || data.qr_slug || data.name?.toLowerCase().replace(/\s+/g, '-') || 'business'}`);
   const qrRef = useRef<HTMLDivElement>(null);
   const qrCode = useRef<any>(null);
 
