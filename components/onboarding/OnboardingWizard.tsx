@@ -405,13 +405,13 @@ const Step3 = ({ data, updateData }: any) => {
     { id: 'cloudkitchen', name: 'Cloud Kitchen', icon: 'Utensils', enabled: false },
     { id: 'jewellery', name: 'Bridal & Festive Jewellery', icon: 'Sparkles', enabled: true },
     { id: 'tax / ca firm', name: 'Tax / CA Firm', icon: 'FileText', enabled: true },
+    { id: 'education', name: 'EDUCATION', icon: 'GraduationCap', enabled: true },
     { id: 'hotel', name: 'Hotel', icon: 'Hotel', enabled: false },
     { id: 'spa', name: 'Spa', icon: 'Sparkles', enabled: false },
     { id: 'salon', name: 'Salon', icon: 'Sparkles', enabled: false },
     { id: 'retail', name: 'Retail', icon: 'ShoppingBag', enabled: false },
     { id: 'gym', name: 'Gym', icon: 'Dumbbell', enabled: false },
     { id: 'medical', name: 'Medical', icon: 'Stethoscope', enabled: false },
-    { id: 'education', name: 'Education', icon: 'GraduationCap', enabled: false },
     { id: 'other', name: 'Other', icon: 'Layout', enabled: false },
   ];
 
@@ -580,7 +580,8 @@ const Step4 = ({ data, updateData }: any) => {
 
   const isTaxCategory = data.category === 'tax / ca firm';
   const isJewelleryCategory = data.category === 'jewellery';
-  const isServiceCategory = isTaxCategory || isJewelleryCategory;
+  const isEducationCategory = data.category === 'education';
+  const isServiceCategory = isTaxCategory || isJewelleryCategory || isEducationCategory;
 
   return (
     <div className="space-y-6">
@@ -740,12 +741,14 @@ const Step4 = ({ data, updateData }: any) => {
 
       {isServiceCategory && (
         <div className="space-y-6">
-          <SectionHeader>{isJewelleryCategory ? "Your Collections & Services" : "Your Services"}</SectionHeader>
-          <p className="text-xs text-slate-500 mb-2">{isJewelleryCategory ? "Add what you offer — helps generate more relevant reviews" : "Add the services you offer — these help generate more relevant reviews"}</p>
+          <SectionHeader>{isJewelleryCategory ? "Your Collections & Services" : isEducationCategory ? "Your Courses & Programs" : "Your Services"}</SectionHeader>
+          <p className="text-xs text-slate-500 mb-2">{isJewelleryCategory || isEducationCategory ? "Add what you offer — helps generate more relevant reviews" : "Add the services you offer — these help generate more relevant reviews"}</p>
           
           <div className="flex flex-wrap gap-2 mb-4">
             {(isJewelleryCategory 
               ? ["Bridal Set", "Necklace Collection", "Ring Collection", "Earrings", "Maang Tikka", "Bangles & Kada", "Custom Jewellery", "Saree & Lehenga"]
+              : isEducationCategory
+              ? ["JEE Preparation", "NEET Coaching", "Class 10 Board Prep", "Class 12 Board Prep", "Spoken English", "Computer Courses", "MBA Entrance", "Foundation Batch"]
               : ["ITR Filing", "GST Registration", "Company Registration"]
             ).map(svc => {
               const currentServices = data.highlightDishes ? data.highlightDishes.split('\n').filter(Boolean) : [];
@@ -774,7 +777,7 @@ const Step4 = ({ data, updateData }: any) => {
               <input 
                 type="text"
                 className="flex-1 bg-[var(--color-bg-secondary)] border border-[var(--color-border-default)] rounded-xl px-4 py-3 text-sm focus:border-[var(--color-brand-primary)] outline-none transition-all"
-                placeholder={isJewelleryCategory ? "Add item (e.g. Bridal Set, Necklace, Ring Collection...)" : "e.g. Payroll Management"}
+                placeholder={isJewelleryCategory ? "Add item (e.g. Bridal Set, Necklace, Ring Collection...)" : isEducationCategory ? "Add course (e.g. JEE Preparation, NEET Coaching...)" : "e.g. Payroll Management"}
                 value={newService}
                 onChange={e => setNewService(e.target.value)}
                 onKeyDown={(e) => {
@@ -805,10 +808,10 @@ const Step4 = ({ data, updateData }: any) => {
           </div>
 
           <div className="space-y-1.5 mt-6">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{isJewelleryCategory ? "Selected Collections/Services" : "Selected Services"}</label>
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{isJewelleryCategory ? "Selected Collections/Services" : isEducationCategory ? "Selected Courses/Programs" : "Selected Services"}</label>
             <textarea 
               className="w-full bg-[var(--color-bg-secondary)] border border-[var(--color-border-default)] rounded-xl px-4 py-3 text-sm focus:border-[var(--color-brand-primary)] outline-none transition-all h-24"
-              placeholder={isJewelleryCategory ? "Your added collections and services will appear here..." : "Your added services will appear here..."}
+              placeholder={isJewelleryCategory ? "Your added collections and services will appear here..." : isEducationCategory ? "Your added courses and programs will appear here..." : "Your added services will appear here..."}
               value={data.highlightDishes || ''}
               onChange={e => updateData({ highlightDishes: e.target.value })}
             />
