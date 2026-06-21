@@ -43,18 +43,33 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
   };
 
   const isTaxFirm = data.business_category?.toLowerCase() === 'tax / ca firm' || data.category?.toLowerCase() === 'tax / ca firm';
+  const isJewellery = data.business_category?.toLowerCase() === 'jewellery' || data.category?.toLowerCase() === 'jewellery' || data.business_category?.toLowerCase() === 'bridal & festive jewellery' || data.category?.toLowerCase() === 'bridal & festive jewellery';
 
   const menuItems = useMemo(() => {
-    if (isTaxFirm) {
+    if (isTaxFirm || isJewellery) {
       const servicesStr = data.highlighted_dishes || data.highlightDishes || "";
       if (servicesStr) {
-        return servicesStr.split('\n').filter(Boolean).map((name: string, i: number) => ({ id: `tax_${i}`, name: name.trim() }));
+        return servicesStr.split('\n').filter(Boolean).map((name: string, i: number) => ({ id: `srv_${i}`, name: name.trim() }));
       }
-      return [
-        { id: "tax_def_1", name: "ITR Filing" },
-        { id: "tax_def_2", name: "GST Registration" },
-        { id: "tax_def_3", name: "Tax Consultation" }
-      ];
+      if (isTaxFirm) {
+        return [
+          { id: "tax_def_1", name: "ITR Filing" },
+          { id: "tax_def_2", name: "GST Registration" },
+          { id: "tax_def_3", name: "Tax Consultation" }
+        ];
+      }
+      if (isJewellery) {
+        return [
+          { id: "jewel_def_1", name: "Bridal Set" },
+          { id: "jewel_def_2", name: "Necklace Collection" },
+          { id: "jewel_def_3", name: "Ring Collection" },
+          { id: "jewel_def_4", name: "Earrings" },
+          { id: "jewel_def_5", name: "Maang Tikka" },
+          { id: "jewel_def_6", name: "Bangles & Kada" },
+          { id: "jewel_def_7", name: "Custom Jewellery" },
+          { id: "jewel_def_8", name: "Saree & Lehenga" }
+        ];
+      }
     }
     
     if (data.menuItems && Array.isArray(data.menuItems) && data.menuItems.length > 0 && typeof data.menuItems[0] === 'object') {
@@ -328,7 +343,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
             <div className="flex-1 overflow-y-auto px-6 pb-6 custom-scrollbar">
               <div className="mt-6 mb-8 w-full overflow-hidden">
                 <p className={`text-[9px] font-bold uppercase tracking-widest mb-3 ${textMuted}`}>
-                  {isTaxFirm ? "Which services did you use?" : "Select dishes you tried"}
+                  {isTaxFirm ? "Which services did you use?" : isJewellery ? "What did you look at?" : "Select dishes you tried"}
                 </p>
                 <div className="flex overflow-x-auto gap-2 pb-2 custom-scrollbar pr-6" style={{ width: 'calc(100% + 1.5rem)' }}>
                   {menuItems.map((item: any) => {
@@ -340,14 +355,14 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                         className={`shrink-0 px-3 py-2 rounded-lg text-xs border flex items-center gap-2 transition-all hover:bg-[rgba(255,255,255,0.14)] hover:border-[rgba(255,255,255,0.30)]`}
                         style={isSelected ? { backgroundColor: 'var(--accent)', borderColor: 'var(--accent)', color: 'var(--accent-text)', fontWeight: 600 } : { backgroundColor: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.18)', color: 'rgba(255,255,255,0.75)' }}
                       >
-                        {isTaxFirm ? <Briefcase className="w-3 h-3 opacity-70" /> : <Utensils className="w-3 h-3 opacity-70" />} {item.name}
+                        {isTaxFirm ? <Briefcase className="w-3 h-3 opacity-70" /> : isJewellery ? <Sparkles className="w-3 h-3 opacity-70" /> : <Utensils className="w-3 h-3 opacity-70" />} {item.name}
                       </button>
                     )
                   })}
                 </div>
               </div>
 
-              {!isTaxFirm && (
+              {(!isTaxFirm && !isJewellery) && (
                 <>
               <div className="mb-8 w-full overflow-hidden">
                 <p className={`text-[9px] font-bold uppercase tracking-widest mb-3 ${textMuted}`}>What did you get?</p>
@@ -487,9 +502,9 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
             ) : (
               <div className="space-y-4 mb-auto">
                 {[
-                  { key: 'food', label: isTaxFirm ? 'Expertise' : 'Food', icon: isTaxFirm ? Briefcase : Utensils },
-                  { key: 'service', label: 'Service', icon: Sparkles },
-                  { key: 'atmosphere', label: isTaxFirm ? 'Professionalism' : 'Atmosphere', icon: isTaxFirm ? Shield : Check }
+                  { key: 'food', label: isTaxFirm ? 'Expertise' : isJewellery ? 'Product Quality' : 'Food', icon: isTaxFirm ? Briefcase : isJewellery ? Sparkles : Utensils },
+                  { key: 'service', label: isJewellery ? 'Staff Helpfulness' : 'Service', icon: Sparkles },
+                  { key: 'atmosphere', label: isTaxFirm ? 'Professionalism' : isJewellery ? 'Store Experience' : 'Atmosphere', icon: isTaxFirm ? Shield : isJewellery ? Check : Check }
                 ].map(({ key, label, icon: Icon }) => (
                   <div key={key} className={`flex items-center justify-between p-4 rounded-xl border border-[rgba(255,255,255,0.10)] bg-[rgba(255,255,255,0.06)]`}>
                     <div className="flex items-center gap-3">
