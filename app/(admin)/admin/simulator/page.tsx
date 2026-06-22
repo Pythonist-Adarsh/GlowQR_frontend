@@ -16,8 +16,7 @@ export default function SimulatorPage() {
   useEffect(() => {
     const fetchBusinesses = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/admin/businesses-list`, {
-          credentials: 'include',
+        const res = await fetch(`/api/admin-proxy/businesses-list`, {
           headers: { 'x-admin-secret': 'supersecretadmin' }
         });
         if (res.ok) {
@@ -49,9 +48,8 @@ export default function SimulatorPage() {
         plan: business.plan || 'trial'
       };
 
-      const res = await fetch(`${API_BASE_URL}/api/admin/simulate-reviews`, {
+      const res = await fetch(`/api/admin-proxy/simulate-reviews`, {
         method: 'POST',
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json', 'x-admin-secret': 'supersecretadmin' },
         body: JSON.stringify(payload)
       });
