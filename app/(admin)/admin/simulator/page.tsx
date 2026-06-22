@@ -17,6 +17,7 @@ export default function SimulatorPage() {
     const fetchBusinesses = async () => {
       try {
         const res = await fetch(`${API_BASE_URL}/api/admin/businesses-list`, {
+          credentials: 'include',
           headers: { 'x-admin-secret': 'supersecretadmin' }
         });
         if (res.ok) {
@@ -50,6 +51,7 @@ export default function SimulatorPage() {
 
       const res = await fetch(`${API_BASE_URL}/api/admin/simulate-reviews`, {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json', 'x-admin-secret': 'supersecretadmin' },
         body: JSON.stringify(payload)
       });
