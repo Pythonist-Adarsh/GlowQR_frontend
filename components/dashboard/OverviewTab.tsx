@@ -28,6 +28,41 @@ import { LockedSection, ExpiredOverlay } from "./LockedComponents";
 import { QRCodeCanvas } from "qrcode.react";
 import QRCardCanvas, { QRCardRef } from '@/components/QRCardCanvas';
 import { API_BASE_URL } from "@/lib/api-config";
+
+const CATEGORY_RATING_LABELS: Record<string, { r1: string, r2: string, r3: string }> = {
+  "restaurant": { r1: "Food Quality", r2: "Service", r3: "Ambiance" },
+  "cafe / coffee shop": { r1: "Brew Quality", r2: "Service", r3: "Ambiance" },
+  "fast food / qsr": { r1: "Food Quality", r2: "Speed", r3: "Cleanliness" },
+  "bar / lounge": { r1: "Drinks Quality", r2: "Service", r3: "Vibe" },
+  "bakery / dessert shop": { r1: "Taste", r2: "Service", r3: "Ambiance" },
+  "food court": { r1: "Food Quality", r2: "Service", r3: "Cleanliness" },
+  "fine dining": { r1: "Food Quality", r2: "Service", r3: "Fine Dining Experience" },
+  "food truck": { r1: "Food Quality", r2: "Speed", r3: "Value for Money" },
+  "cloud kitchen": { r1: "Food Quality", r2: "Packaging", r3: "Delivery Speed" },
+  "salon": { r1: "Work Quality", r2: "Staff Behaviour", r3: "Cleanliness" },
+  "spa": { r1: "Treatment Quality", r2: "Staff Behaviour", r3: "Ambiance" },
+  "gym": { r1: "Equipment Quality", r2: "Trainer Support", r3: "Cleanliness" },
+  "retail": { r1: "Product Quality", r2: "Staff Helpfulness", r3: "Store Experience" },
+  "bridal & festive jewellery": { r1: "Collection Quality", r2: "Staff Helpfulness", r3: "Store Experience" },
+  "hotel": { r1: "Room Quality", r2: "Staff Service", r3: "Facilities" },
+  "medical": { r1: "Treatment Quality", r2: "Doctor Behaviour", r3: "Cleanliness" },
+  "education": { r1: "Teaching Quality", r2: "Faculty Support", r3: "Infrastructure" },
+  "tax / ca firm": { r1: "Service Quality", r2: "Staff Professionalism", r3: "Response Time" },
+  "other": { r1: "Quality", r2: "Service", r3: "Experience" },
+};
+
+const SECTION_TITLES: Record<string, string> = {
+  "tax / ca firm": "Top Services Used",
+  "education": "Top Courses / Services",
+  "salon": "Top Services",
+  "spa": "Top Treatments",
+  "gym": "Top Services",
+  "retail": "Top Products",
+  "bridal & festive jewellery": "Top Collections",
+  "medical": "Top Services",
+  "hotel": "Top Services",
+};
+
 export function OverviewTab({
   user,
   b,
@@ -207,6 +242,17 @@ export function OverviewTab({
     const isPremium = plan === "premium";
     const data = analyticsSummary?.reviews_data;
     
+    const catLower = b.category?.toLowerCase() || "";
+    const ratingLabels = CATEGORY_RATING_LABELS[catLower] || CATEGORY_RATING_LABELS["other"];
+    const topItemsTitle = SECTION_TITLES[catLower] || "Top Menu Items";
+    const yourItemsTitle = SECTION_TITLES[catLower] ? SECTION_TITLES[catLower].replace("Top ", "Your ") : "Your Menu Items";
+
+    const hasUnconfiguredTopItems = analyticsSummary?.top_menu_items?.items?.some((i: any) => i.name?.startsWith('srv_') || i.name?.startsWith('tax_def_'));
+    const hasUnconfiguredMenu = b.menu_items?.some((i: any) => {
+      const n = i.name || i;
+      return typeof n === 'string' && (n.startsWith('srv_') || n.startsWith('tax_def_'));
+    });
+
     return (
       <div className="flex flex-col lg:flex-row gap-6 relative">
         <div className="w-full lg:w-2/3 flex flex-col gap-6">
@@ -275,9 +321,9 @@ export function OverviewTab({
             <h3 className="font-bold text-slate-900 mb-6 flex items-center gap-2"><Star className="w-5 h-5 text-emerald-500" /> Category Ratings</h3>
             <div className="space-y-4">
               {[
-                { label: "Food Quality", icon: "🍽️", value: analyticsSummary?.category_ratings?.food || 0 },
-                { label: "Service", icon: "👋", value: analyticsSummary?.category_ratings?.service || 0 },
-                { label: "Environment", icon: "✨", value: analyticsSummary?.category_ratings?.environment || 0 }
+                { label: ratingLabels.r1, icon: "🍽️", value: analyticsSummary?.category_ratings?.food || 0 },
+                { label: ratingLabels.r2, icon: "👋", value: analyticsSummary?.category_ratings?.service || 0 },
+                { label: ratingLabels.r3, icon: "✨", value: analyticsSummary?.category_ratings?.environment || 0 }
               ].map((item, i) => (
                 <div key={i} className="flex items-center gap-4">
                   <div className="w-32 flex items-center gap-2 text-sm font-bold text-slate-700">
@@ -358,7 +404,12 @@ export function OverviewTab({
             <div className="bg-white rounded-[2.5rem] shadow-sm flex flex-col h-full">
               {isBasicOrPremium ? (
                 <div className="p-8">
-                  <h3 className="font-bold text-slate-900 mb-6">Top Menu Items</h3>
+                  <h3 className="font-bold text-slate-900 mb-6">{topItemsTitle}</h3>
+                  {hasUnconfiguredTopItems && (
+                    <div className="mb-4 text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200 px-3 py-2 rounded-lg flex items-center gap-2">
+                      ⚠️ Service names not configured — update in Onboarding Setup
+                    </div>
+                  )}
                   <div className="space-y-4">
                     {analyticsSummary?.top_menu_items?.items?.map((item: any, i: number) => (
                       <div key={i} className="flex items-center justify-between">
@@ -509,9 +560,14 @@ export function OverviewTab({
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
                   <span className="w-8 h-8 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center">🍔</span>
-                  Your Menu Items
+                  {yourItemsTitle}
                 </h3>
               </div>
+              {hasUnconfiguredMenu && (
+                <div className="mb-4 text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200 px-3 py-2 rounded-lg flex items-center gap-2">
+                  ⚠️ Service names not configured — update in Onboarding Setup
+                </div>
+              )}
               <div className="flex flex-wrap gap-2">
                 {b.menu_items && b.menu_items.length > 0 ? (
                   b.menu_items.map((item: any, i: number) => (
@@ -523,7 +579,7 @@ export function OverviewTab({
                     </span>
                   ))
                 ) : (
-                  <p className="text-sm text-slate-400 font-medium italic">No menu items added. Add them in the setup tab!</p>
+                  <p className="text-sm text-slate-400 font-medium italic">No items added. Add them in the setup tab!</p>
                 )}
               </div>
             </div>
