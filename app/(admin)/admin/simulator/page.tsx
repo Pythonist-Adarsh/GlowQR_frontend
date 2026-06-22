@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { API_BASE_URL } from '@/lib/api-config';
-import { Loader2, FlaskConical, CheckCircle2, XCircle, Search, X } from 'lucide-react';
+import { Loader2, FlaskConical, CheckCircle2, XCircle, Search, X, ScanFace } from 'lucide-react';
+import { ARExperience } from '@/components/review/ARExperience';
 
 export default function SimulatorPage() {
   const [businesses, setBusinesses] = useState<any[]>([]);
   const [loadingList, setLoadingList] = useState(true);
   
   const [modalOpen, setModalOpen] = useState(false);
+  const [scannerModalOpen, setScannerModalOpen] = useState(false);
   const [selectedBusiness, setSelectedBusiness] = useState<any>(null);
   const [simulating, setSimulating] = useState(false);
   const [results, setResults] = useState<any>(null);
@@ -150,12 +152,23 @@ export default function SimulatorPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button
-                        onClick={() => handleSimulate(b)}
-                        className="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-slate-900 border border-emerald-500/20 transition-all font-bold py-1.5 px-4 rounded-lg text-sm flex items-center gap-2 ml-auto"
-                      >
-                        <FlaskConical className="w-4 h-4" /> Simulate
-                      </button>
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => {
+                            setSelectedBusiness(b);
+                            setScannerModalOpen(true);
+                          }}
+                          className="bg-purple-500/10 text-purple-400 hover:bg-purple-500 hover:text-white border border-purple-500/20 transition-all font-bold py-1.5 px-4 rounded-lg text-sm flex items-center gap-2"
+                        >
+                          <ScanFace className="w-4 h-4" /> Scan Effect
+                        </button>
+                        <button
+                          onClick={() => handleSimulate(b)}
+                          className="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-slate-900 border border-emerald-500/20 transition-all font-bold py-1.5 px-4 rounded-lg text-sm flex items-center gap-2"
+                        >
+                          <FlaskConical className="w-4 h-4" /> Simulate Reviews
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -272,6 +285,27 @@ export default function SimulatorPage() {
               )}
             </div>
           </div>
+        </div>
+      )}
+      {/* Scanner Effect Modal */}
+      {scannerModalOpen && selectedBusiness && (
+        <div className="fixed inset-0 z-[100] flex bg-black">
+          {/* We wrap ARExperience in a full screen container so the user can experience the scan animation */}
+          <ARExperience 
+            businessData={{
+              name: selectedBusiness.name,
+              category: selectedBusiness.category
+            }}
+            plan={selectedBusiness.plan || 'trial'} 
+            onComplete={() => setScannerModalOpen(false)} 
+          />
+          {/* Close Button overlay */}
+          <button 
+            onClick={() => setScannerModalOpen(false)}
+            className="absolute top-6 right-6 z-[110] p-3 text-white/50 hover:text-white hover:bg-white/10 rounded-full transition"
+          >
+            <X className="w-6 h-6" />
+          </button>
         </div>
       )}
     </div>
