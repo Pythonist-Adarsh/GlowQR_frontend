@@ -294,7 +294,12 @@ export default function SimulatorPage() {
           <ARExperience 
             businessData={{
               name: selectedBusiness.name,
-              category: selectedBusiness.category
+              category: selectedBusiness.category,
+              primaryColor: selectedBusiness.primaryColor,
+              welcomeMessage: selectedBusiness.welcomeMessage,
+              tagline: selectedBusiness.tagline,
+              logoUrl: selectedBusiness.logoUrl,
+              website: selectedBusiness.website
             }}
             plan={selectedBusiness.plan || 'trial'} 
             onComplete={() => setScannerModalOpen(false)} 
