@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { API_BASE_URL } from '@/lib/api-config';
 import { Loader2, FlaskConical, CheckCircle2, XCircle, Search, X, ScanFace } from 'lucide-react';
-import { ARExperience } from '@/components/review/ARExperience';
+import { ReviewPageOrchestrator } from '@/components/review/ReviewPageOrchestrator';
 
 export default function SimulatorPage() {
   const [businesses, setBusinesses] = useState<any[]>([]);
@@ -289,25 +289,26 @@ export default function SimulatorPage() {
       )}
       {/* Scanner Effect Modal */}
       {scannerModalOpen && selectedBusiness && (
-        <div className="fixed inset-0 z-[100] flex bg-black">
-          {/* We wrap ARExperience in a full screen container so the user can experience the scan animation */}
-          <ARExperience 
-            businessData={{
-              name: selectedBusiness.name,
-              category: selectedBusiness.category,
-              primaryColor: selectedBusiness.primaryColor,
-              welcomeMessage: selectedBusiness.welcomeMessage,
-              tagline: selectedBusiness.tagline,
-              logoUrl: selectedBusiness.logoUrl,
-              website: selectedBusiness.website
-            }}
-            plan={selectedBusiness.plan || 'trial'} 
-            onComplete={() => setScannerModalOpen(false)} 
-          />
+        <div className="fixed inset-0 z-[100] flex bg-slate-950">
+          <div className="flex-1 overflow-hidden relative">
+            <ReviewPageOrchestrator 
+              initialData={{
+                name: selectedBusiness.name,
+                category: selectedBusiness.category,
+                primaryColor: selectedBusiness.primaryColor,
+                welcomeMessage: selectedBusiness.welcomeMessage,
+                tagline: selectedBusiness.tagline,
+                logoUrl: selectedBusiness.logoUrl,
+                website: selectedBusiness.website,
+                plan: selectedBusiness.plan || 'trial'
+              }}
+              isEmbedded={false}
+            />
+          </div>
           {/* Close Button overlay */}
           <button 
             onClick={() => setScannerModalOpen(false)}
-            className="absolute top-6 right-6 z-[110] p-3 text-white/50 hover:text-white hover:bg-white/10 rounded-full transition"
+            className="absolute top-6 right-6 z-[110] p-3 text-white/50 hover:text-white hover:bg-white/10 bg-black/20 rounded-full transition"
           >
             <X className="w-6 h-6" />
           </button>
