@@ -2,32 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { API_BASE_URL } from '@/lib/api-config';
-import { Loader2, FlaskConical, CheckCircle2, XCircle, Star, Search, Info } from 'lucide-react';
-
-const CATEGORIES = [
-  "restaurant", "cafe / coffee shop", "fast food / qsr", "bar / lounge", 
-  "bakery / dessert shop", "food court", "fine dining", "food truck", 
-  "cloud kitchen", "salon", "spa", "gym", "retail", 
-  "bridal & festive jewellery", "hotel", "medical", "education", 
-  "tax / ca firm", "other"
-];
+import { Loader2, FlaskConical, CheckCircle2, XCircle, Search, X } from 'lucide-react';
 
 export default function SimulatorPage() {
   const [businesses, setBusinesses] = useState<any[]>([]);
   const [loadingList, setLoadingList] = useState(true);
   
-  const [selectedBusinessId, setSelectedBusinessId] = useState<string>('');
-  
-  const [form, setForm] = useState({
-    business_name: '',
-    category: 'restaurant',
-    city: 'Lucknow',
-    services: 'Signature Dish, Popular Choice',
-    overall_rating: 5,
-    plan: 'trial'
-  });
-
-  const [loading, setLoading] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedBusiness, setSelectedBusiness] = useState<any>(null);
+  const [simulating, setSimulating] = useState(false);
   const [results, setResults] = useState<any>(null);
 
   useEffect(() => {
@@ -49,32 +32,26 @@ export default function SimulatorPage() {
     fetchBusinesses();
   }, []);
 
-  const handleBusinessSelect = (id: string) => {
-    setSelectedBusinessId(id);
-    if (!id) return;
-    
-    const bus = businesses.find(b => b.id.toString() === id);
-    if (bus) {
-      setForm(prev => ({
-        ...prev,
-        business_name: bus.name || '',
-        category: bus.category ? bus.category.toLowerCase() : 'restaurant',
-        city: bus.city || '',
-        plan: bus.plan || 'trial'
-      }));
-    }
-  };
-
-  const generateReviews = async () => {
-    if (!form.business_name || !form.category) return alert("Business Name and Category are required");
-    
-    setLoading(true);
+  const handleSimulate = async (business: any) => {
+    setSelectedBusiness(business);
     setResults(null);
+    setModalOpen(true);
+    setSimulating(true);
+
     try {
+      const payload = {
+        business_name: business.name || 'Unknown',
+        category: business.category ? business.category.toLowerCase() : 'restaurant',
+        city: business.city || '',
+        services: '', // No manual input
+        overall_rating: 5,
+        plan: business.plan || 'trial'
+      };
+
       const res = await fetch(`${API_BASE_URL}/api/admin/simulate-reviews`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-admin-secret': 'supersecretadmin' },
-        body: JSON.stringify(form)
+        body: JSON.stringify(payload)
       });
       if (res.ok) {
         const data = await res.json();
@@ -86,13 +63,13 @@ export default function SimulatorPage() {
       console.error(err);
       alert("Error calling simulator API");
     } finally {
-      setLoading(false);
+      setSimulating(false);
     }
   };
 
   const renderHighlightedText = (text: string, avoidWords: string[], placeWord: string, category: string) => {
     let highlightedText = text;
-    const allBadWords = [...avoidWords];
+    const allBadWords = [...(avoidWords || [])];
     
     const isRestaurantOrFineDining = category === 'restaurant' || category === 'fine dining';
     
@@ -133,7 +110,7 @@ export default function SimulatorPage() {
   };
 
   return (
-    <div className="p-8 max-w-6xl mx-auto space-y-8">
+    <div className="p-8 max-w-6xl mx-auto space-y-8 relative">
       <div>
         <h1 className="text-2xl font-bold text-white flex items-center gap-2">
           <FlaskConical className="text-emerald-500" /> Review Simulator
@@ -141,194 +118,157 @@ export default function SimulatorPage() {
         <p className="text-slate-400 mt-1">Test AI review generation for any business — verify category flow is working correctly.</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
-        {/* LEFT COLUMN: Controls */}
-        <div className="lg:col-span-4 space-y-6">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-            <h2 className="text-lg font-bold text-white mb-4">Configuration</h2>
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+        {loadingList ? (
+          <div className="flex justify-center items-center h-64 text-slate-400">
+            <Loader2 className="w-8 h-8 animate-spin" />
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-slate-800/50 border-b border-slate-800">
+                  <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Business Name</th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Category</th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">City</th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Plan</th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800/50">
+                {businesses.map((b) => (
+                  <tr key={b.id} className="hover:bg-slate-800/20 transition-colors">
+                    <td className="px-6 py-4 text-sm font-medium text-white">{b.name}</td>
+                    <td className="px-6 py-4 text-sm text-slate-400 capitalize">{b.category || '-'}</td>
+                    <td className="px-6 py-4 text-sm text-slate-400">{b.city || '-'}</td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-block px-2 py-1 rounded-md text-xs font-bold uppercase tracking-wider ${
+                        b.plan === 'premium' ? 'bg-amber-500/10 text-amber-500' :
+                        b.plan === 'basic' ? 'bg-blue-500/10 text-blue-500' : 'bg-slate-800 text-slate-400'
+                      }`}>
+                        {b.plan || 'trial'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <button
+                        onClick={() => handleSimulate(b)}
+                        className="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-slate-900 border border-emerald-500/20 transition-all font-bold py-1.5 px-4 rounded-lg text-sm flex items-center gap-2 ml-auto"
+                      >
+                        <FlaskConical className="w-4 h-4" /> Simulate
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                {businesses.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
+                      No businesses found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Modal / Popup for Simulation Results */}
+      {modalOpen && (
+        <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm">
+          <div className="bg-slate-900 w-full max-w-2xl h-full shadow-2xl flex flex-col border-l border-slate-800 animate-in slide-in-from-right">
             
-            <div className="space-y-4">
+            <div className="p-6 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
               <div>
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Select Existing Business</label>
-                <select 
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:border-emerald-500 outline-none disabled:opacity-50"
-                  value={selectedBusinessId}
-                  onChange={(e) => handleBusinessSelect(e.target.value)}
-                  disabled={loadingList}
-                >
-                  <option value="">-- Custom Input --</option>
-                  {businesses.map(b => (
-                    <option key={b.id} value={b.id}>{b.name} ({b.category || 'none'})</option>
-                  ))}
-                </select>
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                  <FlaskConical className="text-emerald-500" /> Simulation Results
+                </h2>
+                {selectedBusiness && (
+                  <p className="text-sm text-slate-400 mt-1 flex items-center gap-2">
+                    <span className="text-white font-medium">{selectedBusiness.name}</span>
+                    <span className="text-slate-600">•</span>
+                    <span className="capitalize">{selectedBusiness.category || 'Uncategorized'}</span>
+                  </p>
+                )}
               </div>
-
-              <div className="pt-4 border-t border-slate-800">
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Business Name</label>
-                <input 
-                  type="text"
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:border-emerald-500 outline-none"
-                  value={form.business_name}
-                  onChange={e => setForm({...form, business_name: e.target.value})}
-                  placeholder="e.g. Vernika Academy"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Category</label>
-                <select 
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:border-emerald-500 outline-none"
-                  value={form.category}
-                  onChange={e => setForm({...form, category: e.target.value})}
-                >
-                  {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-              </div>
-
-              <div>
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">City</label>
-                <input 
-                  type="text"
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:border-emerald-500 outline-none"
-                  value={form.city}
-                  onChange={e => setForm({...form, city: e.target.value})}
-                />
-              </div>
-
-              <div>
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Services / Items (comma separated)</label>
-                <textarea 
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:border-emerald-500 outline-none h-20"
-                  value={form.services}
-                  onChange={e => setForm({...form, services: e.target.value})}
-                  placeholder="e.g. NEET Coaching, Class 10 Board Prep"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Overall Rating</label>
-                  <select 
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:border-emerald-500 outline-none"
-                    value={form.overall_rating}
-                    onChange={e => setForm({...form, overall_rating: parseInt(e.target.value)})}
-                  >
-                    {[5,4,3,2,1].map(r => <option key={r} value={r}>{r} Stars</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Plan</label>
-                  <select 
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:border-emerald-500 outline-none"
-                    value={form.plan}
-                    onChange={e => setForm({...form, plan: e.target.value})}
-                  >
-                    <option value="trial">Trial</option>
-                    <option value="basic">Basic</option>
-                    <option value="premium">Premium</option>
-                  </select>
-                </div>
-              </div>
-
               <button 
-                onClick={generateReviews}
-                disabled={loading}
-                className="w-full mt-4 bg-emerald-500 text-slate-900 font-bold py-3 rounded-xl flex justify-center items-center gap-2 hover:bg-emerald-400 transition disabled:opacity-50"
+                onClick={() => setModalOpen(false)}
+                className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition"
               >
-                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <FlaskConical className="w-5 h-5" />}
-                Generate Test Reviews
+                <X className="w-5 h-5" />
               </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+              {simulating ? (
+                <div className="flex flex-col items-center justify-center h-64 text-slate-400 gap-4">
+                  <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
+                  <p className="text-sm animate-pulse">Generating reviews via AI...</p>
+                </div>
+              ) : results ? (
+                <div className="space-y-4">
+                  {(results.reviews || []).map((review: string, idx: number) => {
+                    const category = selectedBusiness?.category ? selectedBusiness.category.toLowerCase() : 'restaurant';
+                    const vals = validateReview(review, results, category);
+                    const isRestaurantOrFineDining = category === 'restaurant' || category === 'fine dining';
+                    const noFoodPlaces = ['firm', 'salon', 'gym', 'clinic', 'institute', 'store'];
+                    
+                    const isValid = !vals.failsAvoid && !vals.failsRestaurant && !vals.failsDinner && (!noFoodPlaces.includes(results.place_word) || !vals.failsFood);
+
+                    return (
+                      <div key={idx} className={`bg-slate-800/50 border ${isValid ? 'border-emerald-500/30' : 'border-red-500/30'} rounded-2xl p-5`}>
+                        <div className="flex justify-between items-start mb-3">
+                          <div className="flex items-center gap-3">
+                            <span className="bg-slate-800 text-slate-300 text-xs font-bold px-2 py-1 rounded-md">Review {idx + 1}</span>
+                            {isValid ? (
+                              <span className="flex items-center gap-1 text-xs text-emerald-400 font-bold bg-emerald-500/10 px-2 py-1 rounded-md">
+                                <CheckCircle2 className="w-3.5 h-3.5" /> PASSED
+                              </span>
+                            ) : (
+                              <span className="flex items-center gap-1 text-xs text-red-400 font-bold bg-red-500/10 px-2 py-1 rounded-md">
+                                <XCircle className="w-3.5 h-3.5" /> FAILED
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <p className="text-slate-300 text-[15px] leading-relaxed mb-4">
+                          "{renderHighlightedText(review, results.avoid_words || [], results.place_word || '', category)}"
+                        </p>
+                        
+                        <div className="flex flex-wrap gap-3 mt-4 pt-4 border-t border-slate-800/50">
+                          <div className="flex items-center gap-1.5 text-xs font-medium">
+                            {vals.failsAvoid ? <XCircle className="w-4 h-4 text-red-500" /> : <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
+                            <span className={vals.failsAvoid ? 'text-red-400' : 'text-slate-400'}>Avoid Words</span>
+                          </div>
+                          <div className="flex items-center gap-1.5 text-xs font-medium">
+                            {vals.failsRestaurant ? <XCircle className="w-4 h-4 text-red-500" /> : <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
+                            <span className={vals.failsRestaurant ? 'text-red-400' : 'text-slate-400'}>Restaurant Rule</span>
+                          </div>
+                          <div className="flex items-center gap-1.5 text-xs font-medium">
+                            {vals.failsDinner ? <XCircle className="w-4 h-4 text-red-500" /> : <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
+                            <span className={vals.failsDinner ? 'text-red-400' : 'text-slate-400'}>Dinner Rule</span>
+                          </div>
+                          {noFoodPlaces.includes(results.place_word) && (
+                            <div className="flex items-center gap-1.5 text-xs font-medium">
+                              {vals.failsFood ? <XCircle className="w-4 h-4 text-red-500" /> : <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
+                              <span className={vals.failsFood ? 'text-red-400' : 'text-slate-400'}>Food Rule</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-64 text-slate-500">
+                  <Search className="w-12 h-12 mb-4 opacity-50" />
+                  <p>Results will appear here</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
-
-        {/* RIGHT COLUMN: Results */}
-        <div className="lg:col-span-8 space-y-6">
-          {results ? (
-            <>
-              {results.place_word && (
-                <div className="bg-slate-800 border border-slate-700 rounded-2xl p-5 mb-6 shadow-lg shadow-black/20">
-                  <h3 className="text-sm font-bold text-slate-300 uppercase tracking-widest mb-4 flex items-center gap-2">
-                    <Info className="w-4 h-4 text-emerald-500" /> Category Debug Info
-                  </h3>
-                  <div className="grid grid-cols-2 gap-y-4 gap-x-8 text-sm">
-                    <div>
-                      <span className="text-slate-500">Place Word:</span> 
-                      <span className="text-white ml-2 bg-slate-900 px-2 py-0.5 rounded border border-slate-700">{results.place_word}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-500">Avoid Words:</span> 
-                      <span className="text-white ml-2">{(results.avoid_words || []).join(', ') || 'None'}</span>
-                    </div>
-                    <div className="col-span-2">
-                      <span className="text-slate-500">Storyteller Context:</span> 
-                      <span className="text-emerald-400 ml-2 italic">{results.storyteller_context || 'N/A'}</span>
-                    </div>
-                    <div className="col-span-2">
-                      <span className="text-slate-500">R1 Opener:</span> 
-                      <span className="text-white ml-2">{results.r1_opener || 'N/A'}</span>
-                    </div>
-                    <div className="col-span-2">
-                      <span className="text-slate-500">R3 Issue:</span> 
-                      <span className="text-rose-400 ml-2">{results.r3_issue || 'N/A'}</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <h2 className="text-lg font-bold text-white mb-4">Generated Reviews</h2>
-              <div className="space-y-4">
-                {(results.reviews || []).map((review: string, idx: number) => {
-                  const vals = validateReview(review, results, form.category);
-                  const isRestaurantOrFineDining = form.category === 'restaurant' || form.category === 'fine dining';
-                  const noFoodPlaces = ['firm', 'salon', 'gym', 'clinic', 'institute', 'store'];
-                  
-                  return (
-                    <div key={idx} className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-                      <div className="flex justify-between items-start mb-3">
-                        <div className="flex items-center gap-2">
-                          <span className="bg-slate-800 text-slate-300 text-xs font-bold px-2 py-1 rounded-md">Variant {idx + 1}</span>
-                          <span className="flex text-amber-400"><Star className="w-4 h-4 fill-current" /> {form.overall_rating}</span>
-                        </div>
-                      </div>
-                      <p className="text-slate-300 text-[15px] leading-relaxed mb-4">
-                        "{renderHighlightedText(review, results.avoid_words || [], results.place_word || '', form.category)}"
-                      </p>
-                      
-                      <div className="flex flex-wrap gap-3 mt-4 pt-4 border-t border-slate-800">
-                        <div className="flex items-center gap-1.5 text-xs font-medium">
-                          {vals.failsAvoid ? <XCircle className="w-4 h-4 text-red-500" /> : <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
-                          <span className={vals.failsAvoid ? 'text-red-400' : 'text-slate-400'}>Avoid Words Rule</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 text-xs font-medium">
-                          {vals.failsRestaurant ? <XCircle className="w-4 h-4 text-red-500" /> : <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
-                          <span className={vals.failsRestaurant ? 'text-red-400' : 'text-slate-400'}>"Restaurant" Rule</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 text-xs font-medium">
-                          {vals.failsDinner ? <XCircle className="w-4 h-4 text-red-500" /> : <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
-                          <span className={vals.failsDinner ? 'text-red-400' : 'text-slate-400'}>"Dinner" Rule</span>
-                        </div>
-                        {noFoodPlaces.includes(results.place_word) && (
-                          <div className="flex items-center gap-1.5 text-xs font-medium">
-                            {vals.failsFood ? <XCircle className="w-4 h-4 text-red-500" /> : <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
-                            <span className={vals.failsFood ? 'text-red-400' : 'text-slate-400'}>"Food" Rule</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </>
-          ) : (
-            <div className="bg-slate-900 border border-slate-800 border-dashed rounded-2xl h-full min-h-[400px] flex flex-col items-center justify-center text-slate-500">
-              <Search className="w-12 h-12 mb-4 opacity-50" />
-              <p>Configure a test and click generate to see results</p>
-            </div>
-          )}
-        </div>
-      </div>
+      )}
     </div>
   );
 }
