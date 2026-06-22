@@ -183,11 +183,16 @@ export default function SimulatorPage() {
                   <FlaskConical className="text-emerald-500" /> Simulation Results
                 </h2>
                 {selectedBusiness && (
-                  <p className="text-sm text-slate-400 mt-1 flex items-center gap-2">
-                    <span className="text-white font-medium">{selectedBusiness.name}</span>
-                    <span className="text-slate-600">•</span>
-                    <span className="capitalize">{selectedBusiness.category || 'Uncategorized'}</span>
-                  </p>
+                  <div className="mt-1 flex flex-col gap-1">
+                    <p className="text-sm text-slate-400 flex items-center gap-2">
+                      <span className="text-white font-medium">{selectedBusiness.name}</span>
+                      <span className="text-slate-600">•</span>
+                      <span className="capitalize">{selectedBusiness.category || 'Uncategorized'}</span>
+                    </p>
+                    <p className="text-xs text-emerald-400/80 font-medium bg-emerald-500/10 px-2 py-0.5 rounded-md w-fit">
+                      Simulating as category: <span className="font-bold text-emerald-400 capitalize">{selectedBusiness.category ? selectedBusiness.category.toLowerCase() : 'restaurant'}</span>
+                    </p>
+                  </div>
                 )}
               </div>
               <button 
