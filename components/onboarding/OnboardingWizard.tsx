@@ -1143,13 +1143,33 @@ export default function OnboardingWizard() {
           })
         });
       } else if (currentStep === 3) {
+        const isNonFood = ['tax / ca firm', 'education', 'bridal & festive jewellery', 'salon', 'spa', 'gym', 'medical', 'retail', 'hotel', 'jewellery', 'other'].includes(data.category?.toLowerCase() || "");
+        
+        let finalMenuCategories = data.menuCategories || [];
+        const selectedServicesList = data.highlightDishes ? data.highlightDishes.split('\n').filter(Boolean) : [];
+        
+        if (isNonFood && selectedServicesList.length > 0) {
+          finalMenuCategories = [{
+            category: "Services",
+            items: selectedServicesList.map((svc: string, index: number) => ({
+              id: index,
+              name: svc,
+              emoji: "",
+              price: null
+            }))
+          }];
+        }
+
+        console.log("Saving menu_data:", JSON.stringify(finalMenuCategories));
+        console.log("Selected services:", JSON.stringify(selectedServicesList));
+
         res = await fetch(`${API_BASE_URL}/api/onboarding/step/4`, {
           method: 'POST',
           headers: { ...headers, 'Content-Type': 'application/json' },
           body: JSON.stringify({
             signature_dish: data.signatureDish || '',
             highlighted_dishes: data.highlightDishes || '',
-            menu_categories: data.menuCategories || []
+            menu_categories: finalMenuCategories
           })
         });
       } else if (currentStep === 4) {
