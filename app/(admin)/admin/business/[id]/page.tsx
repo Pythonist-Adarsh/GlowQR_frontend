@@ -20,6 +20,8 @@ export default function BusinessDetailAdmin({ params }: { params: Promise<{ id: 
   const router = useRouter();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [placeIdInput, setPlaceIdInput] = useState("");
+  const [savingUrl, setSavingUrl] = useState(false);
 
   useEffect(() => {
     const fetchBusinessDetails = async () => {
@@ -32,6 +34,9 @@ export default function BusinessDetailAdmin({ params }: { params: Promise<{ id: 
         if (res.ok) {
           const json = await res.json();
           setData(json);
+          if (json.business_info?.place_id) {
+            setPlaceIdInput(json.business_info.place_id);
+          }
         }
       } catch (err) {
         console.error(err);
@@ -41,6 +46,38 @@ export default function BusinessDetailAdmin({ params }: { params: Promise<{ id: 
     };
     fetchBusinessDetails();
   }, [id, router]);
+
+  const handleUpdateReviewUrl = async () => {
+    if (!placeIdInput.trim()) return;
+    setSavingUrl(true);
+    try {
+      const res = await fetch(`/api/admin-proxy/business/${id}/review-url`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ place_id: placeIdInput.trim() })
+      });
+      if (res.ok) {
+        const result = await res.json();
+        // Update local data
+        setData((prev: any) => ({
+          ...prev,
+          business_info: {
+            ...prev.business_info,
+            place_id: result.google_place_id,
+            google_review_url: result.google_review_url
+          }
+        }));
+        alert("Review URL updated!");
+      } else {
+        alert("Failed to update Review URL");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error updating Review URL");
+    } finally {
+      setSavingUrl(false);
+    }
+  };
 
   if (loading) return <div className="p-8 text-slate-500 font-medium animate-pulse">Loading Business Dashboard...</div>;
   if (!data) return <div className="p-8 text-red-500 font-medium">Failed to load business data</div>;
@@ -154,6 +191,66 @@ export default function BusinessDetailAdmin({ params }: { params: Promise<{ id: 
                 <span className={`px-2 py-1 rounded text-xs font-medium ${business_info.negative_filter_enabled ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}`}>
                   Negative Filter
                 </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Google Review Setup */}
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div className="p-6 md:p-8 flex flex-col md:flex-row gap-8 items-start">
+          <div className="md:w-1/3">
+            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2 mb-2">
+              <Star className="w-5 h-5 text-amber-500" />
+              Google Review Setup
+            </h2>
+            <p className="text-sm text-slate-500 mb-4">
+              Configure the Place ID so users are properly redirected to the Google Maps review flow after they submit positive feedback.
+            </p>
+            <a 
+              href="https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder" 
+              target="_blank" 
+              rel="noreferrer"
+              className="text-sm text-blue-600 font-medium hover:underline flex items-center gap-1"
+            >
+              Find Place ID →
+            </a>
+          </div>
+          <div className="flex-1 bg-slate-50 rounded-xl p-6 border border-slate-100">
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Google Place ID</label>
+                <div className="flex gap-3">
+                  <input 
+                    type="text" 
+                    value={placeIdInput}
+                    onChange={(e) => setPlaceIdInput(e.target.value)}
+                    placeholder="e.g. ChIJN1t_tDeuEmsRUsoyG83frY4" 
+                    className="flex-1 rounded-lg border-slate-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  />
+                  <button 
+                    onClick={handleUpdateReviewUrl}
+                    disabled={savingUrl || !placeIdInput.trim() || placeIdInput === business_info.place_id}
+                    className="px-4 py-2 bg-slate-900 text-white rounded-lg text-sm font-medium hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                  >
+                    {savingUrl ? 'Updating...' : 'Update Review URL'}
+                  </button>
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Current Review URL</label>
+                {business_info.google_review_url ? (
+                  <div className="text-sm text-slate-600 bg-white p-3 rounded border border-slate-200 break-all">
+                    {business_info.google_review_url}
+                  </div>
+                ) : (
+                  <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded border border-amber-200 font-medium flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4" />
+                    Not configured yet
+                  </div>
+                )}
               </div>
             </div>
           </div>
