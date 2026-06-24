@@ -5,25 +5,39 @@ import { fadeUp, staggerContainer } from '@/lib/animations'
 
 const quotes = [
   {
-    name: 'Priya Desai',
-    role: 'Owner, Neon Nights Bistro',
-    avatar: 'PD',
+    name: 'Raj Patel',
+    role: 'Small Business Owner',
+    avatar: 'RP',
     quote:
-      'We tripled Google reviews in six weeks without hovering over tables. The AI drafts sound exactly like our guests.',
+      "Since putting up the QR codes, customers actually leave feedback now. It's made a huge difference.",
   },
   {
-    name: 'Marcus Chen',
-    role: 'COO, Harbor Hotels',
-    avatar: 'MC',
+    name: 'Sarah Jenkins',
+    role: 'Salon Manager',
+    avatar: 'SJ',
     quote:
-      'Premium QR flows match our brand voice. Ops finally sees scans tied to sentiment — not spreadsheet chaos.',
+      "We used to beg clients for reviews after appointments. Now they just scan while paying. Got more reviews in a week than we did all last month.",
   },
   {
-    name: 'Elena Roth',
-    role: 'Marketing Lead, Apex Fitness',
-    avatar: 'ER',
+    name: 'Dr. Amit Sharma',
+    role: 'Clinic Operator',
+    avatar: 'AS',
     quote:
-      'Routing detractors privately saved our reputation twice this quarter. GlowQR pays for itself.',
+      "Our front desk was spending too much time following up with patients. This automated the whole process. It's subtle, professional, and patients actually engage with it.",
+  },
+  {
+    name: 'Maria Gonzalez',
+    role: 'Restaurant Owner',
+    avatar: 'MG',
+    quote:
+      "During rush hours, our staff couldn't ask diners for feedback, so we barely got any online traction. Putting the GlowQR cards on the tables changed everything. The AI drafts make it so easy for people that we've noticed a clear jump in responses. Way less friction.",
+  },
+  {
+    name: 'David Chen',
+    role: 'Multi-Location Operator',
+    avatar: 'DC',
+    quote:
+      "Managing reputation across three branches was a headache. Feedback was inconsistent and manual follow-ups just weren't working. Setting this up took minutes, and suddenly more customers started leaving feedback without us even asking. It just runs in the background and does its job.",
   },
 ]
 
