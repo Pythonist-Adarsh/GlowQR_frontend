@@ -716,7 +716,18 @@ const Step4 = ({ data, updateData }: any) => {
       </AnimatePresence>
 
       <SectionHeader>Manual Additions</SectionHeader>
-      <InputField label="Signature dish / Hero item" badge="production" value={data.signatureDish || ''} onChange={(e: any) => updateData({ signatureDish: e.target.value })} hint="AI mentions it prominently." />
+      <div className="space-y-1.5">
+        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+          Signature dish / Hero item <Badge type="production">production</Badge>
+        </label>
+        <textarea 
+          className="w-full bg-[var(--color-bg-secondary)] border border-[var(--color-border-default)] rounded-xl px-4 py-3 text-sm focus:border-[var(--color-brand-primary)] outline-none transition-all h-24 custom-scrollbar"
+          placeholder="e.g. Butter Chicken"
+          value={data.signatureDish || ''}
+          onChange={e => updateData({ signatureDish: e.target.value })}
+        />
+        <p className="text-[9px] text-slate-400 italic">AI mentions it prominently.</p>
+      </div>
       <div className="space-y-1.5">
         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Dishes to highlight [Optional]</label>
         <textarea 
@@ -1004,6 +1015,7 @@ export default function OnboardingWizard() {
   const [currentStep, setCurrentStep] = useState(0)
   const [loading, setLoading] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
   
   const [data, setData] = useState<any>({
     name: '', tagline: '', website: '', instagramUrl: '', googleReviewUrl: '', placeId: '',
@@ -1088,6 +1100,7 @@ export default function OnboardingWizard() {
 
   const handleNext = async () => {
     setLoading(true);
+    setErrorMsg(null);
     try {
       const token = localStorage.getItem('token');
       const headers: Record<string, string> = {
@@ -1192,7 +1205,11 @@ export default function OnboardingWizard() {
       }
       
       if (res && !res.ok) {
-        console.error("Failed at step", currentStep, await res.text());
+        const errText = await res.text();
+        console.error("Failed at step", currentStep, errText);
+        let parsedErr = errText;
+        try { parsedErr = JSON.parse(errText).detail || errText; } catch(e) {}
+        setErrorMsg(typeof parsedErr === 'string' ? parsedErr : JSON.stringify(parsedErr));
         return; 
       }
       
@@ -1201,6 +1218,14 @@ export default function OnboardingWizard() {
           method: 'POST',
           headers
         });
+        if (!completeRes.ok) {
+           const errText = await completeRes.text();
+           let parsedErr = errText;
+           try { parsedErr = JSON.parse(errText).detail || errText; } catch(e) {}
+           if (typeof parsedErr === 'object' && (parsedErr as any).message) parsedErr = (parsedErr as any).message;
+           setErrorMsg(`Failed to complete: ${parsedErr}`);
+           return;
+        }
         if (completeRes.ok) {
           const completeData = await completeRes.json();
           if (completeData.qr_code && completeData.qr_code.scan_url) {
@@ -1216,8 +1241,9 @@ export default function OnboardingWizard() {
         localStorage.setItem('glowqr_business_data', JSON.stringify(data));
         router.push('/dashboard');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("API error", err);
+      setErrorMsg(err.message || "Network error occurred");
     } finally {
       setLoading(false);
     }
@@ -1318,8 +1344,15 @@ export default function OnboardingWizard() {
         </div>
 
         {/* Card Footer */}
-        <div className="p-6 border-t border-slate-50 flex items-center justify-between sticky bottom-0 bg-white/80 backdrop-blur-md">
-          <div className="flex-1">
+        <div className="flex flex-col bg-white/80 backdrop-blur-md sticky bottom-0 border-t border-slate-50 rounded-b-[2.5rem]">
+          {errorMsg && (
+            <div className="mx-6 mt-4 p-3 bg-red-50 border border-red-100 rounded-lg flex items-center gap-2 text-red-600 animate-in fade-in">
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              <p className="text-xs font-bold">{errorMsg}</p>
+            </div>
+          )}
+          <div className="p-6 flex items-center justify-between">
+            <div className="flex-1">
             {currentStep > 0 && (
               <button 
                 onClick={handleBack}
@@ -1350,6 +1383,7 @@ export default function OnboardingWizard() {
               )}
             </button>
           </div>
+        </div>
         </div>
         </div>
       </main>
