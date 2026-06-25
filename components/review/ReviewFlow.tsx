@@ -52,7 +52,15 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
     rawCat.includes('qsr') || rawCat.includes('lounge');
 
   const parsedMenuData = useMemo(() => {
-    const rawData = data.menu_data || data.menuCategories;
+    let rawData = data.menu_data || data.menuCategories;
+    if (typeof rawData === 'string') {
+      try {
+        rawData = JSON.parse(rawData);
+      } catch (e) {
+        console.error("Failed to parse menu_data", e);
+      }
+    }
+
     if (!isFoodCategory || !Array.isArray(rawData) || rawData.length === 0) return null;
     
     // Check if it's an array where elements have category and items
@@ -117,7 +125,13 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
     }
     
     // Fallback: If menu_data is a flat array without category objects
-    const rawData = data.menu_data || data.menuCategories;
+    let rawData = data.menu_data || data.menuCategories;
+    if (typeof rawData === 'string') {
+      try {
+        rawData = JSON.parse(rawData);
+      } catch (e) {}
+    }
+    
     if (rawData && Array.isArray(rawData) && rawData.length > 0 && !rawData[0].items) {
       return rawData.map((item: any, i: number) => ({
         id: typeof item === 'object' && item.id ? item.id : i,
