@@ -50,13 +50,14 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
     'restaurant', 'cafe / coffee shop', 'cafe', 'fast food / qsr', 'fastfood', 
     'bar / lounge', 'bar', 'bakery / dessert shop', 'bakery', 'food court', 'foodcourt'
   ];
-  const isFoodCategory = foodCategories.includes(data.business_category?.toLowerCase() || "") || foodCategories.includes(data.category?.toLowerCase() || "");
+  const isFoodCategory = foodCategories.includes((data.business_category || "").trim().toLowerCase()) || foodCategories.includes((data.category || "").trim().toLowerCase());
 
   const parsedMenuData = useMemo(() => {
-    if (!isFoodCategory || !data.menu_data || !Array.isArray(data.menu_data) || data.menu_data.length === 0) return null;
-    const valid = data.menu_data.filter((c: any) => c.items && c.items.length > 0);
+    const rawData = data.menu_data || data.menuCategories;
+    if (!isFoodCategory || !rawData || !Array.isArray(rawData) || rawData.length === 0) return null;
+    const valid = rawData.filter((c: any) => c.items && c.items.length > 0);
     return valid.length > 0 ? valid : null;
-  }, [isFoodCategory, data.menu_data]);
+  }, [isFoodCategory, data.menu_data, data.menuCategories]);
 
   const menuItems = useMemo(() => {
     if (parsedMenuData) {
