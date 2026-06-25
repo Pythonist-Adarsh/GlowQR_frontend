@@ -61,16 +61,16 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
       }
     }
 
-    if (!isFoodCategory || !Array.isArray(rawData) || rawData.length === 0) return null;
+    if (!Array.isArray(rawData) || rawData.length === 0) return null;
     
     // Check if it's an array where elements have category and items
     const hasCategories = rawData.some((c: any) => c && typeof c === 'object' && 'category' in c && Array.isArray(c.items));
-    if (hasCategories) {
+    if (hasCategories && !isTaxFirm && !isJewellery && !isEducation) {
       const valid = rawData.filter((c: any) => c && c.category && Array.isArray(c.items) && c.items.length > 0);
       return valid.length > 0 ? valid : null;
     }
     return null;
-  }, [isFoodCategory, data.menu_data, data.menuCategories, data.business_category, data.category]);
+  }, [data.menu_data, data.menuCategories, isTaxFirm, isJewellery, isEducation]);
 
   const menuItems = useMemo(() => {
     if (parsedMenuData) {
