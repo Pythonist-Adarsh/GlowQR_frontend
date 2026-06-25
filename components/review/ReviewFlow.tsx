@@ -46,7 +46,34 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
   const isJewellery = data.business_category?.toLowerCase() === 'jewellery' || data.category?.toLowerCase() === 'jewellery' || data.business_category?.toLowerCase() === 'bridal & festive jewellery' || data.category?.toLowerCase() === 'bridal & festive jewellery';
   const isEducation = data.business_category?.toLowerCase() === 'education' || data.category?.toLowerCase() === 'education';
 
+  const foodCategories = [
+    'restaurant', 'cafe / coffee shop', 'cafe', 'fast food / qsr', 'fastfood', 
+    'bar / lounge', 'bar', 'bakery / dessert shop', 'bakery', 'food court', 'foodcourt'
+  ];
+  const isFoodCategory = foodCategories.includes(data.business_category?.toLowerCase() || "") || foodCategories.includes(data.category?.toLowerCase() || "");
+
+  const parsedMenuData = useMemo(() => {
+    if (!isFoodCategory || !data.menu_data || !Array.isArray(data.menu_data) || data.menu_data.length === 0) return null;
+    const valid = data.menu_data.filter((c: any) => c.items && c.items.length > 0);
+    return valid.length > 0 ? valid : null;
+  }, [isFoodCategory, data.menu_data]);
+
   const menuItems = useMemo(() => {
+    if (parsedMenuData) {
+      let idx = 0;
+      const flat: any[] = [];
+      parsedMenuData.forEach((c: any) => {
+        c.items.forEach((item: any) => {
+          flat.push({
+            id: `cat_${idx++}`,
+            name: typeof item === 'object' ? item.name : item,
+            category: c.category
+          });
+        });
+      });
+      return flat;
+    }
+
     if (isTaxFirm || isJewellery || isEducation) {
       const servicesStr = data.highlighted_dishes || data.highlightDishes || "";
       if (servicesStr) {
@@ -89,20 +116,21 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
     
     const items = data.menu_items || data.menuItems || [];
     if (items.length > 0) {
-      return items.map((name: string, i: number) => ({ id: i, name: typeof name === 'object' ? name.name : name }));
+      return items.map((name: any, i: number) => ({ id: i, name: typeof name === 'object' ? name.name : name }));
     }
 
     return [
       { id: 1, name: "Signature Pizza" },
       { id: 2, name: "Pasta Carbonara" }
     ];
-  }, [data.menuItems, data.menu_items, data.highlighted_dishes, data.highlightDishes, isTaxFirm]);
+  }, [data.menuItems, data.menu_items, data.highlighted_dishes, data.highlightDishes, isTaxFirm, isJewellery, isEducation, parsedMenuData]);
 
   const isDark = business.plan === 'basic' || business.plan === 'premium';
   const themeVars = useMemo(() => getThemeVariables(business.plan, business.primaryColor), [business.plan, business.primaryColor]);
 
   // Screen 2 States
   const [selectedDishes, setSelectedDishes] = useState<(number | string)[]>([]);
+  const [selectedCategoryTab, setSelectedCategoryTab] = useState<string | null>(parsedMenuData && parsedMenuData.length > 0 ? parsedMenuData[0].category : null);
   const [mealType, setMealType] = useState(data.menuCategories && data.menuCategories.length > 0 ? data.menuCategories[0].category : "Dinner");
   const [spendRange, setSpendRange] = useState(data.spendRange || data.price_range || "₹200–₹500");
   const [seatingType, setSeatingType] = useState("Indoor");
@@ -356,8 +384,25 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                 <p className={`text-[9px] font-bold uppercase tracking-widest mb-3 ${textMuted}`}>
                   {isTaxFirm ? "Which services did you use?" : isJewellery ? "What did you look at?" : isEducation ? "Which courses did you take?" : "Select dishes you tried"}
                 </p>
+                {parsedMenuData && parsedMenuData.length > 0 && (
+                  <div className="flex overflow-x-auto gap-2 mb-4 custom-scrollbar pr-6" style={{ width: 'calc(100% + 1.5rem)' }}>
+                    {parsedMenuData.map((cat: any) => (
+                      <button
+                        key={cat.category}
+                        onClick={() => setSelectedCategoryTab(cat.category)}
+                        className={`shrink-0 px-4 py-2 rounded-full text-[10px] uppercase tracking-wider font-semibold transition-all border`}
+                        style={selectedCategoryTab === cat.category 
+                          ? { backgroundColor: 'var(--accent)', borderColor: 'var(--accent)', color: 'var(--accent-text)' } 
+                          : { backgroundColor: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.18)', color: 'rgba(255,255,255,0.75)' }}
+                      >
+                        {cat.category}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                
                 <div className="flex overflow-x-auto gap-2 pb-2 custom-scrollbar pr-6" style={{ width: 'calc(100% + 1.5rem)' }}>
-                  {menuItems.map((item: any) => {
+                  {menuItems.filter((item: any) => parsedMenuData && parsedMenuData.length > 0 ? item.category === selectedCategoryTab : true).map((item: any) => {
                     const isSelected = selectedDishes.includes(item.id);
                     return (
                       <button 

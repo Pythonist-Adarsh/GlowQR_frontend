@@ -28,7 +28,7 @@ async function getBusinessData(slug: string) {
       return { status: "paused", message: data.message };
     }
     
-    return {
+    const result = {
       name: data.business_name,
       tagline: data.tagline || "Experience the excellence with us",
       location: data.city || "Downtown Area",
@@ -57,6 +57,10 @@ async function getBusinessData(slug: string) {
             { id: "2", name: "Avocado Toast", icon: "Utensils" }
           ]
     };
+    if (data.menu_data) {
+      (result as any).menu_data = data.menu_data;
+    }
+    return result;
   } catch (error) {
     console.error("Error fetching business data:", error);
     return null;
@@ -71,7 +75,7 @@ export default async function BusinessReviewPage({ params }: { params: Promise<{
     notFound();
   }
   
-  if (businessData.status === "paused") {
+  if (businessData && 'status' in businessData && businessData.status === "paused") {
     return (
       <main className="min-h-screen bg-slate-50 flex items-center justify-center p-6 font-sans">
         <div className="bg-white p-10 rounded-[2.5rem] shadow-xl max-w-md w-full text-center border border-slate-200">
