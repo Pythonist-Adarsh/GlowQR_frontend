@@ -63,7 +63,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
       return valid.length > 0 ? valid : null;
     }
     return null;
-  }, [isFoodCategory, data.menu_data, data.menuCategories]);
+  }, [isFoodCategory, data.menu_data, data.menuCategories, data.business_category, data.category]);
 
   const menuItems = useMemo(() => {
     if (parsedMenuData) {
