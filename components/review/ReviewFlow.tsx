@@ -439,7 +439,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                   </div>
                 )}
                 
-                <div className="flex overflow-x-auto gap-2 pb-2 custom-scrollbar pr-6" style={{ width: 'calc(100% + 1.5rem)' }}>
+                <div className="flex flex-wrap gap-2 pb-2">
                   {menuItems.filter((item: any) => parsedMenuData && parsedMenuData.length > 0 ? item.category === selectedCategoryTab : true).map((item: any) => {
                     const isSelected = selectedDishes.includes(item.id);
                     return (
