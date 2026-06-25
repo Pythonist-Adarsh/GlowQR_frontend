@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Star, ChevronLeft, Check, MapPin, ExternalLink, ArrowRight,
@@ -54,9 +54,15 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
 
   const parsedMenuData = useMemo(() => {
     const rawData = data.menu_data || data.menuCategories;
-    if (!isFoodCategory || !rawData || !Array.isArray(rawData) || rawData.length === 0) return null;
-    const valid = rawData.filter((c: any) => c.items && c.items.length > 0);
-    return valid.length > 0 ? valid : null;
+    if (!isFoodCategory || !Array.isArray(rawData) || rawData.length === 0) return null;
+    
+    // Check if it's an array where elements have category and items
+    const hasCategories = rawData.some((c: any) => c && typeof c === 'object' && 'category' in c && Array.isArray(c.items));
+    if (hasCategories) {
+      const valid = rawData.filter((c: any) => c && c.category && Array.isArray(c.items) && c.items.length > 0);
+      return valid.length > 0 ? valid : null;
+    }
+    return null;
   }, [isFoodCategory, data.menu_data, data.menuCategories]);
 
   const menuItems = useMemo(() => {
@@ -66,7 +72,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
       parsedMenuData.forEach((c: any) => {
         c.items.forEach((item: any) => {
           flat.push({
-            id: `cat_${idx++}`,
+            id: typeof item === 'object' && item.id ? item.id : `cat_${idx++}`,
             name: typeof item === 'object' ? item.name : item,
             category: c.category
           });
@@ -111,6 +117,15 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
       }
     }
     
+    // Fallback: If menu_data is a flat array without category objects
+    const rawData = data.menu_data || data.menuCategories;
+    if (rawData && Array.isArray(rawData) && rawData.length > 0 && !rawData[0].items) {
+      return rawData.map((item: any, i: number) => ({
+        id: typeof item === 'object' && item.id ? item.id : i,
+        name: typeof item === 'object' ? item.name : item
+      }));
+    }
+    
     if (data.menuItems && Array.isArray(data.menuItems) && data.menuItems.length > 0 && typeof data.menuItems[0] === 'object') {
       return data.menuItems;
     }
@@ -124,14 +139,23 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
       { id: 1, name: "Signature Pizza" },
       { id: 2, name: "Pasta Carbonara" }
     ];
-  }, [data.menuItems, data.menu_items, data.highlighted_dishes, data.highlightDishes, isTaxFirm, isJewellery, isEducation, parsedMenuData]);
+  }, [data.menu_data, data.menuCategories, data.menuItems, data.menu_items, data.highlighted_dishes, data.highlightDishes, isTaxFirm, isJewellery, isEducation, parsedMenuData]);
 
   const isDark = business.plan === 'basic' || business.plan === 'premium';
   const themeVars = useMemo(() => getThemeVariables(business.plan, business.primaryColor), [business.plan, business.primaryColor]);
 
   // Screen 2 States
   const [selectedDishes, setSelectedDishes] = useState<(number | string)[]>([]);
-  const [selectedCategoryTab, setSelectedCategoryTab] = useState<string | null>(parsedMenuData && parsedMenuData.length > 0 ? parsedMenuData[0].category : null);
+  const [selectedCategoryTab, setSelectedCategoryTab] = useState<string | null>(() => {
+    return parsedMenuData && parsedMenuData.length > 0 ? parsedMenuData[0].category : null;
+  });
+
+  useEffect(() => {
+    if (parsedMenuData && parsedMenuData.length > 0 && !selectedCategoryTab) {
+      setSelectedCategoryTab(parsedMenuData[0].category);
+    }
+  }, [parsedMenuData, selectedCategoryTab]);
+
   const [mealType, setMealType] = useState(data.menuCategories && data.menuCategories.length > 0 ? data.menuCategories[0].category : "Dinner");
   const [spendRange, setSpendRange] = useState(data.spendRange || data.price_range || "₹200–₹500");
   const [seatingType, setSeatingType] = useState("Indoor");
