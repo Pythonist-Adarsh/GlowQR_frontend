@@ -423,7 +423,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                   {isTaxFirm ? "Which services did you use?" : isJewellery ? "What did you look at?" : isEducation ? "Which courses did you take?" : "Select dishes you tried"}
                 </p>
                 {parsedMenuData && parsedMenuData.length > 0 && (
-                  <div className="flex overflow-x-auto gap-2 mb-4 custom-scrollbar pr-6" style={{ width: 'calc(100% + 1.5rem)' }}>
+                  <div className="flex overflow-x-auto gap-2 mb-4 custom-scrollbar pr-6" style={{ width: '100%' }}>
                     {parsedMenuData.map((cat: any) => (
                       <button
                         key={cat.category}
