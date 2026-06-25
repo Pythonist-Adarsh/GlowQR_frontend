@@ -46,11 +46,10 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
   const isJewellery = data.business_category?.toLowerCase() === 'jewellery' || data.category?.toLowerCase() === 'jewellery' || data.business_category?.toLowerCase() === 'bridal & festive jewellery' || data.category?.toLowerCase() === 'bridal & festive jewellery';
   const isEducation = data.business_category?.toLowerCase() === 'education' || data.category?.toLowerCase() === 'education';
 
-  const foodCategories = [
-    'restaurant', 'cafe / coffee shop', 'cafe', 'fast food / qsr', 'fastfood', 
-    'bar / lounge', 'bar', 'bakery / dessert shop', 'bakery', 'food court', 'foodcourt'
-  ];
-  const isFoodCategory = foodCategories.includes((data.business_category || "").trim().toLowerCase()) || foodCategories.includes((data.category || "").trim().toLowerCase());
+  const rawCat = ((data.business_category || data.category || "")).toLowerCase().trim();
+  const isFoodCategory = rawCat.includes('restaurant') || rawCat.includes('cafe') || 
+    rawCat.includes('food') || rawCat.includes('bar') || rawCat.includes('bakery') || 
+    rawCat.includes('qsr') || rawCat.includes('lounge');
 
   const parsedMenuData = useMemo(() => {
     const rawData = data.menu_data || data.menuCategories;
