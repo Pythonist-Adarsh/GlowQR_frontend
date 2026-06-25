@@ -13,10 +13,11 @@ export function WhatsAppButton() {
   }, [])
 
   // List of allowed paths where the button should appear
-  // Use exact match for home, and prefix for others if needed, but exact is safer based on request
   const allowedPaths = ['/', '/features', '/about', '/contact']
   
-  if (mounted && !allowedPaths.includes(pathname || '')) {
+  if (!mounted) return null;
+
+  if (!allowedPaths.includes(pathname || '')) {
     return null;
   }
 
