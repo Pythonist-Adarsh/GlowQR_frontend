@@ -1041,7 +1041,14 @@ export default function OnboardingWizard() {
     fetch(`${API_BASE_URL}/api/onboarding/status`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
-    .then(res => res.json())
+    .then(res => {
+      if (res.status === 401) {
+        localStorage.removeItem('token');
+        router.push('/login');
+        throw new Error('Session expired');
+      }
+      return res.json();
+    })
     .then(result => {
       if (result.business) {
         const parsed = result.business;
@@ -1213,6 +1220,11 @@ export default function OnboardingWizard() {
       }
       
       if (res && !res.ok) {
+        if (res.status === 401) {
+          localStorage.removeItem('token');
+          router.push('/login');
+          return;
+        }
         const errText = await res.text();
         console.error("Failed at step", currentStep, errText);
         let parsedErr = errText;
