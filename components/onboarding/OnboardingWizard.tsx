@@ -1136,9 +1136,13 @@ export default function OnboardingWizard() {
         formData.append('days_open', JSON.stringify(data.daysOpen || ["Mon","Tue","Wed","Thu","Fri","Sat"]));
         formData.append('primary_color', data.primaryColor || '#6C63FF');
         if (data.logo && typeof data.logo === 'string' && data.logo.startsWith('data:image')) {
-            const blobRes = await fetch(data.logo);
-            const blob = await blobRes.blob();
-            formData.append('logo', blob, 'logo.png');
+            try {
+                const blobRes = await fetch(data.logo);
+                const blob = await blobRes.blob();
+                formData.append('logo', blob, 'logo.png');
+            } catch (e) {
+                console.error("Failed to parse logo data URL in step 2", e);
+            }
         }
         res = await fetch(`${API_BASE_URL}/api/onboarding/step/2`, {
           method: 'POST',
@@ -1193,9 +1197,13 @@ export default function OnboardingWizard() {
         formData.append('variants', data.variants || (data.plan === 'basic' ? '3 variants' : '5 variants'));
         formData.append('welcome_msg', data.welcomeMsg || '');
         if (data.logo && typeof data.logo === 'string' && data.logo.startsWith('data:image')) {
-            const blobRes = await fetch(data.logo);
-            const blob = await blobRes.blob();
-            formData.append('logo', blob, 'logo.png');
+            try {
+                const blobRes = await fetch(data.logo);
+                const blob = await blobRes.blob();
+                formData.append('logo', blob, 'logo.png');
+            } catch (e) {
+                console.error("Failed to parse logo data URL in step 5", e);
+            }
         }
         res = await fetch(`${API_BASE_URL}/api/onboarding/step/5`, {
           method: 'POST',
@@ -1243,7 +1251,11 @@ export default function OnboardingWizard() {
       }
     } catch (err: any) {
       console.error("API error", err);
-      setErrorMsg(err.message || "Network error occurred");
+      if (err.message === "Failed to fetch") {
+        setErrorMsg("Network error: Could not connect to the backend server. Please ensure the server is running or check your internet connection.");
+      } else {
+        setErrorMsg(err.message || "Network error occurred");
+      }
     } finally {
       setLoading(false);
     }
