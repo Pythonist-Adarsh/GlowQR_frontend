@@ -86,7 +86,7 @@ export function SignUpView() {
 
         <div className="mt-6 mb-2 max-w-md">
           <p className="text-center text-sm font-medium text-emerald-700 bg-emerald-50 py-2 px-4 rounded-md border border-emerald-200">
-            ✨ Start free — 7 days full Premium access. No card needed.
+            ✨ Start free — 3 days full Premium access. No card needed.
           </p>
         </div>
 
