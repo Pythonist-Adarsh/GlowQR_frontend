@@ -170,7 +170,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
   }, [parsedMenuData, selectedCategoryTab]);
 
   const [mealType, setMealType] = useState(data.menuCategories && data.menuCategories.length > 0 ? data.menuCategories[0].category : "Dinner");
-  const [spendRange, setSpendRange] = useState(data.spendRange || data.price_range || "₹200–₹500");
+  const [spendRange, setSpendRange] = useState(data.spendRange || data.value_perception || "Worth it");
   const [seatingType, setSeatingType] = useState("Indoor");
   const [waitTime, setWaitTime] = useState("No wait");
 
@@ -249,7 +249,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
           atmosphere_rating: ratings.atmosphere,
           selected_items: menuItems.filter((m: any) => selectedDishes.includes(m.id)).map((m: any) => m.name),
           meal_type: mealType,
-          price_range: spendRange,
+          value_perception: spendRange,
           language: data.review_language || 'english',
           variant_count: data.ai_variant_count || (business.plan === 'free' ? 1 : (business.plan === 'basic' ? 3 : 5)),
           plan: business.plan,
@@ -291,7 +291,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
             atmosphere_rating: ratings.atmosphere,
             selected_items: menuItems.filter((m: any) => selectedDishes.includes(m.id)).map((m: any) => m.name),
             meal_type: mealType,
-            price_range: spendRange,
+            value_perception: spendRange,
             wait_time: waitTime,
             review_text: generatedReviews.length > 0 ? generatedReviews[0] : `Customer gave a ${ratings.overall}-star rating without an AI review.`,
             action_tip: "Customer rated 1-2 stars. Follow up on this feedback and improve service standards."
@@ -332,7 +332,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
           atmosphere_rating: ratings.atmosphere,
           selected_items: selectedDishes.map(String),
           meal_type: mealType,
-          price_range: spendRange,
+          value_perception: spendRange,
           seating_type: seatingType,
           wait_time: waitTime,
           review_variant: activeReviewIndex,
@@ -459,60 +459,13 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
               {(!isTaxFirm && !isJewellery && !isEducation) && (
                 <>
               <div className="mb-8 w-full overflow-hidden">
-                <p className={`text-[9px] font-bold uppercase tracking-widest mb-3 ${textMuted}`}>What did you get?</p>
+                <p className={`text-[9px] font-bold uppercase tracking-widest mb-3 ${textMuted}`}>How was the value for money?</p>
                 <div className="flex overflow-x-auto gap-2 pb-2 custom-scrollbar pr-6" style={{ width: 'calc(100% + 1.5rem)' }}>
-                  {(data.menuCategories && data.menuCategories.length > 0 
-                    ? data.menuCategories.map((c: any) => c.category) 
-                    : ["Breakfast", "Brunch", "Lunch", "Dinner"]).map((type: string) => (
-                    <button 
-                      key={type} onClick={() => setMealType(type)}
-                      className={`shrink-0 px-4 py-2 rounded-full text-[10px] uppercase tracking-wider border transition-all hover:bg-[rgba(255,255,255,0.14)] hover:border-[rgba(255,255,255,0.30)]`}
-                      style={mealType === type ? { backgroundColor: 'var(--accent)', borderColor: 'var(--accent)', color: 'var(--accent-text)', fontWeight: 600 } : { backgroundColor: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.18)', color: 'rgba(255,255,255,0.75)' }}
-                    >
-                      {type}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mb-8 w-full overflow-hidden">
-                <p className={`text-[9px] font-bold uppercase tracking-widest mb-3 ${textMuted}`}>How much per person?</p>
-                <div className="flex overflow-x-auto gap-2 pb-2 custom-scrollbar pr-6" style={{ width: 'calc(100% + 1.5rem)' }}>
-                  {["Under ₹200", "₹200–₹500", "₹500–₹1000", "₹1000–₹2000", "Above ₹2000"].map(type => (
+                  {["Great value", "Worth it", "A bit pricey"].map(type => (
                     <button 
                       key={type} onClick={() => setSpendRange(type)}
                       className={`shrink-0 px-4 py-2 rounded-full text-[10px] uppercase tracking-wider border transition-all hover:bg-[rgba(255,255,255,0.14)] hover:border-[rgba(255,255,255,0.30)]`}
                       style={spendRange === type ? { backgroundColor: 'var(--accent)', borderColor: 'var(--accent)', color: 'var(--accent-text)', fontWeight: 600 } : { backgroundColor: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.18)', color: 'rgba(255,255,255,0.75)' }}
-                    >
-                      {type}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mb-8 w-full overflow-hidden">
-                <p className={`text-[9px] font-bold uppercase tracking-widest mb-3 ${textMuted}`}>Seating type</p>
-                <div className="flex overflow-x-auto gap-2 pb-2 custom-scrollbar pr-6" style={{ width: 'calc(100% + 1.5rem)' }}>
-                  {["Indoor", "Outdoor", "Bar Area", "Booth"].map(type => (
-                    <button 
-                      key={type} onClick={() => setSeatingType(type)}
-                      className={`shrink-0 px-4 py-2 rounded-full text-[10px] uppercase tracking-wider border transition-all hover:bg-[rgba(255,255,255,0.14)] hover:border-[rgba(255,255,255,0.30)]`}
-                      style={seatingType === type ? { backgroundColor: 'var(--accent)', borderColor: 'var(--accent)', color: 'var(--accent-text)', fontWeight: 600 } : { backgroundColor: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.18)', color: 'rgba(255,255,255,0.75)' }}
-                    >
-                      {type}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mb-4 w-full overflow-hidden">
-                <p className={`text-[9px] font-bold uppercase tracking-widest mb-3 ${textMuted}`}>Waiting time</p>
-                <div className="flex overflow-x-auto gap-2 pb-2 custom-scrollbar pr-6" style={{ width: 'calc(100% + 1.5rem)' }}>
-                  {["No wait", "upto 10 min", "10-30 min", "30-60 min"].map(type => (
-                    <button 
-                      key={type} onClick={() => setWaitTime(type)}
-                      className={`shrink-0 px-4 py-2 rounded-full text-[10px] uppercase tracking-wider border transition-all hover:bg-[rgba(255,255,255,0.14)] hover:border-[rgba(255,255,255,0.30)]`}
-                      style={waitTime === type ? { backgroundColor: 'var(--accent)', borderColor: 'var(--accent)', color: 'var(--accent-text)', fontWeight: 600 } : { backgroundColor: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.18)', color: 'rgba(255,255,255,0.75)' }}
                     >
                       {type}
                     </button>
