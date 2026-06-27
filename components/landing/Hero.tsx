@@ -147,7 +147,9 @@ export function Hero() {
                   </a>
 
                   <a 
-                    href="mailto:hello@glowqr.com?subject=Requesting%20GlowQR%20Demo&body=Hi%20GlowQR%20team,%0A%0AI%20would%20love%20to%20see%20a%20personalized%20interactive%20demo%20of%20your%20platform.%0A%0AThanks!" 
+                    href="https://mail.google.com/mail/?view=cm&fs=1&to=hello@glowqr.com&su=Requesting%20GlowQR%20Demo&body=Hi%20GlowQR%20team,%0A%0AI%20would%20love%20to%20see%20a%20personalized%20interactive%20demo%20of%20your%20platform.%0A%0AThanks!" 
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="flex items-center gap-3 w-full p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors group"
                   >
                     <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white shrink-0 group-hover:scale-110 transition-transform">
