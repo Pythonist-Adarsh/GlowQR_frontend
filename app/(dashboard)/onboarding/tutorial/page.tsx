@@ -35,15 +35,14 @@ export default function TutorialPage() {
           </div>
           
           <div className="flex items-center gap-6">
-            <a href="https://docs.glowqr.com" target="_blank" rel="noreferrer" className="text-sm font-medium text-slate-400 hover:text-white transition-colors hidden sm:block">
-              View Docs
-            </a>
-            <Link 
+            <a 
               href="/onboarding"
+              target="_blank"
+              rel="noopener noreferrer"
               className="px-6 py-2.5 bg-white text-slate-900 font-bold rounded-full text-sm hover:bg-slate-200 hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]"
             >
               Start Real Setup
-            </Link>
+            </a>
           </div>
         </div>
       </header>

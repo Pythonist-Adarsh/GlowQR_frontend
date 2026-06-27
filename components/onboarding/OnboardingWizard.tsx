@@ -1306,7 +1306,7 @@ export default function OnboardingWizard() {
               ))}
             </div>
             {isNewUser && (
-              <button onClick={() => router.push('/onboarding/tutorial')} className="ml-4 text-[10px] font-black uppercase tracking-widest text-[var(--color-brand-primary)] bg-[var(--color-success-bg)] border border-[var(--color-brand-primary)] hover:bg-[var(--color-brand-primary)] hover:text-white px-3 py-1.5 rounded-full transition-colors flex items-center gap-1">
+              <button onClick={() => window.open('/onboarding/tutorial', '_blank')} className="ml-4 text-[10px] font-black uppercase tracking-widest text-[var(--color-brand-primary)] bg-[var(--color-success-bg)] border border-[var(--color-brand-primary)] hover:bg-[var(--color-brand-primary)] hover:text-white px-3 py-1.5 rounded-full transition-colors flex items-center gap-1">
                 <PlayCircle className="w-3 h-3" /> Watch Tutorial
               </button>
             )}
