@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { fadeUp, staggerContainer } from '@/lib/animations'
 import { Button } from '@/components/ui/Button'
@@ -11,6 +12,11 @@ const logos = ['Google', 'Yelp', 'Facebook', 'TripAdvisor', 'Trustpilot']
 
 export function Hero() {
   const [showDemoModal, setShowDemoModal] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <>
@@ -53,14 +59,13 @@ export function Hero() {
             className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
           >
             <AnimatedGetStartedButton size="lg">Start free trial</AnimatedGetStartedButton>
-            <Button
-              variant="secondary"
-              size="lg"
-              className="min-w-[200px] border-white/10 bg-white/5 text-white hover:bg-white/10"
+            <button
+              type="button"
+              className="min-w-[200px] h-14 inline-flex items-center justify-center rounded-2xl font-bold transition-all px-8 text-base border border-white/10 bg-white/5 text-white hover:bg-white/10"
               onClick={() => setShowDemoModal(true)}
             >
               View demo
-            </Button>
+            </button>
           </motion.div>
           <motion.p
             variants={fadeUp}
@@ -94,8 +99,9 @@ export function Hero() {
     </section>
 
       {/* View Demo Modal */}
-      <AnimatePresence>
-        {showDemoModal && (
+      {mounted && createPortal(
+        <AnimatePresence>
+          {showDemoModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -157,7 +163,9 @@ export function Hero() {
             </motion.div>
           </div>
         )}
-      </AnimatePresence>
+        </AnimatePresence>,
+        document.body
+      )}
     </>
   )
 }
