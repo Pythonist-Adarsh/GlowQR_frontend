@@ -1,14 +1,19 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { fadeUp, staggerContainer } from '@/lib/animations'
 import { Button } from '@/components/ui/Button'
 import { AnimatedGetStartedButton } from '@/components/marketing/AnimatedGetStartedButton'
+import { MessageCircle, Mail, X } from 'lucide-react'
 
 const logos = ['Google', 'Yelp', 'Facebook', 'TripAdvisor', 'Trustpilot']
 
 export function Hero() {
+  const [showDemoModal, setShowDemoModal] = useState(false);
+
   return (
+    <>
     <section className="relative overflow-hidden pt-28 pb-20 md:pb-28 section-dark">
       <div className="hero-glow pointer-events-none absolute inset-0 -z-10" />
       <div
@@ -52,6 +57,7 @@ export function Hero() {
               variant="secondary"
               size="lg"
               className="min-w-[200px] border-white/10 bg-white/5 text-white hover:bg-white/10"
+              onClick={() => setShowDemoModal(true)}
             >
               View demo
             </Button>
@@ -86,5 +92,72 @@ export function Hero() {
         </motion.div>
       </div>
     </section>
+
+      {/* View Demo Modal */}
+      <AnimatePresence>
+        {showDemoModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-[#0B0C10]/80 backdrop-blur-sm"
+              onClick={() => setShowDemoModal(false)}
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }} 
+              animate={{ opacity: 1, scale: 1, y: 0 }} 
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative z-10 w-full max-w-md bg-[#13141A] rounded-[2rem] border border-white/10 shadow-2xl overflow-hidden"
+            >
+              <button 
+                onClick={() => setShowDemoModal(false)}
+                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              <div className="p-8">
+                <div className="w-12 h-12 bg-[#1A8A3C]/20 border border-[#1A8A3C]/30 rounded-2xl flex items-center justify-center mb-6">
+                  <span className="text-2xl">✨</span>
+                </div>
+                <h3 className="text-2xl font-black text-white mb-2">See GlowQR in Action</h3>
+                <p className="text-sm text-neutral-400 mb-8 leading-relaxed">
+                  Request a personalized interactive demo of our platform. We'll send you a private link to explore the full experience.
+                </p>
+
+                <div className="space-y-3">
+                  <a 
+                    href="https://wa.me/?text=Hi%20GlowQR,%20I'd%20love%20to%20see%20a%20demo%20of%20your%20platform!" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 w-full p-4 rounded-xl bg-[#25D366]/10 border border-[#25D366]/20 hover:bg-[#25D366]/20 transition-colors group"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-[#25D366] flex items-center justify-center text-white shrink-0 group-hover:scale-110 transition-transform">
+                      <MessageCircle className="w-5 h-5 fill-current" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-sm font-bold text-white mb-0.5">Request via WhatsApp</p>
+                      <p className="text-[11px] text-[#25D366] uppercase tracking-wider font-semibold">Fastest Response</p>
+                    </div>
+                  </a>
+
+                  <a 
+                    href="mailto:hello@glowqr.com?subject=Requesting%20GlowQR%20Demo" 
+                    className="flex items-center gap-3 w-full p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors group"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white shrink-0 group-hover:scale-110 transition-transform">
+                      <Mail className="w-5 h-5" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-sm font-bold text-white mb-0.5">Email hello@glowqr.com</p>
+                      <p className="text-[11px] text-neutral-400 uppercase tracking-wider font-semibold">We typically reply in 2 hours</p>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </>
   )
 }
