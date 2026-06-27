@@ -56,7 +56,7 @@ export function SignInView() {
       if (data.onboarding_completed) {
         router.push('/dashboard')
       } else {
-        router.push('/onboarding')
+        router.push('/onboarding/tutorial')
       }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'An unexpected error occurred')

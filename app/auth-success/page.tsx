@@ -30,7 +30,7 @@ function AuthSuccessHandler() {
       if (hasCompletedOnboarding) {
         router.push('/dashboard');
       } else {
-        router.push('/onboarding');
+        router.push('/onboarding/tutorial');
       }
     } else {
       // No token — something went wrong, go back to sign-in

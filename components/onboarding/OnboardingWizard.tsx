@@ -37,7 +37,8 @@ import {
   Star,
   Flame,
   ChefHat,
-  Heart
+  Heart,
+  PlayCircle
 } from 'lucide-react'
 
 const IconByName = ({ name, className }: { name: string, className?: string }) => {
@@ -1016,6 +1017,7 @@ export default function OnboardingWizard() {
   const [loading, setLoading] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [isNewUser, setIsNewUser] = useState(false)
   
   const [data, setData] = useState<any>({
     name: '', tagline: '', website: '', instagramUrl: '', googleReviewUrl: '', placeId: '',
@@ -1037,6 +1039,7 @@ export default function OnboardingWizard() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) return;
+    setIsNewUser(localStorage.getItem('onboarding_completed') !== 'true');
 
     fetch(`${API_BASE_URL}/api/onboarding/status`, {
       headers: { 'Authorization': `Bearer ${token}` }
@@ -1302,6 +1305,11 @@ export default function OnboardingWizard() {
                 </div>
               ))}
             </div>
+            {isNewUser && (
+              <button onClick={() => router.push('/onboarding/tutorial')} className="ml-4 text-[10px] font-black uppercase tracking-widest text-[var(--color-brand-primary)] bg-[var(--color-success-bg)] border border-[var(--color-brand-primary)] hover:bg-[var(--color-brand-primary)] hover:text-white px-3 py-1.5 rounded-full transition-colors flex items-center gap-1">
+                <PlayCircle className="w-3 h-3" /> Watch Tutorial
+              </button>
+            )}
             <button onClick={() => router.push('/dashboard')} className="ml-4 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-[var(--color-brand-primary)] transition-colors">
               Exit Setup
             </button>
