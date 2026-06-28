@@ -3,9 +3,8 @@ import Script from 'next/script'
 import './globals.css'
 import { WhatsAppButton } from '@/components/WhatsAppButton'
 export const metadata: Metadata = {
-  title: 'GlowQR — AI-Powered QR Review Platform',
-  description:
-    'Turn scans into authentic reviews across Google, Yelp, and more with AI-crafted drafts and a premium QR experience.',
+  title: 'GlowQR — AI Google Review Generator for Indian Local Businesses',
+  description: 'GlowQR helps restaurants, salons, cafes & clinics in India get more Google reviews automatically. Customers scan a QR code, AI drafts a review, they post in seconds. Start free — no card needed.',
 }
 
 export default function RootLayout({
