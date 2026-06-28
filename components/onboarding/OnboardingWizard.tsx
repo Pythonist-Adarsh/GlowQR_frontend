@@ -1311,7 +1311,7 @@ export default function OnboardingWizard() {
               </button>
             )}
             <button onClick={() => router.push('/dashboard')} className="ml-4 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-[var(--color-brand-primary)] transition-colors">
-              Exit Setup
+              Save & Exit
             </button>
           </div>
         </div>

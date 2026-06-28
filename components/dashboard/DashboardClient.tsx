@@ -59,6 +59,7 @@ export function DashboardClient({
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [isOnboarded, setIsOnboarded] = useState(true);
   
   // Renewal system state
   const [renewalStatus, setRenewalStatus] = useState<any>(null);
@@ -89,6 +90,7 @@ export function DashboardClient({
 
         const data = await res.json();
         if (data.is_onboarded && data.business) {
+          setIsOnboarded(true);
           setBusinessData(data.business);
           localStorage.setItem(
             "glowqr_business_data",
@@ -182,11 +184,15 @@ export function DashboardClient({
                if (allReviewsRes.ok) analyticsData.all_reviews = (await allReviewsRes.json()).reviews;
                if (reviewsDataRes.ok) analyticsData.reviews_data = await reviewsDataRes.json();
                setAnalyticsSummary(analyticsData);
-             }
+              }
           }
         } else {
-          localStorage.removeItem("glowqr_business_data");
-          router.push("/onboarding");
+          setIsOnboarded(false);
+          if (data.business) {
+            setBusinessData(data.business);
+          } else {
+            localStorage.removeItem("glowqr_business_data");
+          }
         }
       } catch (err) {
         console.error(err);
@@ -384,6 +390,37 @@ export function DashboardClient({
       {/* Main Content */}
       <main className="flex-1 p-10 overflow-y-auto relative">
         
+        {!isOnboarded ? (
+          <div className="w-full h-full flex flex-col items-center justify-center pt-10">
+            <div className="bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-200 max-w-lg text-center">
+              <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6 text-amber-600">
+                <AlertCircle className="w-10 h-10" />
+              </div>
+              <h2 className="text-3xl font-black text-slate-900 mb-4">
+                Complete Your Setup
+              </h2>
+              <p className="text-slate-500 mb-8 leading-relaxed">
+                You need to finish setting up your business profile before you can access the dashboard and view your analytics.
+              </p>
+
+              <div className="space-y-4">
+                <button
+                  onClick={() => router.push("/onboarding")}
+                  className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
+                >
+                  Resume Onboarding <ChevronRight className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => window.open("/onboarding/tutorial", "_blank")}
+                  className="w-full py-4 border-2 border-slate-200 rounded-2xl font-bold text-slate-700 hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
+                >
+                  Watch Tutorial Video
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <>
         {/* Renewal Banners */}
         {renewalStatus && (
           <div className="w-full mb-6">
@@ -623,7 +660,8 @@ export function DashboardClient({
             <AnalyticsTab businessId={b?.id} businessData={b} />
           </div>
         )}
-
+          </>
+        )}
               </main>
       
       {/* Renewal Modal */}
