@@ -74,12 +74,17 @@ export function Hero() {
             Trusted by restaurants, salons & clinics in Lucknow
           </motion.p>
         </motion.div>
+      </div>
+    </section>
 
+    {/* Platforms Section */}
+    <section className="py-12 bg-[#0B0C10] border-b border-white/5 relative z-10">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.45, duration: 0.6 }}
-          className="mt-16 md:mt-24"
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
         >
           <p className="mb-6 text-center text-xs uppercase tracking-widest text-neutral-500">
             Optimized for Google Reviews — where Indian customers search first.
