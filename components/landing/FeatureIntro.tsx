@@ -14,7 +14,7 @@ const cards = [
   {
     icon: <QrCode className="w-8 h-8 text-slate-800" />,
     title: 'One smart QR',
-    desc: 'Route happy guests to Google, Yelp, Facebook — your rules.',
+    desc: 'Route every happy guest straight to your Google Reviews page.',
     accent: 'from-slate-100 to-white',
   },
   {
