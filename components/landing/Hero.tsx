@@ -59,12 +59,13 @@ export function Hero() {
             className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
           >
             <AnimatedGetStartedButton size="lg">Start free trial</AnimatedGetStartedButton>
-            <a
-              href="#demo"
+            <button
+              type="button"
               className="min-w-[200px] h-14 inline-flex items-center justify-center rounded-2xl font-bold transition-all px-8 text-base border border-white/10 bg-white/5 text-white hover:bg-white/10"
+              onClick={() => setShowDemoModal(true)}
             >
               View demo
-            </a>
+            </button>
           </motion.div>
           <motion.p
             variants={fadeUp}
