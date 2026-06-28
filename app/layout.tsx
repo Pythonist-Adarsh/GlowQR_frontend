@@ -5,6 +5,10 @@ import { WhatsAppButton } from '@/components/WhatsAppButton'
 export const metadata: Metadata = {
   title: 'GlowQR — AI Google Review Generator for Indian Local Businesses',
   description: 'GlowQR helps restaurants, salons, cafes & clinics in India get more Google reviews automatically. Customers scan a QR code, AI drafts a review, they post in seconds. Start free — no card needed.',
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
 }
 
 export default function RootLayout({
