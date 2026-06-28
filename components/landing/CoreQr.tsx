@@ -5,10 +5,6 @@ import { fadeUp } from '@/lib/animations'
 
 const platforms = [
   { label: 'G', color: '#FFFFFF' },
-  { label: 'Y', color: '#FFFFFF' },
-  { label: 'f', color: '#FFFFFF' },
-  { label: '★', color: '#FFFFFF' },
-  { label: 'T', color: '#FFFFFF' },
 ]
 
 export function CoreQr() {
@@ -27,7 +23,7 @@ export function CoreQr() {
           className="mx-auto max-w-2xl text-center"
         >
           <h2 className="font-display text-3xl font-bold text-white md:text-4xl">
-            One QR Code, multiple review platforms.
+            One QR Code. Straight to Google Reviews.
           </h2>
           <p className="mt-4 text-neutral-400 md:text-lg">
             A single branded touchpoint fans out to every channel that matters — tuned for mobile,
@@ -42,7 +38,11 @@ export function CoreQr() {
           transition={{ duration: 0.55 }}
           className="relative mx-auto mt-16 flex justify-center"
         >
-          <div className="relative h-[min(72vw,400px)] w-[min(72vw,400px)] max-w-[400px] rounded-3xl border border-white/10 bg-black/40 p-6 shadow-brand-lg backdrop-blur-md sm:h-[380px] sm:w-[380px] md:p-8">
+          <div 
+            className="relative h-[min(72vw,400px)] w-[min(72vw,400px)] max-w-[400px] rounded-3xl border border-white/10 bg-black/40 p-6 shadow-brand-lg backdrop-blur-md sm:h-[380px] sm:w-[380px] md:p-8"
+            role="img" 
+            aria-label="AI-powered QR code for Google reviews by GlowQR"
+          >
             <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-brand-primary/20 via-transparent to-brand-accent/10" />
 
             <svg

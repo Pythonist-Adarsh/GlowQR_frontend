@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/Button'
 import { AnimatedGetStartedButton } from '@/components/marketing/AnimatedGetStartedButton'
 import { MessageCircle, Mail, X } from 'lucide-react'
 
-const logos = ['Google', 'Yelp', 'Facebook', 'TripAdvisor', 'Trustpilot']
+const logos = ['Google']
 
 export function Hero() {
   const [showDemoModal, setShowDemoModal] = useState(false);
@@ -59,13 +59,12 @@ export function Hero() {
             className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
           >
             <AnimatedGetStartedButton size="lg">Start free trial</AnimatedGetStartedButton>
-            <button
-              type="button"
+            <a
+              href="#demo"
               className="min-w-[200px] h-14 inline-flex items-center justify-center rounded-2xl font-bold transition-all px-8 text-base border border-white/10 bg-white/5 text-white hover:bg-white/10"
-              onClick={() => setShowDemoModal(true)}
             >
               View demo
-            </button>
+            </a>
           </motion.div>
           <motion.p
             variants={fadeUp}
@@ -82,7 +81,7 @@ export function Hero() {
           className="mt-16 md:mt-24"
         >
           <p className="mb-6 text-center text-xs uppercase tracking-widest text-neutral-500">
-            Works with platforms you already use
+            Optimized for Google Reviews — where Indian customers search first.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 opacity-60 grayscale">
             {logos.map((name) => (

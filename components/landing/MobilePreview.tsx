@@ -6,14 +6,18 @@ import { fadeUp, staggerContainer } from '@/lib/animations'
 function PhoneShell({
   variant,
   children,
+  ariaLabel,
 }: {
   variant: 'light' | 'dark'
   children: React.ReactNode
+  ariaLabel?: string
 }) {
   const isDark = variant === 'dark'
   return (
     <div
       className={`phone-frame mx-auto w-full max-w-[260px] ${isDark ? 'bg-neutral-950' : 'bg-neutral-100'}`}
+      role={ariaLabel ? "img" : undefined}
+      aria-label={ariaLabel}
     >
       <div
         className={`aspect-[9/19] p-4 ${isDark ? 'bg-[#0c0c10]' : 'bg-white'}`}
@@ -59,7 +63,7 @@ export function MobilePreview() {
             <p className="mb-4 text-center text-xs font-semibold uppercase tracking-widest text-[var(--text-tertiary)]">
               Light mode
             </p>
-            <PhoneShell variant="light">
+            <PhoneShell variant="light" ariaLabel="GlowQR customer review scan screen in light mode">
               <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4 shadow-sm">
                 <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-brand-primary/15 font-display font-bold text-brand-primary">
                   G
@@ -84,7 +88,7 @@ export function MobilePreview() {
             <p className="mb-4 text-center text-xs font-semibold uppercase tracking-widest text-[var(--text-tertiary)]">
               Dark mode
             </p>
-            <PhoneShell variant="dark">
+            <PhoneShell variant="dark" ariaLabel="GlowQR customer review scan screen in dark mode">
               <div className="rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-md">
                 <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-brand-primary to-brand-accent font-display font-bold text-white shadow-brand">
                   G

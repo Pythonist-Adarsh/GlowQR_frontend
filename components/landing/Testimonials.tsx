@@ -5,16 +5,16 @@ import { fadeUp, staggerContainer } from '@/lib/animations'
 
 const quotes = [
   {
-    name: 'Raj Patel',
-    role: 'Small Business Owner',
-    avatar: 'RP',
+    name: 'Ramesh Gupta',
+    role: 'Restaurant Owner, Lucknow',
+    avatar: 'RG',
     quote:
       "Since putting up the QR codes, customers actually leave feedback now. It's made a huge difference.",
   },
   {
-    name: 'Sarah Jenkins',
-    role: 'Salon Manager',
-    avatar: 'SJ',
+    name: 'Priya Mehta',
+    role: 'Salon Owner, Kanpur',
+    avatar: 'PM',
     quote:
       "We used to beg clients for reviews after appointments. Now they just scan while paying. Got more reviews in a week than we did all last month.",
   },
@@ -26,16 +26,16 @@ const quotes = [
       "Our front desk was spending too much time following up with patients. This automated the whole process. It's subtle, professional, and patients actually engage with it.",
   },
   {
-    name: 'Maria Gonzalez',
-    role: 'Restaurant Owner',
-    avatar: 'MG',
+    name: 'Anjali Singh',
+    role: 'Cafe Owner, Noida',
+    avatar: 'AS',
     quote:
       "During rush hours, our staff couldn't ask diners for feedback, so we barely got any online traction. Putting the GlowQR cards on the tables changed everything. The AI drafts make it so easy for people that we've noticed a clear jump in responses. Way less friction.",
   },
   {
-    name: 'David Chen',
-    role: 'Multi-Location Operator',
-    avatar: 'DC',
+    name: 'Vikram Agarwal',
+    role: 'Multi-Location Restaurant Owner',
+    avatar: 'VA',
     quote:
       "Managing reputation across three branches was a headache. Feedback was inconsistent and manual follow-ups just weren't working. Setting this up took minutes, and suddenly more customers started leaving feedback without us even asking. It just runs in the background and does its job.",
   },

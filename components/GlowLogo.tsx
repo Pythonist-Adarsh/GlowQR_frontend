@@ -8,6 +8,8 @@ export function GlowLogo({ size = 40, className = '' }: { size?: number, classNa
       fill="none" 
       xmlns="http://www.w3.org/2000/svg"
       className={className}
+      role="img"
+      aria-label="GlowQR logo"
     >
       {/* Outer Glow / Base Background (if dark) */}
       <rect width="100" height="100" rx="16" fill="transparent" />

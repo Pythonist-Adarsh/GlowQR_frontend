@@ -4,8 +4,11 @@ import { AnimatedGetStartedButton } from '@/components/marketing/AnimatedGetStar
 import { Check, X } from 'lucide-react'
 
 export const metadata = {
-  title: 'About Us | GlowQR',
-  description: 'Built for every local business that deserves to be found.',
+  title: "About GlowQR — AI Review Platform for Indian Local Businesses",
+  description: "GlowQR was built in Lucknow to help Indian restaurants, salons, cafes and clinics collect more Google reviews automatically using AI and smart QR codes.",
+  alternates: {
+    canonical: 'https://www.glowqr.com/about',
+  }
 }
 
 export default function AboutPage() {
@@ -67,8 +70,8 @@ export default function AboutPage() {
           <h2 className="text-xs font-black uppercase tracking-widest text-[var(--text-tertiary)] mb-6">Why It Matters for Indian Businesses</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-[var(--bg-secondary)] p-6 rounded-2xl border border-[var(--border-default)] text-center">
-              <div className="text-3xl font-black text-[var(--text-primary)] mb-2">1450M+</div>
-              <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase">Searches on local maps everyday</div>
+              <div className="text-3xl font-black text-[var(--text-primary)] mb-2">1 Billion+</div>
+              <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase">Google searches happen every day in India</div>
             </div>
             <div className="bg-[var(--bg-secondary)] p-6 rounded-2xl border border-[var(--border-default)] text-center">
               <div className="text-3xl font-black text-[var(--text-primary)] mb-2">95%</div>

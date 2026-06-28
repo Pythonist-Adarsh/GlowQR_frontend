@@ -84,6 +84,8 @@ export function DashboardPreview() {
           variants={staggerContainer}
           className="mt-12 overflow-hidden rounded-2xl border border-[var(--border-card)] bg-[var(--bg-glass)] shadow-lg backdrop-blur-md"
           style={{ WebkitBackdropFilter: 'blur(8px)' }}
+          role="img"
+          aria-label="GlowQR analytics dashboard showing scan count, review count, and average rating"
         >
           <div className="flex flex-col lg:flex-row">
             <aside className="flex gap-2 border-b border-[var(--border-default)] p-4 lg:w-52 lg:flex-col lg:border-b-0 lg:border-r">

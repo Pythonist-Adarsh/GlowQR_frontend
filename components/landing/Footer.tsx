@@ -18,24 +18,19 @@ const cols = [
     links: [
       { label: 'About Us', href: '/about' },
       { label: 'Contact Us', href: '/contact' },
-      { label: 'Careers', href: '#' },
-      { label: 'Press', href: '#' },
     ],
   },
   {
     title: 'Resources',
     links: [
-      { label: 'Blog', href: '#' },
-      { label: 'Help center', href: '#' },
-      { label: 'API docs', href: '#' },
+      { label: 'Help center', href: '/contact' },
     ],
   },
   {
     title: 'Legal',
     links: [
-      { label: 'Privacy', href: '#' },
-      { label: 'Terms', href: '#' },
-      { label: 'Security', href: '#' },
+      { label: 'Privacy', href: '/privacy' },
+      { label: 'Terms', href: '/terms' },
     ],
   },
 ]
