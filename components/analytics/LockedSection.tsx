@@ -46,7 +46,7 @@ export const LockedSection = ({ title, description, requiredPlan, price }: Locke
         {requiredPlan === 'premium' ? 'Premium' : 'Basic'} — {price}/month
       </div>
       <button
-        onClick={() => router.push('/dashboard/subscription')}
+        onClick={() => router.push('/subscription')}
         style={{
           display: 'block', width: '100%', maxWidth: 200,
           background: '#1a1a1a', color: '#fff',

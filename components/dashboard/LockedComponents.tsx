@@ -17,7 +17,7 @@ export const LockedSection = ({ title, description, requiredPlan, price }: { tit
           {requiredPlan} — {price}
         </span>
         <button 
-          onClick={() => router.push('/dashboard/subscription')}
+          onClick={() => router.push('/subscription')}
           className="mt-4 text-xs font-black text-white bg-slate-900 px-5 py-2.5 rounded-lg hover:bg-slate-800 uppercase tracking-widest transition-colors"
         >
           Upgrade to {requiredPlan}
@@ -42,7 +42,7 @@ export const ExpiredOverlay = ({ children }: { children: React.ReactNode }) => {
             Your QR code is currently inactive. Customers who scan it will see an inactive screen. Reactivate today to start collecting reviews again.
           </p>
           <button 
-            onClick={() => router.push('/dashboard/subscription')}
+            onClick={() => router.push('/subscription')}
             className="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-black uppercase tracking-widest transition-colors"
           >
             Reactivate Now
