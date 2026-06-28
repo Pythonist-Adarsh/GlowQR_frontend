@@ -26,40 +26,37 @@ export const metadata: Metadata = {
 }
 
 export default function Home() {
-  const jsonLdSoftwareApp = {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "GlowQR",
-    "applicationCategory": "BusinessApplication",
-    "operatingSystem": "Web",
-    "description": "AI-powered QR code platform that helps Indian local businesses get more Google reviews automatically.",
-    "url": "https://www.glowqr.com",
-    "offers": {
-      "@type": "Offer",
-      "price": "199",
-      "priceCurrency": "INR"
-    }
-  }
-
-  const jsonLdOrg = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "GlowQR",
-    "url": "https://www.glowqr.com",
-    "logo": "https://www.glowqr.com/logo.png",
-    "foundingLocation": "Lucknow, India",
-    "description": "GlowQR is a Lucknow-based SaaS that helps local businesses in India collect Google reviews using AI-powered QR codes."
-  }
-
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdSoftwareApp) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrg) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([
+            {
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              "name": "GlowQR",
+              "applicationCategory": "BusinessApplication",
+              "operatingSystem": "Web",
+              "description": "AI-powered QR code platform that helps Indian local businesses get more Google reviews automatically.",
+              "url": "https://www.glowqr.com",
+              "offers": {
+                "@type": "Offer",
+                "price": "199",
+                "priceCurrency": "INR"
+              }
+            },
+            {
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "GlowQR",
+              "url": "https://www.glowqr.com",
+              "logo": "https://www.glowqr.com/logo.png",
+              "foundingLocation": "Lucknow, India",
+              "description": "GlowQR is a Lucknow-based SaaS that helps local businesses in India collect Google reviews using AI-powered QR codes."
+            }
+          ])
+        }}
       />
       <LandingPage />
     </>
