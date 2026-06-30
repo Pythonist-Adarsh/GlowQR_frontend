@@ -416,6 +416,8 @@ const Step3 = ({ data, updateData }: any) => {
     { id: 'other', name: 'Other', icon: 'Layout', enabled: false },
   ];
 
+  const isNonFood = ['tax / ca firm', 'education', 'bridal & festive jewellery', 'salon', 'spa', 'gym', 'medical', 'retail', 'hotel', 'jewellery', 'other'].includes(data.category?.toLowerCase() || "");
+
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-4 gap-3">
@@ -440,7 +442,7 @@ const Step3 = ({ data, updateData }: any) => {
 
       <SectionHeader>Price Range</SectionHeader>
       <div className="space-y-4">
-        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Average spend per person</label>
+        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">{isNonFood ? 'Average service cost' : 'Average spend per person'}</label>
         <select 
           value={data.spendRange || ''}
           onChange={e => updateData({ spendRange: e.target.value })}
@@ -456,27 +458,29 @@ const Step3 = ({ data, updateData }: any) => {
         <p className="text-[9px] text-slate-400 italic">Shown as a chip on customer review page</p>
       </div>
 
-      <div className="space-y-6 mt-8">
-        <InputField label="Cuisine / Speciality" badge="optional" value={data.speciality} onChange={(e: any) => updateData({ speciality: e.target.value })} hint="AI includes cuisine in reviews" />
-        <div>
-          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 block">Dietary Options [Optional]</label>
-          <div className="flex flex-wrap gap-2">
-            {['Vegetarian', 'Vegan', 'Jain', 'Halal', 'Gluten-free'].map(opt => (
-              <button 
-                key={opt}
-                onClick={() => {
-                  const current = data.dietary || [];
-                  const next = current.includes(opt) ? current.filter((o: string) => o !== opt) : [...current, opt];
-                  updateData({ dietary: next });
-                }}
-                className={`px-4 py-2 rounded-full border text-xs font-bold transition-all ${data.dietary?.includes(opt) ? 'bg-[var(--color-success-bg)] text-[var(--color-brand-primary)] border-[var(--color-brand-primary)]' : 'bg-white text-slate-400 border-slate-200'}`}
-              >
-                {opt}
-              </button>
-            ))}
+      {!isNonFood && (
+        <div className="space-y-6 mt-8">
+          <InputField label="Cuisine / Speciality" badge="optional" value={data.speciality} onChange={(e: any) => updateData({ speciality: e.target.value })} hint="AI includes cuisine in reviews" />
+          <div>
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 block">Dietary Options [Optional]</label>
+            <div className="flex flex-wrap gap-2">
+              {['Vegetarian', 'Vegan', 'Jain', 'Halal', 'Gluten-free'].map(opt => (
+                <button 
+                  key={opt}
+                  onClick={() => {
+                    const current = data.dietary || [];
+                    const next = current.includes(opt) ? current.filter((o: string) => o !== opt) : [...current, opt];
+                    updateData({ dietary: next });
+                  }}
+                  className={`px-4 py-2 rounded-full border text-xs font-bold transition-all ${data.dietary?.includes(opt) ? 'bg-[var(--color-success-bg)] text-[var(--color-brand-primary)] border-[var(--color-brand-primary)]' : 'bg-white text-slate-400 border-slate-200'}`}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
