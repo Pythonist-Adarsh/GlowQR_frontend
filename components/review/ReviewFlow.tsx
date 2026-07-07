@@ -21,8 +21,17 @@ const STEPS = {
 
 
 export default function ReviewFlow({ initialData, isPreview = false }: { initialData?: any, isPreview?: boolean }) {
-  const [step, setStep] = useState(STEPS.WELCOME);
   const data = initialData || {};
+  
+  const isTaxFirm = data.business_category?.toLowerCase() === 'tax / ca firm' || data.category?.toLowerCase() === 'tax / ca firm';
+  const isJewellery = data.business_category?.toLowerCase() === 'jewellery' || data.category?.toLowerCase() === 'jewellery' || data.business_category?.toLowerCase() === 'bridal & festive jewellery' || data.category?.toLowerCase() === 'bridal & festive jewellery';
+  const isEducation = data.business_category?.toLowerCase() === 'education' || data.category?.toLowerCase() === 'education';
+  const isSalon = data.business_category?.toLowerCase() === 'salon' || data.category?.toLowerCase() === 'salon';
+  const isGym = data.business_category?.toLowerCase() === 'gym' || data.category?.toLowerCase() === 'gym';
+
+  const isSimplifiedFlow = isTaxFirm || isJewellery || isGym;
+
+  const [step, setStep] = useState(isSimplifiedFlow ? STEPS.ENJOY : STEPS.WELCOME);
   
   const areaPart = data.area || data.area_locality || "";
   const cityPart = data.city || "Lucknow";
@@ -41,12 +50,6 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
     instagramUrl: data.instagram_url || data.instagramUrl || "",
     negativeFilterEnabled: data.negativeFilterEnabled ?? true
   };
-
-  const isTaxFirm = data.business_category?.toLowerCase() === 'tax / ca firm' || data.category?.toLowerCase() === 'tax / ca firm';
-  const isJewellery = data.business_category?.toLowerCase() === 'jewellery' || data.category?.toLowerCase() === 'jewellery' || data.business_category?.toLowerCase() === 'bridal & festive jewellery' || data.category?.toLowerCase() === 'bridal & festive jewellery';
-  const isEducation = data.business_category?.toLowerCase() === 'education' || data.category?.toLowerCase() === 'education';
-  const isSalon = data.business_category?.toLowerCase() === 'salon' || data.category?.toLowerCase() === 'salon';
-  const isGym = data.business_category?.toLowerCase() === 'gym' || data.category?.toLowerCase() === 'gym';
 
   const rawCat = ((data.business_category || data.category || "")).toLowerCase().trim();
   const isFoodCategory = rawCat.includes('restaurant') || rawCat.includes('cafe') || 
@@ -296,7 +299,11 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
     } finally {
       setIsGenerating(false);
       setActiveReviewIndex(0);
-      nextStep();
+      if (isSimplifiedFlow) {
+        setStep(STEPS.READY);
+      } else {
+        nextStep();
+      }
       
       // Ensure alert is sent even if generation failed
       const isPremium = ['premium', 'trial'].includes(business.plan?.toLowerCase() || '');
@@ -431,7 +438,9 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
             <div className="p-6 pb-2 shrink-0 bg-inherit z-10">
               <button onClick={prevStep} className="p-2 -ml-2 mb-4 text-[#FFFFFF]"><ChevronLeft className="w-6 h-6" /></button>
               <div className="flex items-center gap-2 mb-3">
-                <span className={`px-2.5 py-1 text-[9px] font-medium rounded-full uppercase tracking-wider bg-[rgba(255,255,255,0.12)] text-[#FFFFFF] border border-[rgba(255,255,255,0.20)]`}>Step 1 of 3</span>
+                <span className={`px-2.5 py-1 text-[9px] font-medium rounded-full uppercase tracking-wider bg-[rgba(255,255,255,0.12)] text-[#FFFFFF] border border-[rgba(255,255,255,0.20)]`}>
+                  {isSimplifiedFlow ? "Step 1 of 2" : "Step 1 of 3"}
+                </span>
               </div>
               <h2 className="text-2xl font-bold mb-1 text-[#FFFFFF]">What did you enjoy?</h2>
               <div className={`flex items-center gap-1.5 text-[10px] font-medium tracking-wide ${textMuted}`}>
@@ -496,16 +505,47 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
               </div>
                 </>
               )}
+
+              {isSimplifiedFlow && (
+                <div className={`w-full bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.10)] backdrop-blur-[12px] rounded-2xl p-6 flex flex-col items-center justify-center mb-6 mt-4`}>
+                  <p className={`text-[10px] font-bold tracking-wide mb-4 ${textMuted} uppercase`}>How was your overall experience?</p>
+                  <div className="flex gap-2 mb-2">
+                    {[1, 2, 3, 4, 5].map(star => (
+                      <button 
+                        key={star}
+                        onClick={() => setRatings(r => ({ ...r, overall: star, food: r.food || star, service: r.service || star, atmosphere: r.atmosphere || star }))}
+                        className="p-1 transition-transform hover:scale-110"
+                      >
+                        <Star className={`w-8 h-8 ${star <= ratings.overall ? 'fill-[var(--accent)] text-[var(--accent)] drop-shadow-[0_0_6px_var(--accent)]' : 'text-[rgba(255,255,255,0.30)] stroke-[rgba(255,255,255,0.40)]'}`} />
+                      </button>
+                    ))}
+                  </div>
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-amber-500 h-4">
+                    {ratings.overall > 0 ? ["Terrible", "Bad", "Okay", "Good", "Excellent!"][ratings.overall - 1] : ""}
+                  </span>
+                </div>
+              )}
             </div>
 
             <div className={`p-6 pt-4 shrink-0 border-t z-20 ${borderClass} bg-[rgba(255,255,255,0.06)] backdrop-blur-[12px]`}>
-              <button 
-                onClick={nextStep}
-                className="w-full py-4 rounded-xl font-semibold text-sm shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
-                style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-text)' }}
-              >
-                Continue <ArrowRight className="w-4 h-4" />
-              </button>
+              {isSimplifiedFlow ? (
+                <button 
+                  onClick={handleGenerateReview}
+                  disabled={ratings.overall === 0 || isGenerating || showEmpathy}
+                  className="w-full py-4 rounded-xl font-semibold text-sm shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
+                  style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-text)' }}
+                >
+                  {isGenerating || showEmpathy ? <><Loader2 className="w-4 h-4 animate-spin" /> Generating Review...</> : <><Sparkles className="w-4 h-4" /> Continue</>}
+                </button>
+              ) : (
+                <button 
+                  onClick={nextStep}
+                  className="w-full py-4 rounded-xl font-semibold text-sm shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                  style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-text)' }}
+                >
+                  Continue <ArrowRight className="w-4 h-4" />
+                </button>
+              )}
             </div>
           </motion.div>
         )}
@@ -620,38 +660,42 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
             <div className="p-6 pb-2 shrink-0">
               <button onClick={prevStep} className="p-2 -ml-2 mb-4 text-[#FFFFFF]"><ChevronLeft className="w-6 h-6" /></button>
               <div className="flex items-center gap-2 mb-3">
-                <span className={`px-2.5 py-1 text-[9px] font-medium rounded-full uppercase tracking-wider bg-[rgba(255,255,255,0.12)] text-[#FFFFFF] border border-[rgba(255,255,255,0.20)]`}>Step 3 of 3</span>
+                <span className={`px-2.5 py-1 text-[9px] font-medium rounded-full uppercase tracking-wider bg-[rgba(255,255,255,0.12)] text-[#FFFFFF] border border-[rgba(255,255,255,0.20)]`}>
+                  {isSimplifiedFlow ? "Step 2 of 2" : "Step 3 of 3"}
+                </span>
               </div>
               <h2 className="text-2xl font-bold mb-1 text-[#FFFFFF]">Your review is ready</h2>
               <p className={`text-[10px] font-medium tracking-wide ${textMuted}`}>Pick one, copy it, paste on Google</p>
             </div>
 
             <div className="flex-1 overflow-y-auto px-6 pb-6 custom-scrollbar">
-              <div className={`w-full rounded-2xl p-4 mb-6 border border-emerald-500/30 bg-emerald-500/10`}>
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center">
-                    <span className="text-white text-[9px] font-bold">!</span>
-                  </div>
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-emerald-400">Enter these exact ratings on Google</span>
-                </div>
-                <div className="grid grid-cols-2 gap-y-2 gap-x-4">
-                  {[
-                    { label: 'Overall', val: ratings.overall },
-                    { label: 'Food', val: ratings.food },
-                    { label: 'Service', val: ratings.service },
-                    { label: 'Atmosphere', val: ratings.atmosphere },
-                  ].map(r => (
-                    <div key={r.label} className="flex items-center justify-between">
-                      <span className={`text-[8px] font-bold uppercase ${textMuted}`}>{r.label}</span>
-                      <div className="flex gap-[1px]">
-                        {[1, 2, 3, 4, 5].map(s => (
-                          <Star key={s} className={`w-2 h-2 ${s <= r.val ? 'fill-[var(--accent)] text-[var(--accent)]' : 'text-[rgba(255,255,255,0.25)]'}`} />
-                        ))}
-                      </div>
+              {!isSimplifiedFlow && (
+                <div className={`w-full rounded-2xl p-4 mb-6 border border-emerald-500/30 bg-emerald-500/10`}>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center">
+                      <span className="text-white text-[9px] font-bold">!</span>
                     </div>
-                  ))}
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-emerald-400">Enter these exact ratings on Google</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-y-2 gap-x-4">
+                    {[
+                      { label: 'Overall', val: ratings.overall },
+                      { label: 'Food', val: ratings.food },
+                      { label: 'Service', val: ratings.service },
+                      { label: 'Atmosphere', val: ratings.atmosphere },
+                    ].map(r => (
+                      <div key={r.label} className="flex items-center justify-between">
+                        <span className={`text-[8px] font-bold uppercase ${textMuted}`}>{r.label}</span>
+                        <div className="flex gap-[1px]">
+                          {[1, 2, 3, 4, 5].map(s => (
+                            <Star key={s} className={`w-2 h-2 ${s <= r.val ? 'fill-[var(--accent)] text-[var(--accent)]' : 'text-[rgba(255,255,255,0.25)]'}`} />
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Review Variants List */}
               <div className="space-y-4 mb-6">
@@ -753,12 +797,14 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
               Thank you for choosing {business.name}. Google Maps should be opening now to paste your review.
             </p>
             
-            <button 
-              onClick={() => setStep(STEPS.WELCOME)}
-              className={`w-full py-4 rounded-xl font-semibold text-sm shadow-md flex items-center justify-center gap-2 transition-all active:scale-[0.98] bg-[rgba(255,255,255,0.10)] text-[#FFFFFF] hover:bg-[rgba(255,255,255,0.20)]`}
-            >
-              Done <RefreshCw className="w-4 h-4" />
-            </button>
+            {!isSimplifiedFlow && (
+              <button 
+                onClick={() => setStep(STEPS.WELCOME)}
+                className={`w-full py-4 rounded-xl font-semibold text-sm shadow-md flex items-center justify-center gap-2 transition-all active:scale-[0.98] bg-[rgba(255,255,255,0.10)] text-[#FFFFFF] hover:bg-[rgba(255,255,255,0.20)]`}
+              >
+                Done <RefreshCw className="w-4 h-4" />
+              </button>
+            )}
           </motion.div>
         )}
 
