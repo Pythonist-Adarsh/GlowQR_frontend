@@ -1,7 +1,7 @@
 'use client';
 import { toast } from 'react-hot-toast';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Copy, X, Eye, EyeOff } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/api-config';
@@ -25,6 +25,17 @@ export function RenewalModal({ isOpen, onClose, currentPlan = 'basic', upiId, up
   const [formData, setFormData] = useState({
     utrNumber: '',
   });
+
+  useEffect(() => {
+    if (isOpen) {
+      setStep(1);
+      setSelectedPlan(currentPlan === 'premium' ? 'premium' : 'basic');
+      setBillingCycle('monthly');
+      setFormData({ utrNumber: '' });
+      setCopied(false);
+      setShowUpi(false);
+    }
+  }, [isOpen, currentPlan]);
 
   const price = selectedPlan === 'premium' 
     ? (billingCycle === 'yearly' ? 4799 : 499) 

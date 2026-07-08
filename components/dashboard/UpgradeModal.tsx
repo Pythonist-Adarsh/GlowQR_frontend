@@ -28,16 +28,23 @@ export function UpgradeModal({ isOpen, onClose, defaultPlan = 'basic' }: Upgrade
 
   useEffect(() => {
     if (isOpen) {
+      setStep(1);
       const storedPlan = localStorage.getItem('glowqr_intended_plan');
       const storedBilling = localStorage.getItem('glowqr_intended_billing');
+      
       if (storedPlan === 'basic' || storedPlan === 'premium') {
         setSelectedPlan(storedPlan);
+      } else {
+        setSelectedPlan(defaultPlan);
       }
+      
       if (storedBilling === 'monthly' || storedBilling === 'yearly') {
         setBillingCycle(storedBilling as 'monthly' | 'yearly');
+      } else {
+        setBillingCycle('monthly');
       }
     }
-  }, [isOpen]);
+  }, [isOpen, defaultPlan]);
 
   const price = selectedPlan === 'premium' 
     ? (billingCycle === 'yearly' ? 4799 : 499) 
