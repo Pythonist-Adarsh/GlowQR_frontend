@@ -413,10 +413,11 @@ const Step3 = ({ data, updateData }: any) => {
     { id: 'retail', name: 'Retail', icon: 'ShoppingBag', enabled: false },
     { id: 'gym', name: 'Gym', icon: 'Dumbbell', enabled: true },
     { id: 'medical', name: 'Medical', icon: 'Stethoscope', enabled: false },
+    { id: 'real_estate', name: 'Real Estate', icon: 'Building2', enabled: true },
     { id: 'other', name: 'Other', icon: 'Layout', enabled: false },
   ];
 
-  const isNonFood = ['tax / ca firm', 'education', 'bridal & festive jewellery', 'salon', 'spa', 'gym', 'medical', 'retail', 'hotel', 'jewellery', 'other'].includes(data.category?.toLowerCase() || "");
+  const isNonFood = ['tax / ca firm', 'education', 'bridal & festive jewellery', 'salon', 'spa', 'gym', 'medical', 'retail', 'hotel', 'jewellery', 'other', 'real_estate'].includes(data.category?.toLowerCase() || "");
 
   return (
     <div className="space-y-8">
@@ -487,22 +488,90 @@ const Step3 = ({ data, updateData }: any) => {
 
 const Step4 = ({ data, updateData }: any) => {
   const [parsing, setParsing] = useState(false);
-  const [parsed, setParsed] = useState(false);
-  const [fileDetails, setFileDetails] = useState<{ name: string; size: string; type: string } | null>(null);
+  const [currentFileParsing, setCurrentFileParsing] = useState<{ name: string; size: string; isPdf: boolean } | null>(null);
+  const [uploadHistory, setUploadHistory] = useState<{ id: string; name: string; size: string; type: string; extractedData: any }[]>([]);
   const [newService, setNewService] = useState("");
   
   const pdfInputRef = useRef<HTMLInputElement | null>(null);
   const photoInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setFileDetails({
+  const recalculateAndMerge = (history: any[]) => {
+    const finalCategories: any[] = [];
+    const sigSet = new Set<string>();
+    const highSet = new Set<string>();
+
+    if (data.signatureDish) {
+      data.signatureDish.split('\n').forEach((s: string) => {
+        if (s.trim()) sigSet.add(s.trim().toLowerCase());
+      });
+    }
+    if (data.highlightDishes) {
+      data.highlightDishes.split('\n').forEach((s: string) => {
+        if (s.trim()) highSet.add(s.trim().toLowerCase());
+      });
+    }
+
+    const finalSignatures: string[] = data.signatureDish ? data.signatureDish.split('\n').filter(Boolean) : [];
+    const finalHighlights: string[] = data.highlightDishes ? data.highlightDishes.split('\n').filter(Boolean) : [];
+
+    history.forEach(item => {
+      const ext = item.extractedData;
+      if (!ext) return;
+
+      if (ext.signatureDish && ext.signatureDish.toLowerCase() !== 'sample signature') {
+        ext.signatureDish.split('\n').forEach((s: string) => {
+          if (s.trim() && !sigSet.has(s.trim().toLowerCase())) {
+            sigSet.add(s.trim().toLowerCase());
+            finalSignatures.push(s.trim());
+          }
+        });
+      }
+
+      if (ext.highlightDishes && ext.highlightDishes.toLowerCase() !== 'sample dish') {
+        ext.highlightDishes.split('\n').forEach((s: string) => {
+          if (s.trim() && !highSet.has(s.trim().toLowerCase())) {
+            highSet.add(s.trim().toLowerCase());
+            finalHighlights.push(s.trim());
+          }
+        });
+      }
+
+      const cats = ext.menuCategories || [];
+      cats.forEach((cat: any) => {
+        const catName = cat.category?.trim();
+        if (!catName) return;
+        
+        let existingCat = finalCategories.find(c => c.category.toLowerCase() === catName.toLowerCase());
+        if (!existingCat) {
+          existingCat = { category: catName, items: [] };
+          finalCategories.push(existingCat);
+        }
+
+        const items = cat.items || [];
+        items.forEach((i: any) => {
+          const itemName = i.name?.trim();
+          if (!itemName) return;
+          
+          if (!existingCat.items.find((ei: any) => ei.name.toLowerCase() === itemName.toLowerCase())) {
+            existingCat.items.push(i);
+          }
+        });
+      });
+    });
+
+    updateData({
+      menuCategories: finalCategories,
+      signatureDish: finalSignatures.join('\n'),
+      highlightDishes: finalHighlights.join('\n')
+    });
+  };
+
+  const handleFileUpload = async (file: File, type: string, isPdf: boolean) => {
+    setCurrentFileParsing({
       name: file.name,
       size: (file.size / (1024 * 1024)).toFixed(2) + " MB",
-      type: "PDF Document"
+      isPdf
     });
-    setParsed(false);
     setParsing(true);
     
     try {
@@ -511,76 +580,49 @@ const Step4 = ({ data, updateData }: any) => {
       
       const res = await fetch(`${API_BASE_URL}/api/onboarding/extract-menu`, {
         method: 'POST',
-        // Do NOT set Content-Type header manually when using FormData, the browser will set it with the correct boundary
         body: formData
       });
       if (res.ok) {
         const extractedData = await res.json();
         if (extractedData.error) {
           alert("AI Extraction Failed: " + extractedData.error);
-          setFileDetails(null);
         } else {
-          updateData(extractedData);
-          setParsed(true);
+          const newHistory = [...uploadHistory, {
+            id: Date.now().toString(),
+            name: file.name,
+            size: (file.size / (1024 * 1024)).toFixed(2) + " MB",
+            type,
+            extractedData
+          }];
+          setUploadHistory(newHistory);
+          recalculateAndMerge(newHistory);
         }
       } else {
         alert("Server error during extraction.");
-        setFileDetails(null);
       }
     } catch (err) {
       console.error("Failed to extract menu", err);
       alert("Network error during extraction.");
-      setFileDetails(null);
     } finally {
       setParsing(false);
+      setCurrentFileParsing(null);
     }
   };
 
-  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePdfUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-    setFileDetails({
-      name: file.name,
-      size: (file.size / (1024 * 1024)).toFixed(2) + " MB",
-      type: "Menu Image"
-    });
-    setParsed(false);
-    setParsing(true);
-
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const res = await fetch(`${API_BASE_URL}/api/onboarding/extract-menu`, {
-        method: 'POST',
-        body: formData
-      });
-      if (res.ok) {
-        const extractedData = await res.json();
-        if (extractedData.error) {
-          alert("AI Extraction Failed: " + extractedData.error);
-          setFileDetails(null);
-        } else {
-          updateData(extractedData);
-          setParsed(true);
-        }
-      } else {
-        alert("Server error during extraction.");
-        setFileDetails(null);
-      }
-    } catch (err) {
-      console.error("Failed to extract menu", err);
-      alert("Network error during extraction.");
-      setFileDetails(null);
-    } finally {
-      setParsing(false);
-    }
+    if (file) handleFileUpload(file, "PDF Document", true);
   };
 
-  const resetUpload = () => {
-    setFileDetails(null);
-    setParsed(false);
-    setParsing(false);
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleFileUpload(file, "Menu Image", false);
+  };
+
+  const removeUpload = (id: string) => {
+    const newHistory = uploadHistory.filter(item => item.id !== id);
+    setUploadHistory(newHistory);
+    recalculateAndMerge(newHistory);
   };
 
   const isTaxCategory = data.category === 'tax / ca firm';
@@ -588,7 +630,8 @@ const Step4 = ({ data, updateData }: any) => {
   const isEducationCategory = data.category === 'education';
   const isSalonCategory = data.category === 'salon';
   const isGymCategory = data.category === 'gym';
-  const isServiceCategory = isTaxCategory || isJewelleryCategory || isEducationCategory || isSalonCategory || isGymCategory;
+  const isRealEstateCategory = data.category === 'real_estate';
+  const isServiceCategory = isTaxCategory || isJewelleryCategory || isEducationCategory || isSalonCategory || isGymCategory || isRealEstateCategory;
 
   return (
     <div className="space-y-6">
@@ -653,34 +696,40 @@ const Step4 = ({ data, updateData }: any) => {
             <RefreshCw className="w-8 h-8 text-[var(--color-brand-primary)] animate-spin" />
             <div>
               <p className="text-sm font-bold text-slate-900">AI is reading your menu...</p>
-              <p className="text-[10px] text-slate-400">Reading: {fileDetails?.name} ({fileDetails?.size})</p>
+              {currentFileParsing?.isPdf && <p className="text-xs text-[var(--color-brand-primary)] mt-1 font-medium">Reading your menu, this may take a minute...</p>}
+              <p className="text-[10px] text-slate-400 mt-1">Reading: {currentFileParsing?.name} ({currentFileParsing?.size})</p>
             </div>
           </motion.div>
         )}
         
-        {parsed && !parsing && (
+        {uploadHistory.length > 0 && !parsing && (
           <motion.div 
             initial={{ opacity: 0, y: 10 }} 
             animate={{ opacity: 1, y: 0 }}
             className="space-y-4"
           >
-            <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center border border-emerald-100">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Upload History</label>
+              {uploadHistory.map(item => (
+                <div key={item.id} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center border border-emerald-100">
+                      <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-xs font-bold text-slate-950 truncate max-w-[200px]">{item.name}</p>
+                      <p className="text-[9px] text-slate-400">{item.type} · {item.size}</p>
+                    </div>
+                  </div>
+                  <button 
+                    type="button" 
+                    onClick={() => removeUpload(item.id)}
+                    className="text-[9px] font-black uppercase tracking-widest text-red-500 hover:text-red-600 px-3 py-1 rounded-lg hover:bg-red-50 transition-colors"
+                  >
+                    Clear
+                  </button>
                 </div>
-                <div className="text-left">
-                  <p className="text-xs font-bold text-slate-950 truncate max-w-[200px]">{fileDetails?.name}</p>
-                  <p className="text-[9px] text-slate-400">{fileDetails?.type} · {fileDetails?.size}</p>
-                </div>
-              </div>
-              <button 
-                type="button" 
-                onClick={resetUpload}
-                className="text-[9px] font-black uppercase tracking-widest text-red-500 hover:text-red-600 px-3 py-1 rounded-lg hover:bg-red-50"
-              >
-                Clear
-              </button>
+              ))}
             </div>
 
             <InfoBox 
@@ -759,8 +808,8 @@ const Step4 = ({ data, updateData }: any) => {
 
       {isServiceCategory && (
         <div className="space-y-6">
-          <SectionHeader>{isJewelleryCategory ? "Your Collections & Services" : isEducationCategory ? "Your Courses & Programs" : isGymCategory ? "Your Memberships & Classes" : "Your Services"}</SectionHeader>
-          <p className="text-xs text-slate-500 mb-2">{isJewelleryCategory || isEducationCategory ? "Add what you offer — helps generate more relevant reviews" : isGymCategory ? "Add the memberships or classes you offer — these help generate more relevant reviews" : "Add the services you offer — these help generate more relevant reviews"}</p>
+          <SectionHeader>{isJewelleryCategory ? "Your Collections & Services" : isEducationCategory ? "Your Courses & Programs" : isGymCategory ? "Your Memberships & Classes" : isRealEstateCategory ? "Your Properties & Services" : "Your Services"}</SectionHeader>
+          <p className="text-xs text-slate-500 mb-2">{isJewelleryCategory || isEducationCategory ? "Add what you offer — helps generate more relevant reviews" : isGymCategory ? "Add the memberships or classes you offer — these help generate more relevant reviews" : isRealEstateCategory ? "Add property types or services — helps generate more relevant reviews" : "Add the services you offer — these help generate more relevant reviews"}</p>
           
           <div className="flex flex-wrap gap-2 mb-4">
             {(isJewelleryCategory 
@@ -771,6 +820,8 @@ const Step4 = ({ data, updateData }: any) => {
               ? ["Haircut & Styling", "Hair Color & Treatment", "Facial & Cleanup", "Waxing & Threading", "Bridal Makeup", "Manicure & Pedicure"]
               : isGymCategory
               ? ["Personal Training", "Group Classes (Zumba/Yoga/Aerobics)", "Gym Membership", "Diet & Nutrition Consultation", "CrossFit / Functional Training", "Physiotherapy & Recovery"]
+              : isRealEstateCategory
+              ? ["Residential Sales", "Commercial Leasing", "Property Management", "Rental Properties", "Plots & Land", "Legal & Documentation"]
               : ["ITR Filing", "GST Registration", "Company Registration"]
             ).map(svc => {
               const currentServices = data.highlightDishes ? data.highlightDishes.split('\n').filter(Boolean) : [];
@@ -1180,7 +1231,7 @@ export default function OnboardingWizard() {
           })
         });
       } else if (currentStep === 3) {
-        const isNonFood = ['tax / ca firm', 'education', 'bridal & festive jewellery', 'salon', 'spa', 'gym', 'medical', 'retail', 'hotel', 'jewellery', 'other'].includes(data.category?.toLowerCase() || "");
+        const isNonFood = ['tax / ca firm', 'education', 'bridal & festive jewellery', 'salon', 'spa', 'gym', 'medical', 'retail', 'hotel', 'jewellery', 'other', 'real_estate'].includes(data.category?.toLowerCase() || "");
         
         let finalMenuCategories = data.menuCategories || [];
         const selectedServicesList = data.highlightDishes ? data.highlightDishes.split('\n').filter(Boolean) : [];

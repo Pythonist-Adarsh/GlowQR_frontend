@@ -48,6 +48,8 @@ const CATEGORY_RATING_LABELS: Record<string, { r1: string, r2: string, r3: strin
   "medical": { r1: "Treatment Quality", r2: "Doctor Behaviour", r3: "Cleanliness" },
   "education": { r1: "Teaching Quality", r2: "Faculty Support", r3: "Infrastructure" },
   "tax / ca firm": { r1: "Service Quality", r2: "Staff Professionalism", r3: "Response Time" },
+  "real estate": { r1: "Property/Deal Quality", r2: "Agent Professionalism", r3: "Transparency" },
+  "real_estate": { r1: "Property/Deal Quality", r2: "Agent Professionalism", r3: "Transparency" },
   "other": { r1: "Quality", r2: "Service", r3: "Experience" },
 };
 
@@ -61,6 +63,8 @@ const SECTION_TITLES: Record<string, string> = {
   "bridal & festive jewellery": "Top Collections",
   "medical": "Top Services",
   "hotel": "Top Services",
+  "real estate": "Top Properties",
+  "real_estate": "Top Properties",
 };
 
 export function OverviewTab({
