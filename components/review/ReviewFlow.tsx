@@ -85,7 +85,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
       parsedMenuData.forEach((c: any) => {
         c.items.forEach((item: any) => {
           flat.push({
-            id: typeof item === 'object' && item.id ? item.id : `cat_${idx++}`,
+            id: typeof item === 'object' && item.id ? `cat_${idx++}_${item.id}` : `cat_${idx++}`,
             name: typeof item === 'object' ? item.name : item,
             category: c.category
           });
@@ -462,10 +462,10 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
             <div className="flex-1 overflow-y-auto px-6 pb-6 custom-scrollbar">
               <div className="mt-6 mb-8 w-full overflow-hidden">
                 <p className={`text-[9px] font-bold uppercase tracking-widest mb-3 ${textMuted}`}>
-                  {isTaxFirm ? "Which services did you use?" : isJewellery ? "What did you look at?" : isEducation ? "Which courses did you take?" : (isSalon || isGym || isRealEstate) ? "Which services did you use?" : "Select dishes you tried"}
+                  {isTaxFirm ? "Which services did you use?" : isJewellery ? "What did you look at?" : isEducation ? "Which courses did you take?" : (isSalon || isGym || isRealEstate) ? "Which services did you use?" : "Select dishes you tried"} <span className="opacity-70 lowercase capitalize-first">(Max 5)</span>
                 </p>
                 {parsedMenuData && parsedMenuData.length > 0 && (
-                  <div className="flex overflow-x-auto gap-2 mb-4 custom-scrollbar pr-6" style={{ width: '100%' }}>
+                  <div className="flex flex-wrap gap-2 mb-4">
                     {parsedMenuData.map((cat: any) => (
                       <button
                         key={cat.category}
@@ -487,7 +487,11 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                     return (
                       <button 
                         key={item.id}
-                        onClick={() => setSelectedDishes(prev => isSelected ? prev.filter(id => id !== item.id) : [...prev, item.id])}
+                        onClick={() => setSelectedDishes(prev => {
+                          if (isSelected) return prev.filter(id => id !== item.id);
+                          if (prev.length >= 5) return prev;
+                          return [...prev, item.id];
+                        })}
                         className={`shrink-0 px-3 py-2 rounded-lg text-xs border flex items-center gap-2 transition-all hover:bg-[rgba(255,255,255,0.14)] hover:border-[rgba(255,255,255,0.30)]`}
                         style={isSelected ? { backgroundColor: 'var(--accent)', borderColor: 'var(--accent)', color: 'var(--accent-text)', fontWeight: 600 } : { backgroundColor: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.18)', color: 'rgba(255,255,255,0.75)' }}
                       >
