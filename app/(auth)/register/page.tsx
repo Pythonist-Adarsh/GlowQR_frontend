@@ -1,4 +1,5 @@
-﻿import type { Metadata } from 'next'
+import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import { SignUpView } from '@/components/auth/SignUpView'
 import { LandingNavbar } from '@/components/landing/LandingNavbar'
 
@@ -11,7 +12,9 @@ export default function SignUpPage() {
   return (
     <>
       <LandingNavbar forceScrolled={true} />
-      <SignUpView />
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+        <SignUpView />
+      </Suspense>
     </>
   )
 }
