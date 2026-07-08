@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Eye, EyeOff } from 'lucide-react'
 import { AuthBrandPanel } from '@/components/auth/AuthBrandPanel'
@@ -16,6 +16,8 @@ const ATTR = 'Jordan Ellis — General Manager, Brasserie Meridian'
 
 export function SignUpView() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -24,6 +26,13 @@ export function SignUpView() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+
+  useEffect(() => {
+    const plan = searchParams.get('plan')
+    const billing = searchParams.get('billing')
+    if (plan) localStorage.setItem('glowqr_intended_plan', plan)
+    if (billing) localStorage.setItem('glowqr_intended_billing', billing)
+  }, [searchParams])
 
   const handleSignUp = async (e?: any) => {
     if (e && e.preventDefault) e.preventDefault();

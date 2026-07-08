@@ -17,6 +17,7 @@ interface RenewalModalProps {
 export function RenewalModal({ isOpen, onClose, currentPlan = 'basic', upiId, upiQrUrl }: RenewalModalProps) {
   const [step, setStep] = useState(1);
   const [selectedPlan, setSelectedPlan] = useState(currentPlan === 'premium' ? 'premium' : 'basic');
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showUpi, setShowUpi] = useState(false);
@@ -25,7 +26,9 @@ export function RenewalModal({ isOpen, onClose, currentPlan = 'basic', upiId, up
     utrNumber: '',
   });
 
-  const price = selectedPlan === 'premium' ? 499 : 199;
+  const price = selectedPlan === 'premium' 
+    ? (billingCycle === 'yearly' ? 4799 : 499) 
+    : (billingCycle === 'yearly' ? 1899 : 199);
   const planName = selectedPlan === 'premium' ? 'Premium Plan' : 'Basic Plan';
   
   const displayUpiId = upiId || 'adarshtiwari2412-4@okhdfcbank';
@@ -50,7 +53,8 @@ export function RenewalModal({ isOpen, onClose, currentPlan = 'basic', upiId, up
         },
         body: JSON.stringify({
           plan: selectedPlan,
-          amount_paid: selectedPlan === 'basic' ? 199 : 499,
+          amount_paid: price,
+          billing_cycle: billingCycle,
           utr_number: formData.utrNumber,
           payment_method: 'upi'
         })
@@ -91,7 +95,18 @@ export function RenewalModal({ isOpen, onClose, currentPlan = 'basic', upiId, up
                 <div className="space-y-6">
                   <h2 className="text-2xl font-bold text-slate-900">Renew Your Plan</h2>
                   
-                  <div className="space-y-3">
+                  <div className="flex items-center justify-center gap-3 bg-slate-50 p-2 rounded-xl border border-slate-200">
+                    <span className={`text-sm font-semibold ${billingCycle === 'monthly' ? 'text-slate-900' : 'text-slate-500'}`}>Monthly</span>
+                    <button
+                      onClick={() => setBillingCycle(b => b === 'monthly' ? 'yearly' : 'monthly')}
+                      className="relative inline-flex h-6 w-11 items-center rounded-full bg-slate-900 transition-colors"
+                    >
+                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${billingCycle === 'yearly' ? 'translate-x-6' : 'translate-x-1'}`} />
+                    </button>
+                    <span className={`text-sm font-semibold ${billingCycle === 'yearly' ? 'text-slate-900' : 'text-slate-500'}`}>Yearly <span className="text-green-600">(Save 20%)</span></span>
+                  </div>
+
+                  <div className="space-y-3 mt-4">
                     {['basic', 'premium'].map((plan) => (
                       <div 
                         key={plan}
@@ -104,7 +119,9 @@ export function RenewalModal({ isOpen, onClose, currentPlan = 'basic', upiId, up
                       >
                         <div className="flex justify-between items-center">
                           <span className="font-bold capitalize text-slate-900">{plan} Plan</span>
-                          <span className="font-bold text-slate-900">₹{plan === 'premium' ? '499' : '199'}/mo</span>
+                          <span className="font-bold text-slate-900">
+                            {plan === 'premium' ? (billingCycle === 'yearly' ? '₹4,799/yr' : '₹499/mo') : (billingCycle === 'yearly' ? '₹1,899/yr' : '₹199/mo')}
+                          </span>
                         </div>
                       </div>
                     ))}

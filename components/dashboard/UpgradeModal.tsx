@@ -1,7 +1,7 @@
 'use client';
 import { toast } from 'react-hot-toast';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Copy, X, Eye, EyeOff } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/api-config';
@@ -15,6 +15,7 @@ interface UpgradeModalProps {
 export function UpgradeModal({ isOpen, onClose, defaultPlan = 'basic' }: UpgradeModalProps) {
   const [step, setStep] = useState(1);
   const [selectedPlan, setSelectedPlan] = useState(defaultPlan);
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showUpi, setShowUpi] = useState(false);
@@ -25,7 +26,22 @@ export function UpgradeModal({ isOpen, onClose, defaultPlan = 'basic' }: Upgrade
     utrNumber: '',
   });
 
-  const price = selectedPlan === 'premium' ? 499 : 199;
+  useEffect(() => {
+    if (isOpen) {
+      const storedPlan = localStorage.getItem('glowqr_intended_plan');
+      const storedBilling = localStorage.getItem('glowqr_intended_billing');
+      if (storedPlan === 'basic' || storedPlan === 'premium') {
+        setSelectedPlan(storedPlan);
+      }
+      if (storedBilling === 'monthly' || storedBilling === 'yearly') {
+        setBillingCycle(storedBilling as 'monthly' | 'yearly');
+      }
+    }
+  }, [isOpen]);
+
+  const price = selectedPlan === 'premium' 
+    ? (billingCycle === 'yearly' ? 4799 : 499) 
+    : (billingCycle === 'yearly' ? 1899 : 199);
   const planName = selectedPlan === 'premium' ? 'Premium Plan' : 'Basic Plan';
 
   const handleCopy = () => {
@@ -48,7 +64,8 @@ export function UpgradeModal({ isOpen, onClose, defaultPlan = 'basic' }: Upgrade
         },
         body: JSON.stringify({
           plan: selectedPlan,
-          amount: selectedPlan === 'basic' ? 199 : 499,
+          amount: price,
+          billing_cycle: billingCycle,
           contact_name: formData.name,
           phone: formData.phone,
           utr_number: formData.utrNumber,
@@ -89,7 +106,18 @@ export function UpgradeModal({ isOpen, onClose, defaultPlan = 'basic' }: Upgrade
                 <div className="space-y-6">
                   <h2 className="text-2xl font-bold text-slate-900">Upgrade Plan</h2>
                   
-                  <div className="space-y-3">
+                  <div className="flex items-center justify-center gap-3 bg-slate-50 p-2 rounded-xl border border-slate-200">
+                    <span className={`text-sm font-semibold ${billingCycle === 'monthly' ? 'text-slate-900' : 'text-slate-500'}`}>Monthly</span>
+                    <button
+                      onClick={() => setBillingCycle(b => b === 'monthly' ? 'yearly' : 'monthly')}
+                      className="relative inline-flex h-6 w-11 items-center rounded-full bg-slate-900 transition-colors"
+                    >
+                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${billingCycle === 'yearly' ? 'translate-x-6' : 'translate-x-1'}`} />
+                    </button>
+                    <span className={`text-sm font-semibold ${billingCycle === 'yearly' ? 'text-slate-900' : 'text-slate-500'}`}>Yearly <span className="text-green-600">(Save 20%)</span></span>
+                  </div>
+
+                  <div className="space-y-3 mt-4">
                     {['basic', 'premium'].map((plan) => (
                       <div 
                         key={plan}
@@ -102,7 +130,9 @@ export function UpgradeModal({ isOpen, onClose, defaultPlan = 'basic' }: Upgrade
                       >
                         <div className="flex justify-between items-center">
                           <span className="font-bold capitalize text-slate-900">{plan} Plan</span>
-                          <span className="font-bold text-slate-900">₹{plan === 'premium' ? '499' : '199'}/mo</span>
+                          <span className="font-bold text-slate-900">
+                            {plan === 'premium' ? (billingCycle === 'yearly' ? '₹4,799/yr' : '₹499/mo') : (billingCycle === 'yearly' ? '₹1,899/yr' : '₹199/mo')}
+                          </span>
                         </div>
                       </div>
                     ))}
