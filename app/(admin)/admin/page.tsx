@@ -58,37 +58,37 @@ export default function AdminOverview() {
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-blue-100 text-blue-600 rounded-xl"><Users className="w-6 h-6" /></div>
-            <div><p className="text-sm font-medium text-slate-500">Total Users</p><h3 className="text-2xl font-bold">{stats.total_users}</h3></div>
+            <div><p className="text-sm font-medium text-slate-500">Total Users</p><h3 className="text-2xl font-bold text-slate-900">{stats.total_users ?? 0}</h3></div>
           </div>
         </div>
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-emerald-100 text-emerald-600 rounded-xl"><CheckCircle className="w-6 h-6" /></div>
-            <div><p className="text-sm font-medium text-slate-500">Active Subscriptions</p><h3 className="text-2xl font-bold">{stats.active_subscriptions}</h3></div>
+            <div><p className="text-sm font-medium text-slate-500">Active Subscriptions</p><h3 className="text-2xl font-bold text-slate-900">{stats.active_subscriptions ?? 0}</h3></div>
           </div>
         </div>
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-amber-100 text-amber-600 rounded-xl"><Clock className="w-6 h-6" /></div>
-            <div><p className="text-sm font-medium text-slate-500">Trial Users</p><h3 className="text-2xl font-bold">{stats.trial_users}</h3></div>
+            <div><p className="text-sm font-medium text-slate-500">Trial Users</p><h3 className="text-2xl font-bold text-slate-900">{stats.trial_users ?? 0}</h3></div>
           </div>
         </div>
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-red-100 text-red-600 rounded-xl"><LogOut className="w-6 h-6" /></div>
-            <div><p className="text-sm font-medium text-slate-500">Expired Users</p><h3 className="text-2xl font-bold">{stats.expired_users}</h3></div>
+            <div><p className="text-sm font-medium text-slate-500">Expired Users</p><h3 className="text-2xl font-bold text-slate-900">{stats.expired_users ?? 0}</h3></div>
           </div>
         </div>
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-purple-100 text-purple-600 rounded-xl"><CreditCard className="w-6 h-6" /></div>
-            <div><p className="text-sm font-medium text-slate-500">Revenue This Month</p><h3 className="text-2xl font-bold">₹{stats.revenue_this_month}</h3></div>
+            <div><p className="text-sm font-medium text-slate-500">Revenue This Month</p><h3 className="text-2xl font-bold text-slate-900">₹{stats.revenue_this_month ?? 0}</h3></div>
           </div>
         </div>
         <div className={`p-6 rounded-2xl shadow-sm border ${stats.pending_requests > 0 ? 'bg-amber-50 border-amber-200' : 'bg-white border-slate-200'}`}>
           <div className="flex items-center gap-4">
             <div className={`p-3 rounded-xl ${stats.pending_requests > 0 ? 'bg-amber-100 text-amber-600' : 'bg-slate-100 text-slate-600'}`}><AlertTriangle className="w-6 h-6" /></div>
-            <div><p className="text-sm font-medium text-slate-500">Pending Requests</p><h3 className="text-2xl font-bold">{stats.pending_requests}</h3></div>
+            <div><p className="text-sm font-medium text-slate-500">Pending Requests</p><h3 className="text-2xl font-bold text-slate-900">{stats.pending_requests ?? 0}</h3></div>
           </div>
         </div>
       </div>
