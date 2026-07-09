@@ -11,7 +11,8 @@ import {
   LogOut,
   Bell,
   ShieldAlert,
-  FlaskConical
+  FlaskConical,
+  Trash2
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { API_BASE_URL } from '@/lib/api-config';
@@ -57,6 +58,7 @@ export function AdminSidebar() {
     { name: 'Bomb Alerts', href: '/admin/bomb-alerts', icon: ShieldAlert },
     { name: 'Review Simulator', href: '/admin/simulator', icon: FlaskConical },
     { name: 'Settings', href: '/admin/settings', icon: Settings },
+    { name: 'Trash', href: '/admin/trash', icon: Trash2 },
   ];
 
   return (
