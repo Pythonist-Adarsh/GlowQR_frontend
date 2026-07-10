@@ -227,7 +227,7 @@ export default function BusinessDetailAdmin({ params }: { params: Promise<{ id: 
                     value={placeIdInput}
                     onChange={(e) => setPlaceIdInput(e.target.value)}
                     placeholder="e.g. ChIJN1t_tDeuEmsRUsoyG83frY4" 
-                    className="flex-1 rounded-lg border-slate-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    className="flex-1 rounded-lg border-slate-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm text-slate-900"
                   />
                   <button 
                     onClick={handleUpdateReviewUrl}
