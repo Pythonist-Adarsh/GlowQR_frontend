@@ -29,11 +29,7 @@ export default function PaymentsPage() {
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/payment-orders?status=${statusFilter}`, {
-        headers: {
-          'x-admin-secret': 'supersecretadmin' // Rely on cookie or header as used elsewhere in admin
-        }
-      });
+      const res = await fetch(`/api/admin-proxy/payment-orders?status=${statusFilter}`);
       if (!res.ok) throw new Error('Failed to fetch orders');
       const data = await res.json();
       setOrders(data.orders);
@@ -52,9 +48,8 @@ export default function PaymentsPage() {
   const handleVerify = async (orderId: string) => {
     if (!confirm('Verify this payment and activate the plan?')) return;
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/payment-orders/${orderId}/verify`, {
-        method: 'POST',
-        headers: { 'x-admin-secret': 'supersecretadmin' }
+      const res = await fetch(`/api/admin-proxy/payment-orders/${orderId}/verify`, {
+        method: 'POST'
       });
       if (!res.ok) throw new Error('Verification failed');
       toast.success('Payment verified and plan activated');
@@ -68,11 +63,10 @@ export default function PaymentsPage() {
     const reason = prompt('Enter rejection reason:');
     if (!reason) return;
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/payment-orders/${orderId}/reject`, {
+      const res = await fetch(`/api/admin-proxy/payment-orders/${orderId}/reject`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'x-admin-secret': 'supersecretadmin'
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ rejection_reason: reason })
       });
