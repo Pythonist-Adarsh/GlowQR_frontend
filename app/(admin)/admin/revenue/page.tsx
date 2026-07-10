@@ -52,19 +52,19 @@ export default function RevenuePage() {
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-emerald-100 text-emerald-600 rounded-xl"><Wallet className="w-6 h-6" /></div>
-            <div><p className="text-sm font-medium text-slate-500">This Month</p><h3 className="text-2xl font-bold">₹{summary.this_month}</h3></div>
+            <div><p className="text-sm font-medium text-slate-500">This Month</p><h3 className="text-2xl font-bold text-slate-900">₹{summary.this_month}</h3></div>
           </div>
         </div>
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-slate-100 text-slate-600 rounded-xl"><Wallet className="w-6 h-6" /></div>
-            <div><p className="text-sm font-medium text-slate-500">Last Month</p><h3 className="text-2xl font-bold">₹{summary.last_month}</h3></div>
+            <div><p className="text-sm font-medium text-slate-500">Last Month</p><h3 className="text-2xl font-bold text-slate-900">₹{summary.last_month}</h3></div>
           </div>
         </div>
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-purple-100 text-purple-600 rounded-xl"><CreditCard className="w-6 h-6" /></div>
-            <div><p className="text-sm font-medium text-slate-500">All Time</p><h3 className="text-2xl font-bold">₹{summary.all_time}</h3></div>
+            <div><p className="text-sm font-medium text-slate-500">All Time</p><h3 className="text-2xl font-bold text-slate-900">₹{summary.all_time}</h3></div>
           </div>
         </div>
         <div className="bg-emerald-50 p-6 rounded-2xl shadow-sm border border-emerald-200">
