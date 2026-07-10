@@ -341,25 +341,38 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
     }
   };
 
-  const handlePostReview = async () => {
-    navigator.clipboard.writeText(generatedReviews[activeReviewIndex]);
+  const handlePostReview = () => {
+    const reviewText = generatedReviews[activeReviewIndex] || '';
+
+    // Synchronously copy to clipboard
+    try {
+      if (reviewText) {
+        navigator.clipboard.writeText(reviewText).catch(() => {});
+      }
+    } catch (e) {
+      console.error('Clipboard error:', e);
+    }
+    
     setIsCopied(true);
 
-    setTimeout(() => {
-      if (business.googleReviewUrl && business.googleReviewUrl !== '#') {
-        window.open(business.googleReviewUrl, '_blank');
-      }
-      if (['premium', 'trial'].includes(business.plan) && business.instagramUrl) {
-        setStep(STEPS.INSTAGRAM);
-      } else {
-        setStep(STEPS.COPIED);
-      }
-    }, 2000);
+    const isPremium = ['premium', 'trial'].includes(business.plan?.toLowerCase() || '');
+    const hasInstagram = !!business.instagramUrl;
 
+    // Synchronous redirect immediately (no setTimeout, no await before this)
+    if (business.googleReviewUrl && business.googleReviewUrl !== '#') {
+      window.location.href = business.googleReviewUrl;
+    } else if (isPremium && hasInstagram) {
+      setStep(STEPS.INSTAGRAM);
+    } else {
+      setStep(STEPS.COPIED);
+    }
+
+    // Non-blocking network call for analytics (do not await)
     try {
-      await fetch(`${API_BASE_URL}/api/scan/record`, {
+      fetch(`${API_BASE_URL}/api/scan/record`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        keepalive: true,
         body: JSON.stringify({
           qr_slug: data.qr_slug || window.location.pathname.split('/').pop() || '',
           session_id: sessionStorage.getItem('glowqr_scan_session') || undefined,
@@ -376,11 +389,11 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
           seating_type: seatingType,
           wait_time: waitTime,
           review_variant: activeReviewIndex,
-          review_text: generatedReviews[activeReviewIndex],
+          review_text: reviewText,
           was_negative: ratings.overall <= 2,
           language: data.review_language || 'english'
         })
-      });
+      }).catch(() => {});
     } catch (e) {}
   };
 
