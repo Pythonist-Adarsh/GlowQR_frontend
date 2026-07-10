@@ -3,8 +3,9 @@ import { toast } from 'react-hot-toast';
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Copy, X, Eye, EyeOff } from 'lucide-react';
+import { Check, X, QrCode } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/api-config';
+import { QRCodeSVG } from 'qrcode.react';
 
 interface UpgradeModalProps {
   isOpen: boolean;
@@ -17,14 +18,11 @@ export function UpgradeModal({ isOpen, onClose, defaultPlan = 'basic' }: Upgrade
   const [selectedPlan, setSelectedPlan] = useState(defaultPlan);
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [loading, setLoading] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [showUpi, setShowUpi] = useState(false);
   
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    utrNumber: '',
-  });
+  const [orderId, setOrderId] = useState('');
+  const [deepLink, setDeepLink] = useState('');
+  const [tn, setTn] = useState('');
+  const [utrNumber, setUtrNumber] = useState('');
 
   useEffect(() => {
     if (isOpen) {
@@ -51,41 +49,64 @@ export function UpgradeModal({ isOpen, onClose, defaultPlan = 'basic' }: Upgrade
     : (billingCycle === 'yearly' ? 1899 : 199);
   const planName = selectedPlan === 'premium' ? 'Premium Plan' : 'Basic Plan';
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText('adarshtiwari2412-4@okhdfcbank');
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleContinueToPayment = async () => {
     setLoading(true);
     try {
       const accessToken = localStorage.getItem('token');
-      // POST /api/upgrade/request
-      const res = await fetch(`${API_BASE_URL}/api/upgrade/request`, {
+      const res = await fetch(`${API_BASE_URL}/api/payment/create-order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...(accessToken ? { 'Authorization': `Bearer ${accessToken}` } : {})
         },
         body: JSON.stringify({
-          plan: selectedPlan,
-          amount: price,
-          billing_cycle: billingCycle,
-          contact_name: formData.name,
-          phone: formData.phone,
-          utr_number: formData.utrNumber,
-          payment_method: 'upi'
+          plan_name: `${selectedPlan} ${billingCycle}`,
+          amount: price
         })
       });
       if (!res.ok) {
-        throw new Error('Failed to submit upgrade request');
+        throw new Error('Failed to create payment order');
+      }
+      const data = await res.json();
+      setOrderId(data.order_id);
+      setDeepLink(data.deep_link);
+      setTn(data.upi_transaction_note);
+      setStep(2);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to initiate payment. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmitUtr = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!utrNumber || utrNumber.length < 6) {
+      toast.error("Please enter a valid UTR number");
+      return;
+    }
+    setLoading(true);
+    try {
+      const accessToken = localStorage.getItem('token');
+      const res = await fetch(`${API_BASE_URL}/api/payment/submit-utr`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(accessToken ? { 'Authorization': `Bearer ${accessToken}` } : {})
+        },
+        body: JSON.stringify({
+          order_id: orderId,
+          utr_reference: utrNumber
+        })
+      });
+      if (!res.ok) {
+        throw new Error('Failed to submit UTR');
       }
       setStep(3);
     } catch (err) {
       console.error(err);
-      toast.error("Failed to submit request. Please try again.");
+      toast.error("Failed to submit UTR. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -146,66 +167,61 @@ export function UpgradeModal({ isOpen, onClose, defaultPlan = 'basic' }: Upgrade
                   </div>
 
                   <button 
-                    onClick={() => setStep(2)}
-                    className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-colors"
+                    onClick={handleContinueToPayment}
+                    disabled={loading}
+                    className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-colors disabled:opacity-70 flex items-center justify-center"
                   >
-                    Continue to Payment →
+                    {loading ? (
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    ) : (
+                      'Continue to Payment →'
+                    )}
                   </button>
                 </div>
               )}
 
               {step === 2 && (
                 <div className="space-y-6">
-                  <h2 className="text-2xl font-bold text-slate-900">Manual Payment</h2>
-                  <p className="text-slate-600 text-sm">
-                    Pay ₹{price} via UPI to activate the {planName}.
-                  </p>
-
-                  <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex justify-between items-center">
-                    <div>
-                      <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">UPI ID</p>
-                      <p className="font-mono text-slate-900">{showUpi ? 'adarshtiwari2412-4@okhdfcbank' : '*****************************'}</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <button 
-                        onClick={() => setShowUpi(!showUpi)}
-                        className="p-2 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors"
-                      >
-                        {showUpi ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
-                      <button 
-                        onClick={handleCopy}
-                        className="p-2 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors"
-                      >
-                        {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
-                      </button>
-                    </div>
+                  <div className="text-center">
+                    <h2 className="text-2xl font-bold text-slate-900">Complete Payment</h2>
+                    <p className="text-slate-600 text-sm mt-1">
+                      Pay ₹{price} for {planName}
+                    </p>
                   </div>
 
-                  <form onSubmit={handleSubmit} className="space-y-4 pt-4 border-t border-slate-100">
-                    <p className="text-sm font-bold text-slate-900">After paying, fill this:</p>
+                  <div className="flex flex-col items-center justify-center p-6 bg-slate-50 rounded-2xl border border-slate-200 space-y-4">
+                    <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+                      {deepLink ? (
+                        <QRCodeSVG value={deepLink} size={180} />
+                      ) : (
+                        <div className="w-[180px] h-[180px] bg-slate-100 animate-pulse rounded-lg"></div>
+                      )}
+                    </div>
+                    <p className="text-sm text-slate-500 font-medium text-center">Scan with any UPI App<br/>(GPay, PhonePe, Paytm)</p>
+                    
+                    <button
+                      onClick={() => window.location.href = deepLink}
+                      className="w-full flex items-center justify-center gap-2 py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition-colors"
+                    >
+                      <QrCode className="w-5 h-5" />
+                      Pay via UPI App
+                    </button>
+                  </div>
+
+                  <form onSubmit={handleSubmitUtr} className="space-y-4 pt-4 border-t border-slate-100">
+                    <p className="text-sm font-bold text-slate-900 text-center">Paid? Enter your UPI transaction/UTR number to confirm:</p>
                     
                     <input 
-                      required type="text" placeholder="Your Name"
-                      value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder-slate-500 outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
-                    />
-                    <input 
-                      required type="tel" placeholder="Phone Number"
-                      value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder-slate-500 outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
-                    />
-                    <input 
                       required type="text" placeholder="12-digit UTR from UPI app"
-                      value={formData.utrNumber} onChange={e => setFormData({...formData, utrNumber: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder-slate-500 outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
+                      value={utrNumber} onChange={e => setUtrNumber(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder-slate-500 outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 text-center"
                     />
 
                     <button 
                       type="submit" disabled={loading}
                       className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-colors disabled:opacity-70"
                     >
-                      {loading ? 'Submitting...' : 'Submit Payment Request →'}
+                      {loading ? 'Verifying...' : 'Submit UTR →'}
                     </button>
                   </form>
                 </div>
@@ -216,12 +232,11 @@ export function UpgradeModal({ isOpen, onClose, defaultPlan = 'basic' }: Upgrade
                   <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6 text-emerald-600">
                     <Check className="w-8 h-8" />
                   </div>
-                  <h2 className="text-2xl font-bold text-slate-900">Request received!</h2>
-                  <p className="text-slate-600">We'll verify and activate within 2-4 hours.</p>
+                  <h2 className="text-2xl font-bold text-slate-900">Payment Submitted!</h2>
+                  <p className="text-slate-600">We'll verify and activate your plan within a few hours.</p>
                   
                   <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-sm space-y-2 mt-6">
-                    <p className="text-slate-600">Confirmation email sent</p>
-                    <p className="text-slate-600">Reference: <span className="font-mono text-slate-900 font-bold">GQ-{Math.floor(Math.random() * 1000000)}</span></p>
+                    <p className="text-slate-600">Reference: <span className="font-mono text-slate-900 font-bold">{tn}</span></p>
                     <p className="text-slate-600">Questions? WhatsApp: <span className="font-medium text-slate-900">{process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP || '+91XXXXXXXXXX'}</span></p>
                   </div>
 

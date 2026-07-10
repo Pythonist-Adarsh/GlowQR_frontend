@@ -12,7 +12,8 @@ import {
   Bell,
   ShieldAlert,
   FlaskConical,
-  Trash2
+  Trash2,
+  IndianRupee
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { API_BASE_URL } from '@/lib/api-config';
@@ -52,6 +53,7 @@ export function AdminSidebar() {
   const navItems = [
     { name: 'Overview', href: '/admin', icon: LayoutDashboard },
     { name: 'Requests', href: '/admin/requests', icon: Bell, badge: pendingCount },
+    { name: 'Payments', href: '/admin/payments', icon: IndianRupee },
     { name: 'Users', href: '/admin/users', icon: UserCircle },
     { name: 'Revenue', href: '/admin/revenue', icon: CreditCard },
     { name: 'Feedback', href: '/admin/feedback', icon: MessageSquareWarning },
