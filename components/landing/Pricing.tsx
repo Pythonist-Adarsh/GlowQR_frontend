@@ -187,7 +187,7 @@ export function Pricing() {
           viewport={{ once: true }}
           className="mt-8 text-center text-sm font-medium text-gray-500"
         >
-          💳 Pay via UPI · Activated within 2-4 hours
+          💳 Secure UPI Payment · We verify and activate manually — usually within 2-4 hours (often faster)
         </motion.p>
       </div>
     </section>
