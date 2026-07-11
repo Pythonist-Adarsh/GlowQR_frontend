@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import { flushSync } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Star, ChevronLeft, Check, MapPin, ExternalLink, ArrowRight,
@@ -274,13 +275,15 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
       if (reviewText) navigator.clipboard.writeText(reviewText).catch(() => {});
     } catch (e) {}
     
-    setIsCopied(true);
-
     const isPremium = ['premium', 'trial'].includes(business.plan?.toLowerCase() || '');
     const hasInstagram = !!business.instagramUrl;
 
     sessionStorage.setItem('glowqr_flow_finished', 'true');
-    setStep(STEPS.COPIED);
+    
+    flushSync(() => {
+      setIsCopied(true);
+      setStep(STEPS.COPIED);
+    });
 
     if (business.googleReviewUrl && business.googleReviewUrl !== '#') {
       window.location.href = business.googleReviewUrl;
