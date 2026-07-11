@@ -174,7 +174,7 @@ export function HealthCheckerFlow() {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto bg-[var(--bg-card)] rounded-3xl shadow-2xl shadow-blue-900/5 border border-[var(--border-default)] min-h-[600px] flex flex-col relative">
+    <div className="w-full max-w-6xl mx-auto bg-[var(--bg-secondary)] rounded-3xl shadow-2xl shadow-blue-900/5 border border-[var(--border-default)] min-h-[600px] flex flex-col relative overflow-hidden">
       <AnimatePresence mode="wait">
         
         {/* STEP 1: SEARCH */}
@@ -387,22 +387,28 @@ export function HealthCheckerFlow() {
                   </p>
                 </div>
                 
-                {/* Score Ring */}
-                <div className="relative w-32 h-32 flex-shrink-0 flex items-center justify-center">
-                  <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="45" fill="none" stroke="var(--border-default)" strokeWidth="10" />
-                    <circle 
-                      cx="50" cy="50" r="45" fill="none" 
-                      stroke={scanResult.headline_score >= 70 ? 'var(--success-main)' : scanResult.headline_score >= 40 ? '#F59E0B' : '#EF4444'} 
-                      strokeWidth="10" 
-                      strokeDasharray={`${scanResult.headline_score * 2.83} 283`}
-                      strokeLinecap="round"
-                      className="transition-all duration-1000 ease-out"
-                    />
-                  </svg>
-                  <span className="text-4xl font-extrabold" style={{ color: scanResult.headline_score >= 70 ? 'var(--success-main)' : scanResult.headline_score >= 40 ? '#F59E0B' : '#EF4444' }}>
-                    {scanResult.headline_score}
-                  </span>
+                {/* Score Card */}
+                <div className="rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] p-5 shadow-sm w-44 shrink-0 flex flex-col items-center">
+                  <p className="text-xs font-medium text-[var(--text-tertiary)] w-full text-left">Overall Score</p>
+                  <div className="relative w-20 h-20 my-3 flex items-center justify-center">
+                    <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                      <circle cx="50" cy="50" r="45" fill="none" stroke="var(--border-default)" strokeWidth="10" />
+                      <circle 
+                        cx="50" cy="50" r="45" fill="none" 
+                        stroke={scanResult.headline_score >= 70 ? 'var(--success-main)' : scanResult.headline_score >= 40 ? '#F59E0B' : '#EF4444'} 
+                        strokeWidth="10" 
+                        strokeDasharray={`${scanResult.headline_score * 2.83} 283`}
+                        strokeLinecap="round"
+                        className="transition-all duration-1000 ease-out"
+                      />
+                    </svg>
+                    <span className="text-2xl font-display font-bold text-[var(--text-primary)]">
+                      {scanResult.headline_score}
+                    </span>
+                  </div>
+                  <p className="w-full text-left text-xs font-semibold" style={{ color: scanResult.headline_score >= 70 ? 'var(--success-main)' : scanResult.headline_score >= 40 ? '#F59E0B' : '#EF4444' }}>
+                    {scanResult.headline_score >= 70 ? 'Strong' : scanResult.headline_score >= 40 ? 'Needs Work' : 'Critical'}
+                  </p>
                 </div>
               </div>
 
