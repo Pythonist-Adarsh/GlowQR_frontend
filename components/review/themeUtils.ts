@@ -7,41 +7,37 @@ export function hexToRgb(hex: string) {
   return { r, g, b };
 }
 
-export function getLuminance(hex: string) {
-  const { r, g, b } = hexToRgb(hex);
-  return (r * 299 + g * 587 + b * 114) / 1000;
-}
-
-export function getContrastText(hexColor: string): string {
-  const luminance = getLuminance(hexColor);
-  return luminance > 145 ? '#111111' : '#FFFFFF';
-}
-
-export function mixColorWithBlack(hex: string, percentage: number) {
-  const { r, g, b } = hexToRgb(hex);
-  const factor = 1 - (percentage / 100);
-  const newR = Math.round(r * factor);
-  const newG = Math.round(g * factor);
-  const newB = Math.round(b * factor);
-  return `rgb(${newR}, ${newG}, ${newB})`;
-}
-
 export function getThemeVariables(plan: string, brandColor: string) {
-  const isBasic = plan === 'basic' || plan === 'free';
-  const color = isBasic ? '#E53E3E' : (brandColor || '#7C3AED');
+  // Use #2F5FE0 as fallback, but if the old default #6366F1 was passed, 
+  // we could just treat it as the accent, or override it.
+  // The user requested: "The accent hook should just default silently to #2F5FE0 for every business unless a value is already set in whatever field you find."
+  const isOldDefault = brandColor === '#6366F1' || brandColor === '#1D9E75' || !brandColor;
+  const accentColor = isOldDefault ? '#2F5FE0' : brandColor;
 
-  const { r, g, b } = hexToRgb(color);
+  const { r, g, b } = hexToRgb(accentColor);
 
   return {
-    '--accent': color,
+    '--accent': accentColor,
     '--accent-rgb': `${r}, ${g}, ${b}`,
-    '--accent-glow': `${color}B3`,
-    '--accent-text': getContrastText(color),
-    '--bg-primary': isBasic ? '#0a0a0a' : mixColorWithBlack(color, 85),
-    '--bg-card': isBasic ? '#141414' : mixColorWithBlack(color, 75),
-    '--text-primary': '#FFFFFF',
-    '--text-secondary': 'rgba(255, 255, 255, 0.65)',
-    '--text-muted': 'rgba(255, 255, 255, 0.40)',
-    '--border-default': isBasic ? '#333333' : mixColorWithBlack(color, 65)
-  } as React.CSSProperties;
+    '--bg-primary': '#FAFAF8',
+    '--bg-card': '#FFFFFF',
+    '--text-primary': '#1F2430',
+    '--text-secondary': '#62687A',
+    '--text-muted': '#9BA0AE',
+    '--border-default': '#E2E4E9',
+    
+    // Success (Green)
+    '--success-main': '#159652',
+    '--success-bg': '#E3F6EA',
+    '--success-text': '#0B5C31',
+    
+    // Rating Stars (Amber)
+    '--star-filled': '#F0A93E',
+    '--star-empty': '#E2E4E9',
+    
+    // Error (Red)
+    '--error-main': '#D8434B',
+    '--error-bg': '#FCE6E7',
+    '--error-text': '#8C242B'
+  } as React.CSSProperties & Record<string, string>;
 }
