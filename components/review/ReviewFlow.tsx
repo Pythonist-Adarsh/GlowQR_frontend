@@ -257,12 +257,14 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
     const isPremium = ['premium', 'trial'].includes(business.plan?.toLowerCase() || '');
     const hasInstagram = !!business.instagramUrl;
 
-    if (business.googleReviewUrl && business.googleReviewUrl !== '#') {
-      window.location.href = business.googleReviewUrl;
-    } else if (isPremium && hasInstagram) {
+    if (isPremium && hasInstagram) {
       setStep(STEPS.INSTAGRAM);
     } else {
       setStep(STEPS.COPIED);
+    }
+
+    if (business.googleReviewUrl && business.googleReviewUrl !== '#') {
+      window.location.href = business.googleReviewUrl;
     }
 
     try {
