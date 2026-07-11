@@ -19,10 +19,10 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
   // Expired plan
   if (plan === 'expired') {
     return (
-      <div className={`min-h-screen flex items-center justify-center bg-slate-900 text-white p-6 text-center`}>
+      <div className={`min-h-screen flex items-center justify-center bg-[#FAFAF8] text-[#1F2430] p-6 text-center`}>
         <div>
           <h1 className="text-2xl font-bold mb-2">Scanner Inactive</h1>
-          <p className="text-slate-400">This QR code is no longer active.</p>
+          <p className="text-[#62687A]">This QR code is no longer active.</p>
         </div>
       </div>
     );
@@ -33,7 +33,6 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
   // Get computed hex colors for Canvas APIs and React inline styles
   const themeVars = getThemeVariables(plan, businessData?.primaryColor || businessData?.brandColor);
   const brandColor = themeVars['--accent'] as string;
-  const isLight = false; // Forced dark theme for the AR experience overlay
 
   useEffect(() => {
     // Welcome message fade-in / typewriter
@@ -67,7 +66,7 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
     };
   }, [businessData.name, businessData.welcomeMessage, isPremium, onComplete]);
 
-  // Canvas Logic
+  // Canvas Logic for Particles
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -89,18 +88,18 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
     window.addEventListener('resize', handleResize);
 
     const particles: any[] = [];
-    const numParticles = isPremium ? 65 : 20;
+    const numParticles = isPremium ? 40 : 15;
 
     const createParticle = (x: number, y: number) => {
       const isSquare = isPremium && Math.random() > 0.5;
-      const baseColors = [brandColor, '#ffffff', '#e2e8f0', brandColor, brandColor];
+      const baseColors = [brandColor, '#E2E4E9', brandColor];
       const color = isPremium ? baseColors[Math.floor(Math.random() * baseColors.length)] : brandColor;
       
       return {
         x, y,
-        vx: (Math.random() - 0.5) * (isPremium ? 15 : 10),
-        vy: (Math.random() - 0.5) * (isPremium ? 15 : 10),
-        size: Math.random() * (isPremium ? 6 : 4) + 2,
+        vx: (Math.random() - 0.5) * (isPremium ? 10 : 6),
+        vy: (Math.random() - 0.5) * (isPremium ? 10 : 6),
+        size: Math.random() * (isPremium ? 5 : 3) + 2,
         alpha: 1,
         life: 1,
         decay: Math.random() * 0.02 + 0.015,
@@ -123,8 +122,8 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
       ctx.clearRect(0, 0, width, height);
 
       // Continuous respawn for premium
-      if (isPremium && frameCount % 70 === 0) {
-        for (let i = 0; i < 15; i++) {
+      if (isPremium && frameCount % 80 === 0) {
+        for (let i = 0; i < 10; i++) {
           particles.push(createParticle(width / 2, height / 2));
         }
       }
@@ -144,7 +143,7 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
         ctx.save();
         ctx.translate(p.x, p.y);
         ctx.rotate(p.rotation);
-        ctx.globalAlpha = p.life;
+        ctx.globalAlpha = p.life * 0.6; // Slightly softer particles for light mode
         ctx.fillStyle = p.color;
 
         if (p.isSquare) {
@@ -171,79 +170,25 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
 
   return (
     <div 
-      className="absolute inset-0 z-50 flex flex-col items-center justify-center overflow-hidden"
-      style={{ backgroundColor: `${brandColor}15` }}
+      className="absolute inset-0 z-50 flex flex-col items-center justify-center overflow-hidden bg-[var(--bg-primary)] font-sans"
+      style={themeVars as any}
     >
-      {!isLight && <div className="absolute inset-0 bg-slate-900/95 mix-blend-multiply" />}
-      {isLight && <div className="absolute inset-0 bg-white/90 mix-blend-screen" />}
       <canvas ref={canvasRef} className="absolute inset-0 z-10 pointer-events-none" />
-
-      {/* Camera Grid Overlay (Premium) */}
-      {isPremium && (
-        <svg className="absolute inset-0 z-20 pointer-events-none opacity-[0.05]" width="100%" height="100%">
-          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="0.5"/>
-          </pattern>
-          <rect width="100%" height="100%" fill="url(#grid)" />
-        </svg>
-      )}
-
-      {/* HUD Brackets (Premium) */}
-      {isPremium && (
-        <div className="absolute inset-6 z-20 pointer-events-none opacity-40">
-          <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-white" />
-          <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-white" />
-          <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-white" />
-          <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-white" />
-        </div>
-      )}
-
-      {/* Scan Line Animation */}
-      <motion.div
-        className="absolute top-0 left-0 right-0 h-1 z-30 opacity-40 shadow-[0_0_15px_currentColor]"
-        style={{ color: brandColor, backgroundColor: brandColor }}
-        animate={{ top: ['0%', '100%', '0%'] }}
-        transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
-      />
 
       {/* Central Content */}
       <div className="relative z-40 flex flex-col items-center max-w-[320px] w-full text-center p-6">
-        <div className="relative mb-6">
-          {/* Pulsing rings */}
-          <motion.div 
-            className="absolute inset-0 rounded-full border border-current opacity-50"
-            style={{ color: brandColor }}
-            animate={{ scale: [1, 2], opacity: [0.5, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          />
-          {isPremium && (
-            <>
-              <motion.div 
-                className="absolute inset-0 rounded-full border border-current opacity-50"
-                style={{ color: brandColor }}
-                animate={{ scale: [1, 2.5], opacity: [0.4, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
-              />
-              <motion.div 
-                className="absolute inset-0 rounded-full border border-current opacity-50"
-                style={{ color: brandColor }}
-                animate={{ scale: [1, 3], opacity: [0.3, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity, delay: 0.6 }}
-              />
-            </>
-          )}
-
+        <div className="relative mb-8 mt-4">
           <motion.div
-            className="h-auto w-auto max-h-48 max-w-[18rem] bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-2 shadow-[0_0_30px_rgba(0,0,0,0.3)] inline-flex items-center justify-center relative z-10 overflow-hidden"
-            initial={{ scale: 0.4, opacity: 0 }}
+            className="h-auto w-auto max-h-48 max-w-[18rem] bg-[var(--bg-card)] border border-[var(--border-default)] rounded-[20px] p-2 inline-flex items-center justify-center relative z-10 overflow-hidden shadow-sm"
+            initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 200, damping: 15 }}
           >
             {businessData.logo || businessData.logoUrl ? (
-              <img src={businessData.logo || businessData.logoUrl} alt="Logo" className="max-h-[8rem] max-w-full object-contain drop-shadow-md rounded-2xl" />
+              <img src={businessData.logo || businessData.logoUrl} alt="Logo" className="max-h-[8rem] max-w-full object-contain rounded-2xl" />
             ) : (
               <div className="h-24 w-24 flex items-center justify-center">
-                <span className={`text-4xl font-black text-white text-center uppercase tracking-tighter leading-none`} style={{ color: 'var(--text-primary)' }}>
+                <span className={`text-4xl font-black text-center uppercase tracking-tighter leading-none text-[var(--text-primary)]`}>
                   {businessData.name?.substring(0, 2)}
                 </span>
               </div>
@@ -254,33 +199,33 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
+          transition={{ delay: 0.2 }}
           className="w-full flex flex-col items-center"
         >
-          <h2 className="text-2xl font-black mb-2 leading-tight uppercase tracking-wide" style={{ color: brandColor }}>{businessData.name}</h2>
-          <p className={`text-white/60 font-medium tracking-wide text-sm mb-6 italic`}>{businessData.tagline}</p>
+          <h2 className="text-2xl font-[600] mb-2 leading-tight text-[var(--text-primary)]">{businessData.name}</h2>
+          <p className={`text-[var(--text-secondary)] font-medium text-[15px] mb-8 italic`}>{businessData.tagline}</p>
           
           {businessData.website && (
             <a 
               href={businessData.website.startsWith('http') ? businessData.website : `https://${businessData.website}`}
               target="_blank" rel="noopener noreferrer"
-              className={`text-[10px] font-bold uppercase tracking-widest px-5 py-2.5 rounded-full border border-white/20 hover:bg-white/10 text-white flex items-center gap-2 transition-all mb-8`}
+              className={`text-[11px] font-[600] uppercase tracking-widest px-5 py-2.5 rounded-full border border-[var(--border-default)] hover:bg-[#F3F4F7] text-[var(--text-primary)] flex items-center gap-2 transition-all mb-8`}
             >
               VISIT WEBSITE <ExternalLink className="w-3 h-3" />
             </a>
           )}
         </motion.div>
 
-        <div className="min-h-[4rem] h-auto flex items-center justify-center mb-6">
+        <div className="min-h-[3rem] h-auto flex items-center justify-center mb-4">
           {isPremium ? (
-            <p className="text-emerald-400 font-bold tracking-widest uppercase text-xs leading-relaxed" style={{ color: getLightenedBrandColor(brandColor, 30) }}>
+            <p className="text-[var(--text-secondary)] font-[600] tracking-widest uppercase text-xs leading-relaxed">
               {typedMessage}
             </p>
           ) : (
             showContent && (
               <motion.p 
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} 
-                className={`text-white font-bold tracking-widest uppercase text-xs leading-relaxed`}
+                className={`text-[var(--text-secondary)] font-[600] tracking-widest uppercase text-xs leading-relaxed`}
               >
                 {businessData.welcomeMessage || `Welcome to ${businessData.name}`}
               </motion.p>
@@ -295,8 +240,8 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
               onClick={onComplete}
-              className={`w-full py-4 mt-4 rounded-xl font-bold text-sm text-white shadow-[0_0_20px_rgba(0,0,0,0.3)] flex items-center justify-center gap-2 transition-all active:scale-[0.98]`}
-              style={{ backgroundColor: brandColor }}
+              className={`w-full py-4 mt-2 rounded-full font-[600] text-[15px] text-white flex items-center justify-center gap-2 transition-all active:scale-[0.98]`}
+              style={{ backgroundColor: 'var(--accent)' }}
             >
               Share your experience <ArrowRight className="w-4 h-4" />
             </motion.button>
@@ -305,28 +250,4 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
       </div>
     </div>
   );
-}
-
-// Helper
-function getLightenedBrandColor(hex: string, percent: number): string {
-  let c = hex.replace('#', '');
-  if (c.length === 3) c = c[0] + c[0] + c[1] + c[1] + c[2] + c[2];
-  const r = parseInt(c.substring(0, 2), 16) / 255;
-  const g = parseInt(c.substring(2, 4), 16) / 255;
-  const b = parseInt(c.substring(4, 6), 16) / 255;
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  let h = 0, s = 0, l = (max + min) / 2;
-  if (max !== min) {
-    const d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-    switch (max) {
-      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-      case g: h = (b - r) / d + 2; break;
-      case b: h = (r - g) / d + 4; break;
-    }
-    h /= 6;
-  }
-  const targetL = Math.min(100, Math.round(l * 100) + percent);
-  return `hsl(${Math.round(h * 360)}, ${Math.round(s * 100)}%, ${targetL}%)`;
 }
