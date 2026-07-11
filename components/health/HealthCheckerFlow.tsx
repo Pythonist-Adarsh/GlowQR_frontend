@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Loader2, ArrowRight, ShieldCheck, MapPin, Building, Star, AlertTriangle, TrendingUp, CheckCircle2, ChevronRight } from 'lucide-react';
+import { Search, Loader2, ArrowRight, ShieldCheck, MapPin, Building, Star, AlertTriangle, TrendingUp, CheckCircle2, ChevronRight, Sparkles, Info, XCircle } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/api-config';
 import Link from 'next/link';
 
@@ -313,83 +313,181 @@ export function HealthCheckerFlow() {
             key="results"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex-1 flex flex-col h-full"
+            className="flex-1 flex flex-col h-full space-y-8"
           >
-            {/* Header Result */}
-            <div className="bg-slate-900 text-white p-8 md:px-12 md:py-10 text-center relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 via-yellow-500 to-green-500"></div>
-              
-              <div className="flex flex-col md:flex-row items-center justify-between gap-8 max-w-3xl mx-auto">
+            {/* Header Result - Light Theme with Circular Ring */}
+            <div className="bg-[var(--bg-card)] p-8 md:px-12 md:py-10 text-center relative overflow-hidden rounded-3xl border border-[var(--border-default)] shadow-sm">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-8 max-w-4xl mx-auto">
                 <div className="text-left flex-1">
-                  <div className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-2">Health Score Result</div>
-                  <h2 className="text-3xl font-bold mb-2">{scanResult.headline_score}/100</h2>
-                  <p className="text-slate-300 text-lg">
+                  <div className="text-sm font-bold uppercase tracking-wider text-[var(--accent)] mb-2">Health Score Result</div>
+                  <h2 className="text-3xl font-bold mb-3 text-[var(--text-primary)]">
                     {scanResult.headline_score >= 80 ? 'Excellent visibility! You are dominating local search.' : 
                      scanResult.headline_score >= 50 ? 'Average. You are losing significant traffic to competitors.' : 
                      'Critical alert. You are virtually invisible in local search.'}
+                  </h2>
+                  <p className="text-[var(--text-secondary)] text-lg">
+                    This score combines your Google Maps performance with your AI-Search readiness.
                   </p>
                 </div>
                 
-                {/* Circular Score display could go here, keeping it simple for now */}
+                {/* Score Ring */}
+                <div className="relative w-32 h-32 flex-shrink-0 flex items-center justify-center">
+                  <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="var(--border-default)" strokeWidth="10" />
+                    <circle 
+                      cx="50" cy="50" r="45" fill="none" 
+                      stroke={scanResult.headline_score >= 70 ? 'var(--success-main)' : scanResult.headline_score >= 40 ? '#F59E0B' : '#EF4444'} 
+                      strokeWidth="10" 
+                      strokeDasharray={`${scanResult.headline_score * 2.83} 283`}
+                      strokeLinecap="round"
+                      className="transition-all duration-1000 ease-out"
+                    />
+                  </svg>
+                  <span className="text-4xl font-extrabold" style={{ color: scanResult.headline_score >= 70 ? 'var(--success-main)' : scanResult.headline_score >= 40 ? '#F59E0B' : '#EF4444' }}>
+                    {scanResult.headline_score}
+                  </span>
+                </div>
+              </div>
+
+              {/* Three Dimension Score Breakdown */}
+              <div className="grid md:grid-cols-3 gap-6 mt-12 max-w-4xl mx-auto">
+                {/* Local Visibility */}
+                <div className="bg-[var(--bg-primary)] p-5 rounded-2xl border border-[var(--border-default)] flex flex-col items-center text-center">
+                  <div className="text-[var(--text-primary)] font-bold mb-1">Local Visibility</div>
+                  <div className="text-[var(--text-secondary)] text-xs mb-3">Google Maps & Reviews</div>
+                  <div className="relative w-16 h-16 flex items-center justify-center">
+                    <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                      <circle cx="50" cy="50" r="40" fill="none" stroke="var(--border-default)" strokeWidth="8" />
+                      <circle cx="50" cy="50" r="40" fill="none" stroke="var(--accent)" strokeWidth="8" strokeDasharray={`${scanResult.gmb_score * 2.51} 251`} strokeLinecap="round" />
+                    </svg>
+                    <span className="font-bold text-[var(--text-primary)]">{scanResult.gmb_score}</span>
+                  </div>
+                </div>
+                
+                {/* Website SEO */}
+                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 flex flex-col items-center text-center relative overflow-hidden">
+                  <div className="absolute top-2 right-2 bg-slate-200 text-slate-500 text-[10px] font-bold px-2 py-1 rounded-md">COMING SOON</div>
+                  <div className="text-slate-400 font-bold mb-1">Website SEO</div>
+                  <div className="text-slate-400 text-xs mb-3">On-page markup</div>
+                  <div className="relative w-16 h-16 flex items-center justify-center opacity-50 grayscale">
+                    <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                      <circle cx="50" cy="50" r="40" fill="none" stroke="#E2E4E9" strokeWidth="8" />
+                    </svg>
+                    <span className="font-bold text-slate-400">N/A</span>
+                  </div>
+                </div>
+
+                {/* AI Search Ready */}
+                <div className="bg-[var(--bg-primary)] p-5 rounded-2xl border border-[var(--border-default)] flex flex-col items-center text-center relative">
+                  <div className="absolute -top-3 -right-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[10px] font-bold px-2 py-1 rounded-md flex items-center gap-1 shadow-md">
+                    <Sparkles className="w-3 h-3" /> NEW
+                  </div>
+                  <div className="text-[var(--text-primary)] font-bold mb-1">AI Search Ready</div>
+                  <div className="text-[var(--text-secondary)] text-[10px] mb-3 leading-tight px-2">How discoverable you are to ChatGPT & AI Overviews</div>
+                  <div className="relative w-16 h-16 flex items-center justify-center">
+                    <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                      <circle cx="50" cy="50" r="40" fill="none" stroke="var(--border-default)" strokeWidth="8" />
+                      <circle cx="50" cy="50" r="40" fill="none" stroke="#8B5CF6" strokeWidth="8" strokeDasharray={`${scanResult.geo_aeo_score * 2.51} 251`} strokeLinecap="round" />
+                    </svg>
+                    <span className="font-bold text-[var(--text-primary)]">{scanResult.geo_aeo_score}</span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="p-8 md:p-12 flex-1 grid lg:grid-cols-2 gap-12 bg-[var(--bg-primary)]">
+            <div className="flex-1 grid lg:grid-cols-2 gap-8">
               
               {/* Left Column: Data & Competitors */}
-              <div className="space-y-10">
+              <div className="space-y-8">
                 
-                <section>
-                  <h3 className="text-xl font-bold mb-6 text-[var(--text-primary)] flex items-center gap-2">
+                {/* Competitor Leaderboard */}
+                <section className="bg-[var(--bg-card)] p-6 md:p-8 rounded-3xl border border-[var(--border-default)] shadow-sm">
+                  <h3 className="text-xl font-bold mb-2 text-[var(--text-primary)] flex items-center gap-2">
                     <TrendingUp className="w-5 h-5 text-[var(--accent)]" /> 
-                    Competitor Comparison
+                    Local Competitor Leaderboard
                   </h3>
                   
-                  <div className="space-y-6">
-                    {/* Your Business */}
-                    <div>
-                      <div className="flex justify-between mb-2">
-                        <span className="font-semibold">You ({scanResult.business_rating} ★)</span>
-                        <span className="font-bold">{scanResult.business_reviews} reviews</span>
-                      </div>
-                      <div className="w-full bg-slate-200 rounded-full h-3">
-                        <div 
-                          className="bg-[var(--text-primary)] h-3 rounded-full" 
-                          style={{ width: `${Math.min(100, (scanResult.business_reviews / Math.max(scanResult.competitor_top_reviews, scanResult.business_reviews, 1)) * 100)}%` }}
-                        ></div>
-                      </div>
-                    </div>
+                  {(() => {
+                    // Combine business with top 5 competitors and sort
+                    const allBiz = [
+                      { isMe: true, name: "You (Searched Business)", rating: scanResult.business_rating, reviews: scanResult.business_reviews },
+                      ...(scanResult.competitors || []).slice(0, 5).map((c: any, i: number) => ({
+                        isMe: false, name: c.name || `Competitor ${i+1}`, rating: c.rating, reviews: c.reviews
+                      }))
+                    ].sort((a, b) => b.reviews - a.reviews);
                     
-                    {/* Top Competitor */}
-                    <div>
-                      <div className="flex justify-between mb-2">
-                        <span className="font-semibold text-[var(--text-secondary)]">Top Competitor</span>
-                        <span className="font-bold text-[var(--accent)]">{scanResult.competitor_top_reviews} reviews</span>
-                      </div>
-                      <div className="w-full bg-slate-200 rounded-full h-3">
-                        <div 
-                          className="bg-[var(--accent)] h-3 rounded-full" 
-                          style={{ width: `${Math.min(100, (scanResult.competitor_top_reviews / Math.max(scanResult.competitor_top_reviews, scanResult.business_reviews, 1)) * 100)}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  </div>
+                    const myRank = allBiz.findIndex(b => b.isMe) + 1;
+                    const maxReviews = Math.max(1, ...allBiz.map(b => b.reviews));
+                    
+                    return (
+                      <>
+                        <p className="text-[var(--text-secondary)] mb-6 font-medium">
+                          You rank <strong className="text-[var(--text-primary)]">#{myRank}</strong> out of {allBiz.length} top businesses in {category} near {scanResult.city || 'you'}.
+                        </p>
+                        <div className="space-y-5">
+                          {allBiz.map((biz, idx) => (
+                            <div key={idx}>
+                              <div className="flex justify-between mb-1.5 items-end">
+                                <span className={`font-semibold text-sm ${biz.isMe ? 'text-[var(--accent)]' : 'text-[var(--text-primary)]'}`}>
+                                  {idx + 1}. {biz.name}
+                                </span>
+                                <span className={`font-bold text-sm ${biz.isMe ? 'text-[var(--accent)]' : 'text-[var(--text-secondary)]'}`}>
+                                  {biz.reviews} reviews
+                                </span>
+                              </div>
+                              <div className="w-full bg-slate-100 rounded-full h-3">
+                                <div 
+                                  className={`h-3 rounded-full ${biz.isMe ? 'bg-[var(--accent)]' : 'bg-slate-300'}`}
+                                  style={{ width: `${Math.max(2, (biz.reviews / maxReviews) * 100)}%` }}
+                                ></div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    );
+                  })()}
                 </section>
 
-                <section>
+                {/* Top Issues List */}
+                <section className="bg-[var(--bg-card)] p-6 md:p-8 rounded-3xl border border-[var(--border-default)] shadow-sm">
                   <h3 className="text-xl font-bold mb-6 text-[var(--text-primary)] flex items-center gap-2">
-                    <AlertTriangle className="w-5 h-5 text-amber-500" /> 
+                    <ShieldCheck className="w-5 h-5 text-[var(--text-primary)]" /> 
                     Top Issues Found
                   </h3>
                   <ul className="space-y-4">
-                    {scanResult.issues.map((issue: string, idx: number) => (
-                      <li key={idx} className="flex items-start gap-3 bg-[var(--bg-card)] p-4 rounded-xl border border-[var(--border-default)]">
-                        <div className="mt-0.5 text-amber-500">●</div>
-                        <p className="text-[var(--text-primary)] leading-snug">{issue}</p>
-                      </li>
-                    ))}
+                    {scanResult.issues.map((issue: string, idx: number) => {
+                      let severity = 'info';
+                      let Icon = Info;
+                      let colors = 'bg-blue-50 text-blue-700 border-blue-200';
+                      let tagText = 'INFO';
+                      
+                      const issueLower = issue.toLowerCase();
+                      if (issueLower.includes('critical') || issueLower.includes('below the 4.0') || issueLower.includes('virtually invisible')) {
+                        severity = 'critical';
+                        Icon = XCircle;
+                        colors = 'bg-red-50 text-red-700 border-red-200';
+                        tagText = 'CRITICAL';
+                      } else if (issueLower.includes('losing') || issueLower.includes('missing') || issueLower.includes('lion\'s share')) {
+                        severity = 'warning';
+                        Icon = AlertTriangle;
+                        colors = 'bg-amber-50 text-amber-700 border-amber-200';
+                        tagText = 'WARNING';
+                      }
+                      
+                      return (
+                        <li key={idx} className="flex flex-col sm:flex-row sm:items-start gap-3 bg-white p-4 rounded-xl border border-[var(--border-default)]">
+                          <div className={`text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 w-fit border ${colors}`}>
+                            <Icon className="w-3 h-3" /> {tagText}
+                          </div>
+                          <p className="text-[var(--text-primary)] leading-snug text-sm sm:mt-0.5">{issue}</p>
+                        </li>
+                      );
+                    })}
                     {scanResult.issues.length === 0 && (
-                      <li className="text-green-600 font-medium p-4 bg-green-50 rounded-xl">No major issues found! Keep growing your reviews.</li>
+                      <li className="text-green-700 font-medium p-4 bg-green-50 rounded-xl border border-green-200 flex items-center gap-2">
+                        <CheckCircle2 className="w-5 h-5" /> No major issues found! Keep growing your reviews.
+                      </li>
                     )}
                   </ul>
                 </section>
