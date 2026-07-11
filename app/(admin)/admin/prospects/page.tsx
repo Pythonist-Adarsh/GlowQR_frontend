@@ -19,7 +19,7 @@ export default function AdminProspectsPage() {
   const fetchProspects = async () => {
     try {
       // In a real app this uses the admin cookie or token.
-      const res = await fetch(`${API_BASE_URL}/api/admin/prospects`);
+      const res = await fetch(`/api/admin-proxy/prospects`);
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
       setProspects(data);
