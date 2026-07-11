@@ -190,7 +190,7 @@ export default function RequestsPage() {
             <h2 className="text-xl font-bold text-slate-900 mb-4">Reject Request</h2>
             <div className="mb-4">
               <label className="block text-sm font-medium text-slate-700 mb-2">Reason for Rejection</label>
-              <select value={rejectReason} onChange={e => setRejectReason(e.target.value)} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white mb-3">
+              <select value={rejectReason} onChange={e => setRejectReason(e.target.value)} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white mb-3 text-slate-900">
                 <option value="UTR not found">UTR not found</option>
                 <option value="Amount mismatch">Amount mismatch</option>
                 <option value="Duplicate request">Duplicate request</option>
@@ -201,7 +201,7 @@ export default function RequestsPage() {
                   value={customReason}
                   onChange={e => setCustomReason(e.target.value)}
                   placeholder="Enter custom reason..."
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-slate-900"
                   rows={3}
                 />
               )}

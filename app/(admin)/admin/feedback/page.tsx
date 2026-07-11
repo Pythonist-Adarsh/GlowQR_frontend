@@ -90,12 +90,12 @@ export default function FeedbackPage() {
             placeholder="Search business name..." 
             value={businessSearch}
             onChange={(e) => setBusinessSearch(e.target.value)}
-            className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
+            className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-slate-900 text-slate-900"
           />
           <select 
             value={statusFilter} 
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 border border-slate-300 rounded-lg bg-white min-w-[150px]"
+            className="px-4 py-2 border border-slate-300 rounded-lg bg-white min-w-[150px] text-slate-900"
           >
             <option value="all">All Feedback</option>
             <option value="unread">Unread</option>

@@ -118,7 +118,7 @@ export default function TrashPage() {
               placeholder="Search deleted users by name or email..." 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
+              className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-slate-900 text-slate-900"
             />
           </div>
         </div>
@@ -250,7 +250,7 @@ export default function TrashPage() {
                   type="text" 
                   value={confirmName}
                   onChange={(e) => setConfirmName(e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-slate-900"
                   placeholder="Enter client name"
                 />
               </div>
@@ -263,7 +263,7 @@ export default function TrashPage() {
                   type="password" 
                   value={adminPin}
                   onChange={(e) => setAdminPin(e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-slate-900"
                   placeholder="Enter your admin PIN/password"
                 />
               </div>

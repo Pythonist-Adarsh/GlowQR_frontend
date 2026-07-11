@@ -113,16 +113,16 @@ export default function SettingsPage() {
           <div className="p-6 space-y-6">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">UPI ID (For manual payments)</label>
-              <input type="text" name="upi_id" value={settings.upi_id || ''} onChange={handleChange} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-slate-900" placeholder="e.g. merchant@upi" />
+              <input type="text" name="upi_id" value={settings.upi_id || ''} onChange={handleChange} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-slate-900 text-slate-900" placeholder="e.g. merchant@upi" />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Basic Plan Price (₹)</label>
-                <input type="number" name="basic_plan_price" value={settings.basic_plan_price} onChange={handleChange} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-slate-900" />
+                <input type="number" name="basic_plan_price" value={settings.basic_plan_price} onChange={handleChange} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-slate-900 text-slate-900" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Premium Plan Price (₹)</label>
-                <input type="number" name="premium_plan_price" value={settings.premium_plan_price} onChange={handleChange} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-slate-900" />
+                <input type="number" name="premium_plan_price" value={settings.premium_plan_price} onChange={handleChange} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-slate-900 text-slate-900" />
               </div>
             </div>
           </div>
@@ -137,7 +137,7 @@ export default function SettingsPage() {
           <div className="p-6 space-y-6">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Admin Notification Email</label>
-              <input type="email" name="notification_email" value={settings.notification_email || ''} onChange={handleChange} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-slate-900" placeholder="admin@glowqr.in" />
+              <input type="email" name="notification_email" value={settings.notification_email || ''} onChange={handleChange} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-slate-900 text-slate-900" placeholder="admin@glowqr.in" />
             </div>
             <div className="space-y-3">
               <label className="flex items-center gap-3">
@@ -179,11 +179,11 @@ export default function SettingsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Current Password</label>
-                <input type="password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-slate-900" placeholder="Enter current password" />
+                <input type="password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-slate-900 text-slate-900" placeholder="Enter current password" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">New Password</label>
-                <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-slate-900" placeholder="Enter new password" />
+                <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-slate-900 text-slate-900" placeholder="Enter new password" />
               </div>
             </div>
             <div className="flex justify-end">

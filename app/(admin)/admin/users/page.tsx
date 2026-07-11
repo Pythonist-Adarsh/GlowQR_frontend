@@ -139,13 +139,13 @@ export default function UsersPage() {
               placeholder="Search by name, email, or business..." 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
+              className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-slate-900 text-slate-900"
             />
           </div>
           <select 
             value={planFilter} 
             onChange={(e) => setPlanFilter(e.target.value)}
-            className="px-4 py-2 border border-slate-300 rounded-lg bg-white min-w-[150px]"
+            className="px-4 py-2 border border-slate-300 rounded-lg bg-white min-w-[150px] text-slate-900"
           >
             <option value="all">All Plans</option>
             <option value="premium">Premium</option>
@@ -230,7 +230,7 @@ export default function UsersPage() {
             <h2 className="text-xl font-bold text-slate-900 mb-4">Edit User Plan</h2>
             <div className="mb-4">
               <label className="block text-sm font-medium text-slate-700 mb-1">Plan</label>
-              <select value={newPlan?.toLowerCase() || ''} onChange={e => setNewPlan(e.target.value)} className="w-full px-4 py-2 border border-slate-300 rounded-lg mb-4 appearance-auto bg-white">
+              <select value={newPlan?.toLowerCase() || ''} onChange={e => setNewPlan(e.target.value)} className="w-full px-4 py-2 border border-slate-300 rounded-lg mb-4 appearance-auto bg-white text-slate-900">
                 <option value="trial">Trial</option>
                 <option value="basic">Basic</option>
                 <option value="premium">Premium</option>
@@ -240,7 +240,7 @@ export default function UsersPage() {
               {newPlan?.toLowerCase() === 'trial' && (
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Trial Expiry Date</label>
-                  <input type="date" value={newExpiry} onChange={e => setNewExpiry(e.target.value)} className="w-full px-4 py-2 border border-slate-300 rounded-lg" />
+                  <input type="date" value={newExpiry} onChange={e => setNewExpiry(e.target.value)} className="w-full px-4 py-2 border border-slate-300 rounded-lg text-slate-900" />
                 </div>
               )}
             </div>
