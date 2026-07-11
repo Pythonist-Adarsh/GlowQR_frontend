@@ -9,7 +9,7 @@ import { AnimatedGetStartedButton } from '@/components/marketing/AnimatedGetStar
 
 const links = [
   { href: '/#features', label: 'Features' },
-  { href: '/#pricing', label: 'Pricing' },
+  { href: '/pricing', label: 'Pricing' },
   { href: '/about', label: 'About Us' },
   { href: '/contact', label: 'Contact Us' },
 ]

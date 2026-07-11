@@ -8,7 +8,7 @@ const cols = [
     title: 'Product',
     links: [
       { label: 'Features', href: '#features' },
-      { label: 'Pricing', href: '#pricing' },
+      { label: 'Pricing', href: '/pricing' },
       { label: 'Dashboard', href: '#dashboard-preview' },
       { label: 'Sign in', href: '/sign-in' },
     ],
