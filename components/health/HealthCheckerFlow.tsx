@@ -409,15 +409,34 @@ export function HealthCheckerFlow() {
               {/* Three Dimension Score Breakdown */}
               <div className="grid md:grid-cols-3 gap-6 mt-12 max-w-4xl mx-auto">
                 {/* Local Visibility */}
-                <div className="bg-[var(--bg-primary)] p-5 rounded-2xl border border-[var(--border-default)] flex flex-col items-center text-center">
-                  <div className="text-[var(--text-primary)] font-bold mb-1">Local Visibility</div>
-                  <div className="text-[var(--text-secondary)] text-xs mb-3">Google Maps & Reviews</div>
-                  <div className="relative w-16 h-16 flex items-center justify-center">
-                    <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                      <circle cx="50" cy="50" r="40" fill="none" stroke="var(--border-default)" strokeWidth="8" />
-                      <circle cx="50" cy="50" r="40" fill="none" stroke="var(--accent)" strokeWidth="8" strokeDasharray={`${scanResult.gmb_score * 2.51} 251`} strokeLinecap="round" />
-                    </svg>
-                    <span className="font-bold text-[var(--text-primary)]">{scanResult.gmb_score}</span>
+                {/* Local Visibility */}
+                <div className="bg-[var(--bg-primary)] p-5 rounded-2xl border border-[var(--border-default)] flex flex-col relative items-start text-left">
+                  <div className="w-full flex items-center gap-4 mb-3">
+                    <div className="relative w-16 h-16 flex-shrink-0 flex items-center justify-center">
+                      <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="40" fill="none" stroke="var(--border-default)" strokeWidth="8" />
+                        <circle cx="50" cy="50" r="40" fill="none" stroke="var(--accent)" strokeWidth="8" strokeDasharray={`${scanResult.gmb_score * 2.51} 251`} strokeLinecap="round" />
+                      </svg>
+                      <span className="font-bold text-[var(--text-primary)]">{scanResult.gmb_score}</span>
+                    </div>
+                    <div>
+                      <div className="text-[var(--text-primary)] font-bold mb-1">Local Visibility</div>
+                      <div className="text-[var(--text-secondary)] text-[10px] leading-tight">Google Maps & Reviews ranking</div>
+                    </div>
+                  </div>
+                  
+                  <div className="w-full mt-2 pt-3 border-t border-[var(--border-default)]">
+                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Metrics Breakdown</div>
+                    <ul className="space-y-2">
+                      <li className="flex items-start gap-2 text-xs">
+                        <span className="mt-0.5">{scanResult.business_rating >= 4.0 ? '✅' : '❌'}</span>
+                        <span className={scanResult.business_rating >= 4.0 ? "text-slate-700" : "text-slate-500"}>Rating: {scanResult.business_rating} (Target: 4.0+)</span>
+                      </li>
+                      <li className="flex items-start gap-2 text-xs">
+                        <span className="mt-0.5">{scanResult.business_reviews >= scanResult.competitor_avg_reviews ? '✅' : '❌'}</span>
+                        <span className={scanResult.business_reviews >= scanResult.competitor_avg_reviews ? "text-slate-700" : "text-slate-500"}>Reviews: {scanResult.business_reviews} (Local Avg: {scanResult.competitor_avg_reviews})</span>
+                      </li>
+                    </ul>
                   </div>
                 </div>
                 
@@ -599,15 +618,37 @@ export function HealthCheckerFlow() {
                           </div>
                         </li>
                       )}
-                      {scanResult.has_website && scanResult.geo_aeo_score < 50 && (
-                        <li className="flex items-start gap-3">
-                          <div className="bg-purple-100 p-1.5 rounded-full mt-0.5 flex-shrink-0"><div className="w-2 h-2 bg-purple-500 rounded-full"></div></div>
-                          <div>
-                            <div className="font-bold text-sm">Optimize for AI Search</div>
-                            <div className="text-xs text-slate-600 mt-0.5">Add LocalBusiness schema and FAQ structured data to your website to ensure AI engines like ChatGPT can read and recommend your business.</div>
-                          </div>
-                        </li>
-                      )}
+                      {scanResult.has_website && scanResult.geo_aeo_signals?.filter((s:any) => !s.passed).slice(0, 3).map((sig:any, idx:number) => {
+                        let actionTitle = "Optimize for AI Search";
+                        let actionDesc = sig.message;
+                        const msg = sig.message.toLowerCase();
+                        if (msg.includes("schema") || msg.includes("faq")) {
+                          actionTitle = msg.includes("faq") ? "Add FAQ Schema" : "Add LocalBusiness Schema";
+                          actionDesc = "Implement structured data markup on your website so AI engines can reliably understand your business details.";
+                        } else if (msg.includes("nap") || msg.includes("name/phone")) {
+                          actionTitle = "Fix NAP Consistency";
+                          actionDesc = "Ensure your business name and phone number exactly match your Google listing across your website.";
+                        } else if (msg.includes("meta description")) {
+                          actionTitle = "Add Meta Descriptions";
+                          actionDesc = "Write clear, descriptive meta tags for your pages to improve AI and search engine summarization.";
+                        } else if (msg.includes("text content") || msg.includes("crawlable")) {
+                          actionTitle = "Make Website Crawlable";
+                          actionDesc = "Ensure your website has readable HTML text content and isn't entirely hidden behind Javascript.";
+                        } else if (msg.includes("reviews are generic")) {
+                          actionTitle = "Collect Detailed Reviews";
+                          actionDesc = "Answer Engines look for specific keywords in reviews. Ask customers to mention specific services or products.";
+                        }
+                        
+                        return (
+                          <li key={`aeo-action-${idx}`} className="flex items-start gap-3">
+                            <div className="bg-purple-100 p-1.5 rounded-full mt-0.5 flex-shrink-0"><div className="w-2 h-2 bg-purple-500 rounded-full"></div></div>
+                            <div>
+                              <div className="font-bold text-sm">{actionTitle}</div>
+                              <div className="text-xs text-slate-600 mt-0.5">{actionDesc}</div>
+                            </div>
+                          </li>
+                        );
+                      })}
                     </ul>
                     
                     <div className="mt-6 pt-6 border-t border-slate-200">
@@ -625,14 +666,21 @@ export function HealthCheckerFlow() {
                     Top Issues Found
                   </h3>
                   <ul className="space-y-4">
-                    {scanResult.issues.map((issue: string, idx: number) => {
+                    {scanResult.issues.slice(0, 3).map((issue: string, idx: number) => {
                       let severity = 'info';
                       let Icon = Info;
                       let colors = 'bg-blue-50 text-blue-700 border-blue-200';
                       let tagText = 'INFO';
+                      let displayIssue = issue;
                       
                       const issueLower = issue.toLowerCase();
-                      if (issueLower.includes('critical') || issueLower.includes('below the 4.0') || issueLower.includes('virtually invisible')) {
+                      if (issueLower.includes('ai search issue')) {
+                        severity = 'info';
+                        Icon = Sparkles;
+                        colors = 'bg-purple-50 text-purple-700 border-purple-200';
+                        tagText = 'AI SEARCH';
+                        displayIssue = issue.replace('AI Search Issue: ', '').replace('AI Search Issue:', '').trim();
+                      } else if (issueLower.includes('critical') || issueLower.includes('below the 4.0') || issueLower.includes('virtually invisible')) {
                         severity = 'critical';
                         Icon = XCircle;
                         colors = 'bg-red-50 text-red-700 border-red-200';
@@ -646,10 +694,10 @@ export function HealthCheckerFlow() {
                       
                       return (
                         <li key={idx} className="flex flex-col sm:flex-row sm:items-start gap-3 bg-white p-4 rounded-xl border border-[var(--border-default)]">
-                          <div className={`text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 w-fit border ${colors}`}>
+                          <div className={`text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 w-fit border ${colors} whitespace-nowrap`}>
                             <Icon className="w-3 h-3" /> {tagText}
                           </div>
-                          <p className="text-[var(--text-primary)] leading-snug text-sm sm:mt-0.5">{issue}</p>
+                          <p className="text-[var(--text-primary)] leading-snug text-sm sm:mt-0.5">{displayIssue}</p>
                         </li>
                       );
                     })}
