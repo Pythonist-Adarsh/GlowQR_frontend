@@ -364,9 +364,23 @@ export function HealthCheckerFlow() {
                     </button>
                   </div>
                   <h2 className="text-3xl font-bold mb-3 text-[var(--text-primary)]">
-                    {scanResult.headline_score >= 80 ? 'Excellent visibility! You are dominating local search.' : 
-                     scanResult.headline_score >= 50 ? 'Average. You are losing significant traffic to competitors.' : 
-                     'Critical alert. You are virtually invisible in local search.'}
+                    {(() => {
+                      if (scanResult.gmb_score < 50) {
+                        return 'Critical alert. You are losing significant local search traffic.';
+                      } else if (scanResult.gmb_score >= 70) {
+                        if (scanResult.geo_aeo_score < 40) {
+                          return "Your local presence is strong — but you're invisible to AI search tools like ChatGPT.";
+                        } else {
+                          return "Strong local presence — here's how to extend your lead further.";
+                        }
+                      } else {
+                        if (scanResult.geo_aeo_score < 40) {
+                          return "Average local visibility, but you're missing out entirely on AI search.";
+                        } else {
+                          return "Average visibility. You are losing significant traffic to competitors.";
+                        }
+                      }
+                    })()}
                   </h2>
                   <p className="text-[var(--text-secondary)] text-lg">
                     This score combines your Google Maps performance with your AI-Search readiness.
