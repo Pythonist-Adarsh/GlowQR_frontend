@@ -13,7 +13,8 @@ import {
   ShieldAlert,
   FlaskConical,
   Trash2,
-  IndianRupee
+  IndianRupee,
+  Target
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { API_BASE_URL } from '@/lib/api-config';
@@ -57,6 +58,7 @@ export function AdminSidebar() {
     { name: 'Users', href: '/admin/users', icon: UserCircle },
     { name: 'Revenue', href: '/admin/revenue', icon: CreditCard },
     { name: 'Feedback', href: '/admin/feedback', icon: MessageSquareWarning },
+    { name: 'Prospects', href: '/admin/prospects', icon: Target },
     { name: 'Bomb Alerts', href: '/admin/bomb-alerts', icon: ShieldAlert },
     { name: 'Review Simulator', href: '/admin/simulator', icon: FlaskConical },
     { name: 'Settings', href: '/admin/settings', icon: Settings },
