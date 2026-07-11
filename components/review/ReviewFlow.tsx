@@ -136,6 +136,28 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
     }
   }, [parsedMenuData, selectedCategoryTab]);
 
+  useEffect(() => {
+    const handleReturn = () => {
+      if (sessionStorage.getItem('glowqr_flow_finished') === 'true') {
+        sessionStorage.removeItem('glowqr_flow_finished');
+        setStep(STEPS.COPIED);
+      }
+    };
+    
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'visible') handleReturn();
+    };
+
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    window.addEventListener('pageshow', handleReturn);
+    handleReturn(); // check on mount
+    
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      window.removeEventListener('pageshow', handleReturn);
+    };
+  }, []);
+
   const [mealType, setMealType] = useState(data.menuCategories && data.menuCategories.length > 0 ? data.menuCategories[0].category : "Dinner");
   const [spendRange, setSpendRange] = useState(data.spendRange || data.value_perception || "Worth it");
   const [seatingType, setSeatingType] = useState("Indoor");
@@ -257,11 +279,8 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
     const isPremium = ['premium', 'trial'].includes(business.plan?.toLowerCase() || '');
     const hasInstagram = !!business.instagramUrl;
 
-    if (isPremium && hasInstagram) {
-      setStep(STEPS.INSTAGRAM);
-    } else {
-      setStep(STEPS.COPIED);
-    }
+    sessionStorage.setItem('glowqr_flow_finished', 'true');
+    setStep(STEPS.COPIED);
 
     if (business.googleReviewUrl && business.googleReviewUrl !== '#') {
       window.location.href = business.googleReviewUrl;
@@ -702,63 +721,46 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
           </motion.div>
         )}
 
-        {/* SCREEN 5: COPIED */}
+        {/* SCREEN 5: COPIED & INSTAGRAM */}
         {step === STEPS.COPIED && (
           <motion.div 
             key="copied" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={transition}
-            className="flex-1 flex flex-col items-center justify-center p-8 text-center h-full bg-[var(--bg-primary)]"
+            className="flex-1 flex flex-col items-center justify-center p-8 text-center h-full bg-[var(--bg-primary)] overflow-y-auto custom-scrollbar"
           >
-            <div className="w-20 h-20 rounded-full bg-[var(--success-main)] flex items-center justify-center mb-8">
+            <div className="w-20 h-20 rounded-full bg-[var(--success-main)] flex items-center justify-center mb-6 shrink-0 mt-8">
               <Check className="w-10 h-10 text-white stroke-[4]" />
             </div>
-            <h2 className="text-3xl font-[600] mb-3 text-[var(--text-primary)]">Thank you!</h2>
-            <p className={`text-[15px] leading-relaxed max-w-[250px] mb-12 text-[var(--text-secondary)]`}>
+            <h2 className="text-3xl font-[600] mb-2 text-[var(--text-primary)]">Thank you!</h2>
+            <p className={`text-[15px] leading-relaxed max-w-[280px] mb-8 text-[var(--text-secondary)]`}>
               Thank you for choosing {business.name}. Google Maps should be opening now to paste your review.
             </p>
+            
+            {['premium', 'trial'].includes(business.plan?.toLowerCase() || '') && !!business.instagramUrl && (
+              <div className="w-full max-w-[300px] border-t border-[var(--border-default)] pt-8 mb-6">
+                <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-500 flex items-center justify-center mb-4">
+                  <Sparkles className="w-8 h-8 text-white stroke-[2]" />
+                </div>
+                <h2 className="text-[18px] font-[600] mb-2 leading-tight text-[var(--text-primary)]">Stay connected!</h2>
+                <p className={`text-[14px] leading-relaxed mb-6 text-[var(--text-secondary)]`}>
+                  Follow us on Instagram for exclusive offers, new arrivals & behind the scenes.
+                </p>
+                <button 
+                  onClick={() => window.open(business.instagramUrl, '_blank')}
+                  className="w-full py-4 rounded-full font-[600] text-white text-[15px] flex items-center justify-center gap-2 transition-all active:scale-[0.98] mb-4 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 hover:opacity-90"
+                >
+                  Follow on Instagram <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            )}
             
             {!isSimplifiedFlow && (
               <button 
                 onClick={() => setStep(STEPS.WELCOME)}
-                className={`w-full py-4 rounded-full font-[600] text-[15px] flex items-center justify-center gap-2 transition-all active:scale-[0.98] border border-[var(--border-default)] text-[var(--text-primary)] bg-transparent hover:bg-[#F3F4F7]`}
+                className={`w-full max-w-[300px] py-4 rounded-full font-[600] text-[15px] flex items-center justify-center gap-2 transition-all active:scale-[0.98] border border-[var(--border-default)] text-[var(--text-primary)] bg-transparent hover:bg-[#F3F4F7] mb-8`}
               >
                 Done <RefreshCw className="w-4 h-4" />
               </button>
             )}
-          </motion.div>
-        )}
-
-        {/* SCREEN 6: INSTAGRAM FOLLOW (Premium Only) */}
-        {step === STEPS.INSTAGRAM && (
-          <motion.div 
-            key="instagram" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={transition}
-            className="flex-1 flex flex-col items-center justify-center p-8 text-center h-full bg-[var(--bg-primary)]"
-          >
-            <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-500 flex items-center justify-center mb-6">
-              <Sparkles className="w-10 h-10 text-white stroke-[2]" />
-            </div>
-            
-            <h2 className="text-[20px] font-[600] mb-3 leading-tight text-[var(--text-primary)]">Don't forget to build a relationship with us!</h2>
-            
-            <p className={`text-[15px] leading-relaxed max-w-[260px] mb-10 text-[var(--text-secondary)]`}>
-              Follow us on Instagram for exclusive offers, new arrivals & behind the scenes.
-            </p>
-            
-            <button 
-              onClick={() => {
-                window.open(business.instagramUrl, '_blank');
-                setStep(STEPS.COPIED);
-              }}
-              className="w-full py-4 rounded-full font-[600] text-white text-[15px] flex items-center justify-center gap-2 transition-all active:scale-[0.98] mb-4 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 hover:opacity-90"
-            >
-              Follow us on Instagram <ArrowRight className="w-4 h-4" />
-            </button>
-            
-            <button 
-              onClick={() => setStep(STEPS.COPIED)}
-              className={`text-[13px] font-[600] underline-offset-4 hover:underline text-[var(--text-secondary)]`}
-            >
-              Maybe later
-            </button>
           </motion.div>
         )}
 
