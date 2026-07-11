@@ -141,7 +141,9 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
     const handleReturn = () => {
       if (sessionStorage.getItem('glowqr_flow_finished') === 'true') {
         sessionStorage.removeItem('glowqr_flow_finished');
-        setStep(STEPS.COPIED);
+        flushSync(() => {
+          setStep(STEPS.COPIED);
+        });
       }
     };
     
@@ -280,13 +282,12 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
 
     sessionStorage.setItem('glowqr_flow_finished', 'true');
     
-    flushSync(() => {
-      setIsCopied(true);
-      setStep(STEPS.COPIED);
-    });
+    setIsCopied(true);
 
     if (business.googleReviewUrl && business.googleReviewUrl !== '#') {
       window.location.href = business.googleReviewUrl;
+    } else {
+      setStep(STEPS.COPIED);
     }
 
     try {
