@@ -12,7 +12,6 @@ import { Search } from 'lucide-react'
 const links = [
   { href: '/#features', label: 'Features' },
   { href: '/pricing', label: 'Pricing' },
-  { href: '/score', label: 'Check Score' },
   { href: '/about', label: 'About Us' },
   { href: '/contact', label: 'Contact Us' },
 ]
