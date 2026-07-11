@@ -1,6 +1,7 @@
 'use client';
 
 import { HealthCheckerFlow } from '@/components/health/HealthCheckerFlow';
+import { LandingNavbar } from '@/components/landing/LandingNavbar';
 
 export default function ScorePage() {
   const theme = {
@@ -14,7 +15,9 @@ export default function ScorePage() {
   };
 
   return (
-    <div style={{ backgroundColor: theme.bgPrimary }} className="min-h-screen py-12 md:py-20 px-4 font-sans flex items-center justify-center">
+    <div style={{ backgroundColor: theme.bgPrimary }} className="min-h-screen font-sans flex flex-col">
+      <LandingNavbar forceScrolled={true} />
+      
       <style dangerouslySetInnerHTML={{__html: `
         :root {
           --bg-primary: ${theme.bgPrimary};
@@ -26,7 +29,7 @@ export default function ScorePage() {
           --success-main: ${theme.successMain};
         }
       `}} />
-      <div className="w-full">
+      <div className="w-full flex-1 flex items-start justify-center px-4 pt-32 pb-20">
         <HealthCheckerFlow />
       </div>
     </div>
