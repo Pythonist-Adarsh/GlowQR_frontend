@@ -25,6 +25,9 @@ export function HealthCheckerFlow() {
   const [scanResult, setScanResult] = useState<any>(null);
   const [category, setCategory] = useState('Restaurant'); // Default
   
+  // Session State
+  const [sessionToken, setSessionToken] = useState<string>('');
+  
   // Lead State
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -37,13 +40,20 @@ export function HealthCheckerFlow() {
       return;
     }
     
+    // Initialize session token if it doesn't exist
+    let currentToken = sessionToken;
+    if (!currentToken) {
+      currentToken = crypto.randomUUID();
+      setSessionToken(currentToken);
+    }
+    
     const timeoutId = setTimeout(async () => {
       setIsSearching(true);
       try {
         const res = await fetch(`${API_BASE_URL}/api/health-check/search`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query })
+          body: JSON.stringify({ query, session_token: currentToken })
         });
         if (res.ok) {
           const data = await res.json();
@@ -60,13 +70,19 @@ export function HealthCheckerFlow() {
   }, [query]);
 
   const handleManualSearch = async () => {
-    if (!query || query.length < 3) return;
+    // Initialize session token if it doesn't exist
+    let currentToken = sessionToken;
+    if (!currentToken) {
+      currentToken = crypto.randomUUID();
+      setSessionToken(currentToken);
+    }
+
     setIsSearching(true);
     try {
       const res = await fetch(`${API_BASE_URL}/api/health-check/search`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query })
+        body: JSON.stringify({ query, session_token: currentToken })
       });
       if (res.ok) {
         const data = await res.json();
@@ -95,9 +111,13 @@ export function HealthCheckerFlow() {
           name: place.name,
           address: place.address,
           category: category,
-          city: city
+          city: city,
+          session_token: sessionToken
         })
       });
+      
+      // Clear session token so a new one is generated for the next search
+      setSessionToken('');
       
       if (res.ok) {
         const data = await res.json();
