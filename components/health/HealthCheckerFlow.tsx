@@ -214,6 +214,18 @@ export function HealthCheckerFlow() {
                   <option value="Real Estate">Real Estate</option>
                   <option value="Bakery">Bakery</option>
                   <option value="Jewellery">Jewellery Store</option>
+                  <option value="Boutique">Boutique / Clothing Store</option>
+                  <option value="Wellness">Spa / Wellness Center</option>
+                  <option value="Dental">Dental Clinic</option>
+                  <option value="Medical">Medical Clinic</option>
+                  <option value="Electronics">Electronics Store</option>
+                  <option value="Furniture">Furniture Store</option>
+                  <option value="Photography">Photography Studio</option>
+                  <option value="Event Planner">Event Planner</option>
+                  <option value="Hotel">Hotel / Guesthouse</option>
+                  <option value="Coaching">Coaching Institute / Tuition Center</option>
+                  <option value="Garage">Automobile Service / Garage</option>
+                  <option value="Interior Designer">Interior Designer</option>
                 </select>
               </div>
 
@@ -409,7 +421,7 @@ export function HealthCheckerFlow() {
                 </div>
 
                 {/* AI Search Ready */}
-                <div className={`bg-[var(--bg-primary)] p-5 rounded-2xl border border-[var(--border-default)] flex flex-col items-center text-center relative ${!scanResult.has_website ? 'overflow-hidden' : ''}`}>
+                <div className={`bg-[var(--bg-primary)] p-5 rounded-2xl border border-[var(--border-default)] flex flex-col relative ${!scanResult.has_website ? 'overflow-hidden items-center text-center' : 'items-start text-left'}`}>
                   {!scanResult.has_website ? (
                     <div className="absolute top-2 right-2 bg-slate-200 text-slate-500 text-[10px] font-bold px-2 py-1 rounded-md">NO WEBSITE</div>
                   ) : (
@@ -417,21 +429,40 @@ export function HealthCheckerFlow() {
                       <Sparkles className="w-3 h-3" /> NEW
                     </div>
                   )}
-                  <div className={!scanResult.has_website ? "text-slate-400 font-bold mb-1" : "text-[var(--text-primary)] font-bold mb-1"}>AI Search Ready</div>
-                  <div className={!scanResult.has_website ? "text-slate-400 text-xs mb-3 px-2" : "text-[var(--text-secondary)] text-[10px] mb-3 leading-tight px-2"}>
-                    {!scanResult.has_website ? "No website found — can't be evaluated" : "How discoverable you are to ChatGPT & AI Overviews"}
+                  
+                  <div className={`w-full flex ${!scanResult.has_website ? 'flex-col items-center' : 'items-center gap-4'} mb-3`}>
+                    <div className={`relative w-16 h-16 flex-shrink-0 flex items-center justify-center ${!scanResult.has_website ? 'opacity-50 grayscale mx-auto mb-2' : ''}`}>
+                      <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="40" fill="none" stroke={!scanResult.has_website ? "#E2E4E9" : "var(--border-default)"} strokeWidth="8" />
+                        {scanResult.has_website && (
+                          <circle cx="50" cy="50" r="40" fill="none" stroke="#8B5CF6" strokeWidth="8" strokeDasharray={`${scanResult.geo_aeo_score * 2.51} 251`} strokeLinecap="round" />
+                        )}
+                      </svg>
+                      <span className={`font-bold ${!scanResult.has_website ? 'text-slate-400' : 'text-[var(--text-primary)]'}`}>
+                        {!scanResult.has_website ? 'N/A' : scanResult.geo_aeo_score}
+                      </span>
+                    </div>
+                    <div>
+                      <div className={!scanResult.has_website ? "text-slate-400 font-bold mb-1" : "text-[var(--text-primary)] font-bold mb-1"}>AI Search Ready</div>
+                      <div className={!scanResult.has_website ? "text-slate-400 text-xs px-2" : "text-[var(--text-secondary)] text-[10px] leading-tight"}>
+                        {!scanResult.has_website ? "No website found — can't be evaluated" : "How discoverable you are to ChatGPT & AI Overviews"}
+                      </div>
+                    </div>
                   </div>
-                  <div className={`relative w-16 h-16 flex items-center justify-center ${!scanResult.has_website ? 'opacity-50 grayscale' : ''}`}>
-                    <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                      <circle cx="50" cy="50" r="40" fill="none" stroke={!scanResult.has_website ? "#E2E4E9" : "var(--border-default)"} strokeWidth="8" />
-                      {scanResult.has_website && (
-                        <circle cx="50" cy="50" r="40" fill="none" stroke="#8B5CF6" strokeWidth="8" strokeDasharray={`${scanResult.geo_aeo_score * 2.51} 251`} strokeLinecap="round" />
-                      )}
-                    </svg>
-                    <span className={`font-bold ${!scanResult.has_website ? 'text-slate-400' : 'text-[var(--text-primary)]'}`}>
-                      {!scanResult.has_website ? 'N/A' : scanResult.geo_aeo_score}
-                    </span>
-                  </div>
+
+                  {scanResult.has_website && scanResult.geo_aeo_signals && scanResult.geo_aeo_signals.length > 0 && (
+                    <div className="w-full mt-2 pt-3 border-t border-[var(--border-default)]">
+                      <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Technical Breakdown</div>
+                      <ul className="space-y-2">
+                        {scanResult.geo_aeo_signals.map((sig, idx) => (
+                          <li key={idx} className="flex items-start gap-2 text-xs">
+                            <span className="mt-0.5">{sig.passed ? '✅' : '❌'}</span>
+                            <span className={sig.passed ? "text-slate-700" : "text-slate-500"}>{sig.message}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -488,6 +519,89 @@ export function HealthCheckerFlow() {
                       </>
                     );
                   })()}
+                </section>
+
+                {/* Growth Path */}
+                <section className="bg-[var(--bg-card)] p-6 md:p-8 rounded-3xl border border-[var(--border-default)] shadow-sm">
+                  <div className="text-sm font-bold uppercase tracking-wider text-[var(--accent)] mb-2">Your Growth Path</div>
+                  <h3 className="text-2xl font-bold mb-8 text-[var(--text-primary)]">Where you could be in 90 days</h3>
+                  
+                  <div className="relative pt-2 pb-6">
+                    {/* Visual Roadmap line */}
+                    <div className="absolute top-7 left-[16.6%] right-[16.6%] h-1 bg-slate-200 rounded-full z-0 hidden sm:block"></div>
+                    <div className="absolute top-7 left-[16.6%] h-1 bg-[var(--accent)] rounded-full z-0 hidden sm:block" style={{ width: '66%' }}></div>
+                    
+                    <div className="flex flex-col sm:flex-row justify-between relative z-10 gap-8 sm:gap-0">
+                      {/* Today */}
+                      <div className="flex flex-col items-center sm:w-1/3">
+                        <div className="w-10 h-10 rounded-full bg-[var(--bg-card)] border-4 border-[var(--accent)] flex items-center justify-center font-bold text-sm mb-3">1</div>
+                        <div className="font-bold text-slate-800">Today</div>
+                        <div className="text-xs text-slate-500 mt-1">{scanResult.business_reviews} Reviews</div>
+                        <div className="text-sm font-bold text-slate-700 mt-1">
+                          Rank #{scanResult.competitors ? scanResult.competitors.filter((c: any) => c.reviews > scanResult.business_reviews).length + 1 : 1}
+                        </div>
+                      </div>
+                      
+                      {/* 30 Days */}
+                      <div className="flex flex-col items-center sm:w-1/3">
+                        <div className="w-10 h-10 rounded-full bg-[var(--accent)] text-white border-4 border-[var(--bg-card)] flex items-center justify-center font-bold text-sm mb-3 shadow-md">2</div>
+                        <div className="font-bold text-slate-800">30 Days</div>
+                        <div className="text-xs text-slate-500 mt-1">{scanResult.business_reviews + 8} Reviews*</div>
+                        <div className="text-sm font-bold text-[var(--accent)] mt-1">Projected Rank</div>
+                      </div>
+                      
+                      {/* 90 Days */}
+                      <div className="flex flex-col items-center sm:w-1/3">
+                        <div className="w-10 h-10 rounded-full bg-[var(--accent)] text-white border-4 border-[var(--bg-card)] flex items-center justify-center font-bold text-sm mb-3 shadow-md">3</div>
+                        <div className="font-bold text-slate-800">90 Days</div>
+                        <div className="text-xs text-slate-500 mt-1">{scanResult.business_reviews + 24} Reviews*</div>
+                        <div className="text-sm font-bold text-[var(--accent)] mt-1">Target Rank</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-[10px] text-center text-slate-400 mt-2 mb-6 italic">
+                    *Estimate based on typical GlowQR client results (approx. 5-10 new reviews/month). Actual results vary.
+                  </div>
+
+                  <div className="mt-8 bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                    <h4 className="font-bold text-slate-800 mb-4">Recommended Actions</h4>
+                    <ul className="space-y-4">
+                      {scanResult.business_reviews < scanResult.competitor_avg_reviews && (
+                        <li className="flex items-start gap-3">
+                          <div className="bg-amber-100 p-1.5 rounded-full mt-0.5 flex-shrink-0"><div className="w-2 h-2 bg-amber-500 rounded-full"></div></div>
+                          <div>
+                            <div className="font-bold text-sm">Close the Review Gap</div>
+                            <div className="text-xs text-slate-600 mt-0.5">You need roughly {scanResult.competitor_avg_reviews - scanResult.business_reviews} more reviews to reach the local average. Automate this collection with GlowQR to boost your rank.</div>
+                          </div>
+                        </li>
+                      )}
+                      {!scanResult.has_website && (
+                        <li className="flex items-start gap-3">
+                          <div className="bg-red-100 p-1.5 rounded-full mt-0.5 flex-shrink-0"><div className="w-2 h-2 bg-red-500 rounded-full"></div></div>
+                          <div>
+                            <div className="font-bold text-sm">Create a Website Presence</div>
+                            <div className="text-xs text-slate-600 mt-0.5">Without a website, you cannot be found by ChatGPT or Google AI Overviews. Creating a basic landing page is critical.</div>
+                          </div>
+                        </li>
+                      )}
+                      {scanResult.has_website && scanResult.geo_aeo_score < 50 && (
+                        <li className="flex items-start gap-3">
+                          <div className="bg-purple-100 p-1.5 rounded-full mt-0.5 flex-shrink-0"><div className="w-2 h-2 bg-purple-500 rounded-full"></div></div>
+                          <div>
+                            <div className="font-bold text-sm">Optimize for AI Search</div>
+                            <div className="text-xs text-slate-600 mt-0.5">Add LocalBusiness schema and FAQ structured data to your website to ensure AI engines like ChatGPT can read and recommend your business.</div>
+                          </div>
+                        </li>
+                      )}
+                    </ul>
+                    
+                    <div className="mt-6 pt-6 border-t border-slate-200">
+                      <a href="#" className="inline-block bg-[var(--accent)] hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md">
+                        Start closing this gap today
+                      </a>
+                    </div>
+                  </div>
                 </section>
 
                 {/* Top Issues List */}
