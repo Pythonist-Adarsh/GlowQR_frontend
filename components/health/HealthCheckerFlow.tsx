@@ -59,6 +59,26 @@ export function HealthCheckerFlow() {
     return () => clearTimeout(timeoutId);
   }, [query]);
 
+  const handleManualSearch = async () => {
+    if (!query || query.length < 3) return;
+    setIsSearching(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/health-check/search`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSearchResults(data);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
   const handleSelectBusiness = async (place: any) => {
     setStep(STEPS.LOADING);
     
@@ -162,22 +182,34 @@ export function HealthCheckerFlow() {
 
               <div className="space-y-3 relative z-10">
                 <label className="text-sm font-semibold text-[var(--text-primary)] uppercase tracking-wider">Search Your Business</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <Search className="w-5 h-5 text-[var(--text-secondary)]" />
-                  </div>
-                  <input 
-                    type="text"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Enter business name and city..."
-                    className="w-full pl-12 pr-4 py-4 rounded-xl border-2 border-[var(--border-default)] bg-[var(--bg-primary)] focus:border-[var(--accent)] outline-none transition-colors text-[var(--text-primary)] font-medium text-lg placeholder:text-slate-400"
-                  />
-                  {isSearching && (
-                    <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                      <Loader2 className="w-5 h-5 text-[var(--accent)] animate-spin" />
+                <div className="flex items-center gap-3">
+                  <div className="relative flex-1">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <Search className="w-5 h-5 text-[var(--text-secondary)]" />
                     </div>
-                  )}
+                    <input 
+                      type="text"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') handleManualSearch() }}
+                      placeholder="Enter business name and city..."
+                      className="w-full pl-12 pr-4 py-4 rounded-xl border-2 border-[var(--border-default)] bg-[var(--bg-primary)] focus:border-[var(--accent)] outline-none transition-colors text-[var(--text-primary)] font-medium text-lg placeholder:text-slate-400"
+                    />
+                    {isSearching && (
+                      <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                        <Loader2 className="w-5 h-5 text-[var(--accent)] animate-spin" />
+                      </div>
+                    )}
+                  </div>
+                  
+                  <button 
+                    onClick={handleManualSearch}
+                    disabled={isSearching || query.length < 3}
+                    className="h-[60px] px-8 rounded-xl text-white font-bold transition-all hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 flex-shrink-0"
+                    style={{ backgroundColor: 'var(--accent)' }}
+                  >
+                    Search
+                  </button>
                 </div>
                 
                 {/* Autocomplete Dropdown */}
