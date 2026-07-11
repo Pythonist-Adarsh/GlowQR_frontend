@@ -174,7 +174,7 @@ export function HealthCheckerFlow() {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto bg-[var(--bg-secondary)] rounded-3xl shadow-2xl shadow-blue-900/5 border border-[var(--border-default)] min-h-[600px] flex flex-col relative overflow-hidden">
+    <div className="w-full max-w-6xl mx-auto bg-[var(--bg-secondary)] rounded-3xl shadow-2xl shadow-blue-900/5 border border-[var(--border-default)] min-h-[600px] flex flex-col relative">
       <AnimatePresence mode="wait">
         
         {/* STEP 1: SEARCH */}
