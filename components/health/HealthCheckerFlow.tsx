@@ -57,7 +57,7 @@ export function HealthCheckerFlow() {
         const res = await fetch(`${API_BASE_URL}/api/health-check/search`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query, session_token: currentToken })
+          body: JSON.stringify({ query, category, session_token: currentToken })
         });
         if (res.ok) {
           const data = await res.json();
@@ -90,7 +90,7 @@ export function HealthCheckerFlow() {
       const res = await fetch(`${API_BASE_URL}/api/health-check/search`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query, session_token: currentToken })
+        body: JSON.stringify({ query, category, session_token: currentToken })
       });
       if (res.ok) {
         const data = await res.json();
@@ -150,7 +150,7 @@ export function HealthCheckerFlow() {
     if (!email && !phone) return;
     
     try {
-      await fetch(`${API_BASE_URL}/api/health-check/capture-lead`, {
+      const res = await fetch(`${API_BASE_URL}/api/health-check/capture-lead`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -159,9 +159,17 @@ export function HealthCheckerFlow() {
           phone
         })
       });
-      setLeadCaptured(true);
+      if (res.ok) {
+        setLeadCaptured(true);
+        alert("Report sent successfully! Check your inbox.");
+        setEmail('');
+        setPhone('');
+      } else {
+        alert("Failed to send report. Please try again.");
+      }
     } catch (err) {
       console.error(err);
+      alert("Failed to send report due to a network error.");
     }
   };
 
@@ -329,7 +337,20 @@ export function HealthCheckerFlow() {
             <div className="bg-[var(--bg-card)] p-8 md:px-12 md:py-10 text-center relative overflow-hidden rounded-3xl border border-[var(--border-default)] shadow-sm">
               <div className="flex flex-col md:flex-row items-center justify-between gap-8 max-w-4xl mx-auto">
                 <div className="text-left flex-1">
-                  <div className="text-sm font-bold uppercase tracking-wider text-[var(--accent)] mb-2">Health Score Result</div>
+                  <div className="flex items-center gap-4 mb-2">
+                    <div className="text-sm font-bold uppercase tracking-wider text-[var(--accent)]">Health Score Result</div>
+                    <button 
+                      onClick={() => {
+                        setScanResult(null);
+                        setStep(STEPS.SEARCH);
+                        setQuery('');
+                        setSearchResults([]);
+                      }}
+                      className="text-xs font-semibold px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full transition-colors flex items-center gap-1"
+                    >
+                      Search again
+                    </button>
+                  </div>
                   <h2 className="text-3xl font-bold mb-3 text-[var(--text-primary)]">
                     {scanResult.headline_score >= 80 ? 'Excellent visibility! You are dominating local search.' : 
                      scanResult.headline_score >= 50 ? 'Average. You are losing significant traffic to competitors.' : 
@@ -388,18 +409,28 @@ export function HealthCheckerFlow() {
                 </div>
 
                 {/* AI Search Ready */}
-                <div className="bg-[var(--bg-primary)] p-5 rounded-2xl border border-[var(--border-default)] flex flex-col items-center text-center relative">
-                  <div className="absolute -top-3 -right-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[10px] font-bold px-2 py-1 rounded-md flex items-center gap-1 shadow-md">
-                    <Sparkles className="w-3 h-3" /> NEW
+                <div className={`bg-[var(--bg-primary)] p-5 rounded-2xl border border-[var(--border-default)] flex flex-col items-center text-center relative ${!scanResult.has_website ? 'overflow-hidden' : ''}`}>
+                  {!scanResult.has_website ? (
+                    <div className="absolute top-2 right-2 bg-slate-200 text-slate-500 text-[10px] font-bold px-2 py-1 rounded-md">NO WEBSITE</div>
+                  ) : (
+                    <div className="absolute -top-3 -right-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[10px] font-bold px-2 py-1 rounded-md flex items-center gap-1 shadow-md">
+                      <Sparkles className="w-3 h-3" /> NEW
+                    </div>
+                  )}
+                  <div className={!scanResult.has_website ? "text-slate-400 font-bold mb-1" : "text-[var(--text-primary)] font-bold mb-1"}>AI Search Ready</div>
+                  <div className={!scanResult.has_website ? "text-slate-400 text-xs mb-3 px-2" : "text-[var(--text-secondary)] text-[10px] mb-3 leading-tight px-2"}>
+                    {!scanResult.has_website ? "No website found — can't be evaluated" : "How discoverable you are to ChatGPT & AI Overviews"}
                   </div>
-                  <div className="text-[var(--text-primary)] font-bold mb-1">AI Search Ready</div>
-                  <div className="text-[var(--text-secondary)] text-[10px] mb-3 leading-tight px-2">How discoverable you are to ChatGPT & AI Overviews</div>
-                  <div className="relative w-16 h-16 flex items-center justify-center">
+                  <div className={`relative w-16 h-16 flex items-center justify-center ${!scanResult.has_website ? 'opacity-50 grayscale' : ''}`}>
                     <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                      <circle cx="50" cy="50" r="40" fill="none" stroke="var(--border-default)" strokeWidth="8" />
-                      <circle cx="50" cy="50" r="40" fill="none" stroke="#8B5CF6" strokeWidth="8" strokeDasharray={`${scanResult.geo_aeo_score * 2.51} 251`} strokeLinecap="round" />
+                      <circle cx="50" cy="50" r="40" fill="none" stroke={!scanResult.has_website ? "#E2E4E9" : "var(--border-default)"} strokeWidth="8" />
+                      {scanResult.has_website && (
+                        <circle cx="50" cy="50" r="40" fill="none" stroke="#8B5CF6" strokeWidth="8" strokeDasharray={`${scanResult.geo_aeo_score * 2.51} 251`} strokeLinecap="round" />
+                      )}
                     </svg>
-                    <span className="font-bold text-[var(--text-primary)]">{scanResult.geo_aeo_score}</span>
+                    <span className={`font-bold ${!scanResult.has_website ? 'text-slate-400' : 'text-[var(--text-primary)]'}`}>
+                      {!scanResult.has_website ? 'N/A' : scanResult.geo_aeo_score}
+                    </span>
                   </div>
                 </div>
               </div>
