@@ -16,10 +16,16 @@ async function handler(req: NextRequest, context: { params: Promise<{ path: stri
   const url = `${API_BASE_URL}/api/admin/${path}${req.nextUrl.search}`;
   
   try {
+    let body = undefined;
+    if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
+      const text = await req.text();
+      if (text) body = text;
+    }
+
     const res = await fetch(url, {
       method: req.method,
       headers,
-      body: (req.method !== 'GET' && req.method !== 'HEAD') ? await req.text() : undefined,
+      body,
     });
     
     // For export endpoints we need to return the raw blob
