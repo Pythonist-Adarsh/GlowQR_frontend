@@ -174,7 +174,7 @@ export function HealthCheckerFlow() {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto bg-[var(--bg-card)] rounded-3xl shadow-2xl shadow-blue-900/5 border border-[var(--border-default)] min-h-[600px] flex flex-col relative">
+    <div className="w-full max-w-6xl mx-auto bg-[var(--bg-card)] rounded-3xl shadow-2xl shadow-blue-900/5 border border-[var(--border-default)] min-h-[600px] flex flex-col relative">
       <AnimatePresence mode="wait">
         
         {/* STEP 1: SEARCH */}
@@ -347,7 +347,7 @@ export function HealthCheckerFlow() {
           >
             {/* Header Result - Light Theme with Circular Ring */}
             <div className="bg-[var(--bg-card)] p-8 md:px-12 md:py-10 text-center relative overflow-hidden rounded-3xl border border-[var(--border-default)] shadow-sm">
-              <div className="flex flex-col md:flex-row items-center justify-between gap-8 max-w-4xl mx-auto">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-8 max-w-6xl mx-auto">
                 <div className="text-left flex-1">
                   <div className="flex items-center gap-4 mb-2">
                     <div className="text-sm font-bold uppercase tracking-wider text-[var(--accent)]">Health Score Result</div>
@@ -407,7 +407,7 @@ export function HealthCheckerFlow() {
               </div>
 
               {/* Three Dimension Score Breakdown */}
-              <div className="grid md:grid-cols-3 gap-6 mt-8 max-w-4xl mx-auto">
+              <div className="grid md:grid-cols-3 gap-6 mt-8 max-w-6xl mx-auto">
                 {/* Local Visibility */}
                 {/* Local Visibility */}
                 <div className="bg-[var(--bg-primary)] p-5 rounded-2xl border border-[var(--border-default)] flex flex-col relative items-start text-left">
