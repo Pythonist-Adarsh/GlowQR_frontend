@@ -43,7 +43,11 @@ export function HealthCheckerFlow() {
     // Initialize session token if it doesn't exist
     let currentToken = sessionToken;
     if (!currentToken) {
-      currentToken = crypto.randomUUID();
+      try {
+        currentToken = crypto.randomUUID();
+      } catch (e) {
+        currentToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      }
       setSessionToken(currentToken);
     }
     
@@ -60,7 +64,7 @@ export function HealthCheckerFlow() {
           setSearchResults(data);
         }
       } catch (err) {
-        console.error(err);
+        console.error("Autocomplete fetch error:", err);
       } finally {
         setIsSearching(false);
       }
@@ -73,7 +77,11 @@ export function HealthCheckerFlow() {
     // Initialize session token if it doesn't exist
     let currentToken = sessionToken;
     if (!currentToken) {
-      currentToken = crypto.randomUUID();
+      try {
+        currentToken = crypto.randomUUID();
+      } catch (e) {
+        currentToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      }
       setSessionToken(currentToken);
     }
 
@@ -89,7 +97,8 @@ export function HealthCheckerFlow() {
         setSearchResults(data);
       }
     } catch (err) {
-      console.error(err);
+      console.error("Manual search error:", err);
+      alert("Failed to search. Please check console for details.");
     } finally {
       setIsSearching(false);
     }
