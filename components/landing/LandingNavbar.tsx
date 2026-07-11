@@ -7,9 +7,12 @@ import { GlowLogo } from '@/components/GlowLogo'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { AnimatedGetStartedButton } from '@/components/marketing/AnimatedGetStartedButton'
 
+import { Search } from 'lucide-react'
+
 const links = [
   { href: '/#features', label: 'Features' },
   { href: '/pricing', label: 'Pricing' },
+  { href: '/score', label: 'Check Score' },
   { href: '/about', label: 'About Us' },
   { href: '/contact', label: 'Contact Us' },
 ]
@@ -62,8 +65,16 @@ export function LandingNavbar({ forceScrolled = false }: { forceScrolled?: boole
           ))}
         </nav>
 
-        <div className="flex items-center gap-4 sm:gap-5">
+        <div className="flex items-center gap-3 sm:gap-4">
           <ThemeToggle />
+          <Link href="/score" className={`hidden lg:flex items-center gap-2 px-4 py-2 rounded-xl border transition-colors ${
+            onHero 
+              ? 'border-white/20 text-white hover:bg-white/10' 
+              : 'border-[var(--border-default)] text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]'
+          }`}>
+            <Search className="w-4 h-4" />
+            <span className="text-sm font-semibold">Check Score</span>
+          </Link>
           <AnimatedGetStartedButton
             size="sm"
             className={`hidden sm:inline-flex ${onHero ? 'drop-shadow-[0_8px_28px_rgba(240,124,60,0.35)]' : ''}`}
