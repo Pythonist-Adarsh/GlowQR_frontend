@@ -157,7 +157,7 @@ export function HealthCheckerFlow() {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto bg-[var(--bg-card)] rounded-3xl shadow-2xl shadow-blue-900/5 overflow-hidden border border-[var(--border-default)] min-h-[600px] flex flex-col relative">
+    <div className="w-full max-w-4xl mx-auto bg-[var(--bg-card)] rounded-3xl shadow-2xl shadow-blue-900/5 border border-[var(--border-default)] min-h-[600px] flex flex-col relative">
       <AnimatePresence mode="wait">
         
         {/* STEP 1: SEARCH */}
@@ -234,7 +234,7 @@ export function HealthCheckerFlow() {
                 
                 {/* Autocomplete Dropdown */}
                 {searchResults.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--bg-card)] border border-[var(--border-default)] rounded-xl shadow-2xl overflow-hidden max-h-[300px] overflow-y-auto">
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--bg-card)] border border-[var(--border-default)] rounded-xl shadow-2xl max-h-[300px] overflow-y-auto z-50">
                     {searchResults.map((place, idx) => (
                       <button 
                         key={idx}
@@ -246,8 +246,9 @@ export function HealthCheckerFlow() {
                         </div>
                         <div>
                           <div className="font-bold text-[var(--text-primary)]">{place.name}</div>
-                          <div className="text-sm text-[var(--text-secondary)] flex items-center gap-1 mt-1">
-                            <MapPin className="w-3 h-3" /> {place.address}
+                          <div className="text-sm text-[var(--text-secondary)] flex items-start gap-1 mt-1">
+                            <MapPin className="w-3 h-3 mt-0.5 flex-shrink-0" /> 
+                            <span className="whitespace-normal leading-tight">{place.address}</span>
                           </div>
                           {place.rating > 0 && (
                             <div className="text-sm font-semibold text-amber-500 flex items-center gap-1 mt-1">
