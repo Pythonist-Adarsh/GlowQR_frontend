@@ -14,7 +14,7 @@ export default function PricingPage() {
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-[var(--bg-primary)] text-[var(--text-primary)]">
-      <LandingNavbar />
+      <LandingNavbar forceScrolled={true} />
       
       <main className="flex-1 pt-24 pb-12">
         <Pricing />
