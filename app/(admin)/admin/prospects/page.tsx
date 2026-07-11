@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { API_BASE_URL } from '@/lib/api-config';
-import { Target, Search, Calendar, MapPin, Building, Mail, Phone, ChevronDown, ChevronUp } from 'lucide-react';
+import { Target, Search, Calendar, MapPin, Building, Mail, Phone, ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function AdminProspectsPage() {
@@ -28,6 +28,19 @@ export default function AdminProspectsPage() {
       toast.error('Could not load prospects');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this prospect?')) return;
+    
+    try {
+      const res = await fetch(`/api/admin-proxy/prospects/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed to delete');
+      toast.success('Prospect deleted');
+      fetchProspects();
+    } catch (err) {
+      toast.error('Failed to delete prospect');
     }
   };
 
@@ -106,16 +119,17 @@ export default function AdminProspectsPage() {
                 <th className="p-4 font-semibold cursor-pointer" onClick={() => handleSort('scanned_at')}>
                   Date {sortField === 'scanned_at' && (sortAsc ? <ChevronUp className="inline w-4 h-4" /> : <ChevronDown className="inline w-4 h-4" />)}
                 </th>
+                <th className="p-4 font-semibold text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-slate-500">Loading...</td>
+                  <td colSpan={7} className="p-8 text-center text-slate-500">Loading...</td>
                 </tr>
               ) : filteredProspects.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-slate-500">No prospects found.</td>
+                  <td colSpan={7} className="p-8 text-center text-slate-500">No prospects found.</td>
                 </tr>
               ) : (
                 filteredProspects.map((p) => (
@@ -160,6 +174,11 @@ export default function AdminProspectsPage() {
                     <td className="p-4 text-slate-500 text-sm flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
                       {new Date(p.scanned_at).toLocaleDateString()}
+                    </td>
+                    <td className="p-4 text-right">
+                      <button onClick={() => handleDelete(p.id)} className="text-slate-400 hover:text-red-600 transition-colors" title="Delete Prospect">
+                        <Trash2 className="w-4 h-4 inline-block" />
+                      </button>
                     </td>
                   </tr>
                 ))

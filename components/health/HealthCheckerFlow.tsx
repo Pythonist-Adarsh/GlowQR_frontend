@@ -407,7 +407,7 @@ export function HealthCheckerFlow() {
               </div>
 
               {/* Three Dimension Score Breakdown */}
-              <div className="grid md:grid-cols-3 gap-6 mt-12 max-w-4xl mx-auto">
+              <div className="grid md:grid-cols-3 gap-6 mt-8 max-w-4xl mx-auto">
                 {/* Local Visibility */}
                 {/* Local Visibility */}
                 <div className="bg-[var(--bg-primary)] p-5 rounded-2xl border border-[var(--border-default)] flex flex-col relative items-start text-left">
@@ -487,7 +487,7 @@ export function HealthCheckerFlow() {
                     <div className="w-full mt-2 pt-3 border-t border-[var(--border-default)]">
                       <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Technical Breakdown</div>
                       <ul className="space-y-2">
-                        {scanResult.geo_aeo_signals.map((sig, idx) => (
+                        {scanResult.geo_aeo_signals.map((sig: any, idx: number) => (
                           <li key={idx} className="flex items-start gap-2 text-xs">
                             <span className="mt-0.5">{sig.passed ? '✅' : '❌'}</span>
                             <span className={sig.passed ? "text-slate-700" : "text-slate-500"}>{sig.message}</span>
@@ -500,10 +500,10 @@ export function HealthCheckerFlow() {
               </div>
             </div>
 
-            <div className="flex-1 grid lg:grid-cols-2 gap-8">
+            <div className="flex-1 grid lg:grid-cols-12 gap-6 lg:gap-8 mt-8">
               
               {/* Left Column: Data & Competitors */}
-              <div className="space-y-8">
+              <div className="lg:col-span-8 space-y-6 lg:space-y-8">
                 
                 {/* Competitor Leaderboard */}
                 <section className="bg-[var(--bg-card)] p-6 md:p-8 rounded-3xl border border-[var(--border-default)] shadow-sm">
@@ -712,7 +712,8 @@ export function HealthCheckerFlow() {
               </div>
 
               {/* Right Column: CTA & Lead Gen */}
-              <div className="bg-[var(--bg-card)] p-8 rounded-3xl border-2 border-[var(--border-default)] shadow-xl flex flex-col justify-center h-full">
+              <div className="lg:col-span-4">
+                <div className="bg-[var(--bg-card)] p-6 md:p-8 rounded-3xl border-2 border-[var(--border-default)] shadow-xl flex flex-col h-fit sticky top-6">
                 <div className="text-center mb-8">
                   <h3 className="text-2xl font-bold mb-4 text-[var(--text-primary)]">Fix this with GlowQR</h3>
                   <p className="text-[var(--text-secondary)]">
@@ -753,8 +754,37 @@ export function HealthCheckerFlow() {
                   </div>
                 )}
                 
+                {/* The Reality Check */}
+                <div className="mt-8 pt-8 border-t border-[var(--border-default)]">
+                  <div className="text-[10px] font-bold text-[var(--accent)] uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4" /> The Reality Check
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+                      While you're reading this, <strong className="text-[var(--text-primary)]">{scanResult.competitors?.[0]?.name || 'your top competitor'}</strong> is getting new 5-star reviews. The gap between you and #1 is growing every week you wait.
+                    </p>
+                    
+                    <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+                      Customers comparing you to <strong className="text-[var(--text-primary)]">{scanResult.competitors?.[0]?.name || 'your top competitor'}</strong> see <strong className="text-[var(--accent)]">{Math.max(1, scanResult.competitor_top_reviews - scanResult.business_reviews)} fewer reviews</strong> — in local search, that's often the difference between being chosen and being scrolled past.
+                    </p>
+                    
+                    {scanResult.has_website && scanResult.geo_aeo_score < 50 && (
+                      <p className="text-sm text-[var(--text-secondary)] leading-relaxed bg-amber-50/50 p-3 rounded-lg border border-amber-100 mt-2">
+                        Even customers who find you on Google may never see you when they ask AI for a recommendation — that's a second, invisible competition you're currently losing.
+                      </p>
+                    )}
+                    
+                    <div className="bg-[var(--bg-primary)] p-4 rounded-xl border border-[var(--border-default)] mt-2">
+                      <p className="text-sm font-bold text-[var(--text-primary)]">Time Is the Only Variable You Control</p>
+                      <p className="text-xs text-[var(--text-secondary)] mt-1">You can't change your competitor's review count. You CAN change yours — starting today.</p>
+                    </div>
+                  </div>
+                </div>
+                
+                </div>
+                
               </div>
-              
             </div>
             
           </motion.div>
