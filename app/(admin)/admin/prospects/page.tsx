@@ -91,7 +91,7 @@ export default function AdminProspectsPage() {
               placeholder="Search by name, city, email..." 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 bg-white"
+              className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 !text-slate-900 bg-white selection:bg-blue-100 selection:text-slate-900"
             />
           </div>
           <div className="text-sm font-medium text-slate-500">
