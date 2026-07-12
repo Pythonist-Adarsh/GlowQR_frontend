@@ -352,7 +352,7 @@ export function HealthCheckerFlow() {
                         setQuery('');
                         setSearchResults([]);
                       }}
-                      className="text-xs font-semibold px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full transition-colors flex items-center gap-1"
+                      className="text-xs font-semibold px-3 py-1 bg-[var(--bg-secondary)] hover:bg-[var(--border-default)] text-[var(--text-secondary)] rounded-full transition-colors flex items-center gap-1"
                     >
                       Search again
                     </button>
@@ -568,9 +568,9 @@ export function HealthCheckerFlow() {
                       {/* Today */}
                       <div className="flex flex-col items-center sm:w-1/3">
                         <div className="w-10 h-10 rounded-full bg-[var(--bg-card)] border-4 border-[var(--accent)] flex items-center justify-center font-bold text-sm mb-3">1</div>
-                        <div className="font-bold text-slate-800">Today</div>
-                        <div className="text-xs text-slate-500 mt-1">{scanResult.business_reviews} Reviews</div>
-                        <div className="text-sm font-bold text-slate-700 mt-1">
+                        <div className="font-bold text-[var(--text-primary)]">Today</div>
+                        <div className="text-xs text-[var(--text-secondary)] mt-1">{scanResult.business_reviews} Reviews</div>
+                        <div className="text-sm font-bold text-[var(--text-primary)] mt-1">
                           Rank #{scanResult.competitors ? scanResult.competitors.filter((c: any) => c.reviews > scanResult.business_reviews).length + 1 : 1}
                         </div>
                       </div>
@@ -578,16 +578,16 @@ export function HealthCheckerFlow() {
                       {/* 30 Days */}
                       <div className="flex flex-col items-center sm:w-1/3">
                         <div className="w-10 h-10 rounded-full bg-[var(--accent)] text-white border-4 border-[var(--bg-card)] flex items-center justify-center font-bold text-sm mb-3 shadow-md">2</div>
-                        <div className="font-bold text-slate-800">30 Days</div>
-                        <div className="text-xs text-slate-500 mt-1">{scanResult.business_reviews + 8} Reviews*</div>
+                        <div className="font-bold text-[var(--text-primary)]">30 Days</div>
+                        <div className="text-xs text-[var(--text-secondary)] mt-1">{scanResult.business_reviews + 8} Reviews*</div>
                         <div className="text-sm font-bold text-[var(--accent)] mt-1">Projected Rank</div>
                       </div>
                       
                       {/* 90 Days */}
                       <div className="flex flex-col items-center sm:w-1/3">
                         <div className="w-10 h-10 rounded-full bg-[var(--accent)] text-white border-4 border-[var(--bg-card)] flex items-center justify-center font-bold text-sm mb-3 shadow-md">3</div>
-                        <div className="font-bold text-slate-800">90 Days</div>
-                        <div className="text-xs text-slate-500 mt-1">{scanResult.business_reviews + 24} Reviews*</div>
+                        <div className="font-bold text-[var(--text-primary)]">90 Days</div>
+                        <div className="text-xs text-[var(--text-secondary)] mt-1">{scanResult.business_reviews + 24} Reviews*</div>
                         <div className="text-sm font-bold text-[var(--accent)] mt-1">Target Rank</div>
                       </div>
                     </div>
@@ -597,15 +597,15 @@ export function HealthCheckerFlow() {
                     *Estimate based on typical GlowQR client results (approx. 5-10 new reviews/month). Actual results vary.
                   </div>
 
-                  <div className="mt-8 bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                    <h4 className="font-bold text-slate-800 mb-4">Recommended Actions</h4>
+                  <div className="mt-8 bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border-default)]">
+                    <h4 className="font-bold text-[var(--text-primary)] mb-4">Recommended Actions</h4>
                     <ul className="space-y-4">
                       {scanResult.business_reviews < scanResult.competitor_avg_reviews && (
                         <li className="flex items-start gap-3">
                           <div className="bg-amber-100 p-1.5 rounded-full mt-0.5 flex-shrink-0"><div className="w-2 h-2 bg-amber-500 rounded-full"></div></div>
                           <div>
-                            <div className="font-bold text-sm">Close the Review Gap</div>
-                            <div className="text-xs text-slate-600 mt-0.5">You need roughly {scanResult.competitor_avg_reviews - scanResult.business_reviews} more reviews to reach the local average. Automate this collection with GlowQR to boost your rank.</div>
+                            <div className="font-bold text-[var(--text-primary)] text-sm">Close the Review Gap</div>
+                            <div className="text-xs text-[var(--text-secondary)] mt-0.5">You need roughly {scanResult.competitor_avg_reviews - scanResult.business_reviews} more reviews to reach the local average. Automate this collection with GlowQR to boost your rank.</div>
                           </div>
                         </li>
                       )}
@@ -613,8 +613,8 @@ export function HealthCheckerFlow() {
                         <li className="flex items-start gap-3">
                           <div className="bg-red-100 p-1.5 rounded-full mt-0.5 flex-shrink-0"><div className="w-2 h-2 bg-red-500 rounded-full"></div></div>
                           <div>
-                            <div className="font-bold text-sm">Create a Website Presence</div>
-                            <div className="text-xs text-slate-600 mt-0.5">Without a website, you cannot be found by ChatGPT or Google AI Overviews. Creating a basic landing page is critical.</div>
+                            <div className="font-bold text-[var(--text-primary)] text-sm">Create a Website Presence</div>
+                            <div className="text-xs text-[var(--text-secondary)] mt-0.5">Without a website, you cannot be found by ChatGPT or Google AI Overviews. Creating a basic landing page is critical.</div>
                           </div>
                         </li>
                       )}
@@ -643,8 +643,8 @@ export function HealthCheckerFlow() {
                           <li key={`aeo-action-${idx}`} className="flex items-start gap-3">
                             <div className="bg-purple-100 p-1.5 rounded-full mt-0.5 flex-shrink-0"><div className="w-2 h-2 bg-purple-500 rounded-full"></div></div>
                             <div>
-                              <div className="font-bold text-sm">{actionTitle}</div>
-                              <div className="text-xs text-slate-600 mt-0.5">{actionDesc}</div>
+                              <div className="font-bold text-[var(--text-primary)] text-sm">{actionTitle}</div>
+                              <div className="text-xs text-[var(--text-secondary)] mt-0.5">{actionDesc}</div>
                             </div>
                           </li>
                         );
@@ -693,7 +693,7 @@ export function HealthCheckerFlow() {
                       }
                       
                       return (
-                        <li key={idx} className="flex flex-col sm:flex-row sm:items-start gap-3 bg-white p-4 rounded-xl border border-[var(--border-default)]">
+                        <li key={idx} className="flex flex-col sm:flex-row sm:items-start gap-3 bg-[var(--bg-primary)] p-4 rounded-xl border border-[var(--border-default)]">
                           <div className={`text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 w-fit border ${colors} whitespace-nowrap`}>
                             <Icon className="w-3 h-3" /> {tagText}
                           </div>
@@ -702,7 +702,7 @@ export function HealthCheckerFlow() {
                       );
                     })}
                     {scanResult.issues.length === 0 && (
-                      <li className="text-green-700 font-medium p-4 bg-green-50 rounded-xl border border-green-200 flex items-center gap-2">
+                      <li className="text-green-700 dark:text-green-400 font-medium p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-800 flex items-center gap-2">
                         <CheckCircle2 className="w-5 h-5" /> No major issues found! Keep growing your reviews.
                       </li>
                     )}
