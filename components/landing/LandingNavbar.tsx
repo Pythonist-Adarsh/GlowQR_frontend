@@ -11,6 +11,7 @@ import { Search } from 'lucide-react'
 
 const links = [
   { href: '/#features', label: 'Features' },
+  { href: '/health-checker', label: 'Health Checker' },
   { href: '/pricing', label: 'Pricing' },
   { href: '/about', label: 'About Us' },
   { href: '/contact', label: 'Contact Us' },
