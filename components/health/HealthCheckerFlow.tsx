@@ -426,30 +426,30 @@ export function HealthCheckerFlow() {
                   </div>
                   
                   <div className="w-full mt-2 pt-3 border-t border-[var(--border-default)]">
-                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Metrics Breakdown</div>
+                    <div className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Metrics Breakdown</div>
                     <ul className="space-y-2">
                       <li className="flex items-start gap-2 text-xs">
                         <span className="mt-0.5">{scanResult.business_rating >= 4.0 ? '✅' : '❌'}</span>
-                        <span className={scanResult.business_rating >= 4.0 ? "text-slate-700" : "text-slate-500"}>Rating: {scanResult.business_rating} (Target: 4.0+)</span>
+                        <span className={scanResult.business_rating >= 4.0 ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]"}>Rating: {scanResult.business_rating} (Target: 4.0+)</span>
                       </li>
                       <li className="flex items-start gap-2 text-xs">
                         <span className="mt-0.5">{scanResult.business_reviews >= scanResult.competitor_avg_reviews ? '✅' : '❌'}</span>
-                        <span className={scanResult.business_reviews >= scanResult.competitor_avg_reviews ? "text-slate-700" : "text-slate-500"}>Reviews: {scanResult.business_reviews} (Local Avg: {scanResult.competitor_avg_reviews})</span>
+                        <span className={scanResult.business_reviews >= scanResult.competitor_avg_reviews ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]"}>Reviews: {scanResult.business_reviews} (Local Avg: {scanResult.competitor_avg_reviews})</span>
                       </li>
                     </ul>
                   </div>
                 </div>
                 
                 {/* Website SEO */}
-                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 flex flex-col items-center text-center relative overflow-hidden">
-                  <div className="absolute top-2 right-2 bg-slate-200 text-slate-500 text-[10px] font-bold px-2 py-1 rounded-md">COMING SOON</div>
-                  <div className="text-slate-400 font-bold mb-1">Website SEO</div>
-                  <div className="text-slate-400 text-xs mb-3">On-page markup</div>
+                <div className="bg-[var(--bg-card)] opacity-70 p-5 rounded-2xl border border-[var(--border-default)] flex flex-col items-center text-center relative overflow-hidden">
+                  <div className="absolute top-2 right-2 bg-[var(--bg-secondary)] text-[var(--text-secondary)] text-[10px] font-bold px-2 py-1 rounded-md">COMING SOON</div>
+                  <div className="text-[var(--text-primary)] font-bold mb-1">Website SEO</div>
+                  <div className="text-[var(--text-secondary)] text-xs mb-3">On-page markup</div>
                   <div className="relative w-16 h-16 flex items-center justify-center opacity-50 grayscale">
                     <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                      <circle cx="50" cy="50" r="40" fill="none" stroke="#E2E4E9" strokeWidth="8" />
+                      <circle cx="50" cy="50" r="40" fill="none" stroke="var(--border-default)" strokeWidth="8" />
                     </svg>
-                    <span className="font-bold text-slate-400">N/A</span>
+                    <span className="font-bold text-[var(--text-secondary)]">N/A</span>
                   </div>
                 </div>
 
@@ -485,12 +485,12 @@ export function HealthCheckerFlow() {
 
                   {scanResult.has_website && scanResult.geo_aeo_signals && scanResult.geo_aeo_signals.length > 0 && (
                     <div className="w-full mt-2 pt-3 border-t border-[var(--border-default)]">
-                      <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Technical Breakdown</div>
+                      <div className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Technical Breakdown</div>
                       <ul className="space-y-2">
                         {scanResult.geo_aeo_signals.map((sig: any, idx: number) => (
                           <li key={idx} className="flex items-start gap-2 text-xs">
                             <span className="mt-0.5">{sig.passed ? '✅' : '❌'}</span>
-                            <span className={sig.passed ? "text-slate-700" : "text-slate-500"}>{sig.message}</span>
+                            <span className={sig.passed ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]"}>{sig.message}</span>
                           </li>
                         ))}
                       </ul>
