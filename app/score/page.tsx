@@ -15,7 +15,7 @@ export default function ScorePage() {
   };
 
   return (
-    <div style={{ backgroundColor: theme.bgPrimary }} className="min-h-screen font-sans flex flex-col">
+    <div className="min-h-screen font-sans flex flex-col bg-[var(--bg-primary)] transition-colors duration-300">
       <LandingNavbar forceScrolled={true} />
       
       <style dangerouslySetInnerHTML={{__html: `
@@ -27,6 +27,15 @@ export default function ScorePage() {
           --accent: ${theme.accent};
           --border-default: ${theme.borderDefault};
           --success-main: ${theme.successMain};
+        }
+        [data-theme='dark'] {
+          --bg-primary: #000000;
+          --bg-card: #111111;
+          --text-primary: #ffffff;
+          --text-secondary: #cccccc;
+          --accent: #4B7CFF;
+          --border-default: #333333;
+          --success-main: #10B981;
         }
       `}} />
       <div className="w-full flex-1 flex items-start justify-center px-4 pt-32 pb-20">
