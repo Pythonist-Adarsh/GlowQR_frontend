@@ -207,13 +207,15 @@ export function HealthCheckerFlow() {
                   className="w-full p-4 rounded-xl border-2 border-[var(--border-default)] bg-[var(--bg-primary)] focus:border-[var(--accent)] outline-none transition-colors font-medium text-[var(--text-primary)]"
                 >
                   <option value="Restaurant">Restaurant</option>
+                  <option value="Food Court">Food Court</option>
                   <option value="Cafe">Cafe</option>
-                  <option value="Salon">Salon / Spa</option>
+                  <option value="Salon">Salon</option>
                   <option value="Gym">Gym / Fitness</option>
                   <option value="CA Firm">CA Firm / Accountant</option>
                   <option value="Real Estate">Real Estate</option>
                   <option value="Bakery">Bakery</option>
-                  <option value="Jewellery">Jewellery Store</option>
+                  <option value="Artificial Jewellery">Artificial Jewellery</option>
+                  <option value="Jewellery">Jewellery Store (Gold/Diamond)</option>
                   <option value="Boutique">Boutique / Clothing Store</option>
                   <option value="Wellness">Spa / Wellness Center</option>
                   <option value="Dental">Dental Clinic</option>
@@ -222,7 +224,8 @@ export function HealthCheckerFlow() {
                   <option value="Furniture">Furniture Store</option>
                   <option value="Photography">Photography Studio</option>
                   <option value="Event Planner">Event Planner</option>
-                  <option value="Hotel">Hotel / Guesthouse</option>
+                  <option value="Hotel">Hotel</option>
+                  <option value="Guesthouse">Guesthouse / Lodge</option>
                   <option value="Coaching">Coaching Institute / Tuition Center</option>
                   <option value="Garage">Automobile Service / Garage</option>
                   <option value="Interior Designer">Interior Designer</option>
