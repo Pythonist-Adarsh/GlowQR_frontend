@@ -66,13 +66,13 @@ export function LandingNavbar({ forceScrolled = false }: { forceScrolled?: boole
 
         <div className="flex items-center gap-3 sm:gap-4">
           <ThemeToggle />
-          <Link href="/score" className={`hidden lg:flex items-center gap-2 px-4 py-2 rounded-xl border transition-colors ${
+          <Link href="/score" className={`flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl border transition-colors ${
             onHero 
               ? 'border-white/20 text-white hover:bg-white/10' 
               : 'border-[var(--border-default)] text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]'
           }`}>
-            <Search className="w-4 h-4" />
-            <span className="text-sm font-semibold">Check Score</span>
+            <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span className="text-xs sm:text-sm font-semibold">Check Score</span>
           </Link>
           <AnimatedGetStartedButton
             size="sm"
