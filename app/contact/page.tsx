@@ -1,6 +1,7 @@
 import { LandingNavbar } from '@/components/landing/LandingNavbar'
 import { Footer } from '@/components/landing/Footer'
 import { AnimatedGetStartedButton } from '@/components/marketing/AnimatedGetStartedButton'
+import { ContactForm } from '@/components/contact/ContactForm'
 import { MessageSquare, Mail, FormInput, MapPin, Clock, CreditCard, Handshake, ChevronDown } from 'lucide-react'
 
 export const metadata = {
@@ -71,63 +72,7 @@ export default function ContactPage() {
 
         <section className="mb-20">
           <h2 className="text-xs font-black uppercase tracking-widest text-[var(--text-tertiary)] mb-6">Send Us A Message</h2>
-          <div className="bg-[var(--bg-glass)] p-8 md:p-10 rounded-3xl border border-[var(--border-default)] shadow-sm backdrop-blur-sm">
-            <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">What can we help with?</h3>
-            <p className="text-sm text-[var(--text-secondary)] mb-8">Pick a topic below so we route your message to the right person.</p>
-            
-            <div className="mb-8">
-              <p className="text-[10px] font-black uppercase tracking-widest text-[var(--text-tertiary)] mb-3">Topic</p>
-              <div className="flex flex-wrap gap-2">
-                {['General query', 'Upgrade / payment', 'Technical issue', 'Demo request', 'Partnership'].map(topic => (
-                  <button key={topic} className={`px-4 py-2 rounded-full border text-xs font-bold transition-all ${topic === 'General query' ? 'bg-[var(--brand-primary)]/10 text-[var(--brand-primary)] border-[var(--brand-primary)]/20' : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] border-[var(--border-default)] hover:border-[var(--text-tertiary)]'}`}>
-                    {topic}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <form className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-tertiary)] block mb-2">Your Name</label>
-                  <input type="text" placeholder="Rahul Sharma" className="w-full bg-[var(--bg-secondary)] border border-[var(--border-default)] rounded-xl px-4 py-3 text-sm focus:border-[var(--brand-primary)] outline-none transition-all text-[var(--text-primary)]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-tertiary)] block mb-2">Business Name</label>
-                  <input type="text" placeholder="The Velvet Lounge" className="w-full bg-[var(--bg-secondary)] border border-[var(--border-default)] rounded-xl px-4 py-3 text-sm focus:border-[var(--brand-primary)] outline-none transition-all text-[var(--text-primary)]" />
-                </div>
-              </div>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-tertiary)] block mb-2">Phone / WhatsApp</label>
-                  <input type="text" placeholder="+91 98765 43210" className="w-full bg-[var(--bg-secondary)] border border-[var(--border-default)] rounded-xl px-4 py-3 text-sm focus:border-[var(--brand-primary)] outline-none transition-all text-[var(--text-primary)]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-tertiary)] block mb-2">Email</label>
-                  <input type="email" placeholder="you@yourbusiness.com" className="w-full bg-[var(--bg-secondary)] border border-[var(--border-default)] rounded-xl px-4 py-3 text-sm focus:border-[var(--brand-primary)] outline-none transition-all text-[var(--text-primary)]" />
-                </div>
-              </div>
-              <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-tertiary)] block mb-2">Current Plan</label>
-                <select className="w-full bg-[var(--bg-secondary)] border border-[var(--border-default)] rounded-xl px-4 py-3 text-sm focus:border-[var(--brand-primary)] outline-none transition-all appearance-none text-[var(--text-primary)]">
-                  <option>Not a customer yet</option>
-                  <option>Free Trial</option>
-                  <option>Basic Plan</option>
-                  <option>Premium Plan</option>
-                </select>
-              </div>
-              <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-tertiary)] block mb-2">Your Message</label>
-                <textarea placeholder="Tell us what's going on. The more detail, the faster we can help." className="w-full bg-[var(--bg-secondary)] border border-[var(--border-default)] rounded-xl px-4 py-3 text-sm focus:border-[var(--brand-primary)] outline-none transition-all h-32 text-[var(--text-primary)]"></textarea>
-              </div>
-              <div className="flex items-center justify-between pt-4">
-                <p className="text-[10px] text-[var(--text-tertiary)] italic">We never share your data.</p>
-                <button type="button" className="px-6 py-3 bg-[var(--text-primary)] text-[var(--bg-primary)] text-xs font-bold uppercase tracking-widest rounded-xl hover:opacity-90 transition-opacity shadow-md">
-                  Send Message
-                </button>
-              </div>
-            </form>
-          </div>
+          <ContactForm />
         </section>
 
         <section className="mb-20">
