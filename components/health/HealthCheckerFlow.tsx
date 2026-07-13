@@ -505,11 +505,62 @@ export function HealthCheckerFlow() {
               {/* Left Column: Data & Competitors */}
               <div className="lg:col-span-8 space-y-6 lg:space-y-8">
                 
-                {/* Competitor Leaderboard */}
+                {/* Local Competitor Leaderboard */}
+                {scanResult.local_competitors && scanResult.local_competitors.length > 0 && (
+                  <section className="bg-[var(--bg-card)] p-6 md:p-8 rounded-3xl border border-[var(--border-default)] shadow-sm">
+                    <h3 className="text-xl font-bold mb-2 text-[var(--text-primary)] flex items-center gap-2">
+                      <TrendingUp className="w-5 h-5 text-[var(--accent)]" /> 
+                      Your Local Competitors
+                    </h3>
+                    
+                    {(() => {
+                      // Combine business with top 5 competitors and sort
+                      const allBiz = [
+                        { isMe: true, name: "You (Searched Business)", rating: scanResult.business_rating, reviews: scanResult.business_reviews, distance_km: 0 },
+                        ...(scanResult.local_competitors || []).slice(0, 5).map((c: any, i: number) => ({
+                          isMe: false, name: c.name || `Competitor ${i+1}`, rating: c.rating, reviews: c.reviews, distance_km: c.distance_km
+                        }))
+                      ].sort((a, b) => b.reviews - a.reviews);
+                      
+                      const myRank = allBiz.findIndex(b => b.isMe) + 1;
+                      const maxReviews = Math.max(1, ...allBiz.map(b => b.reviews));
+                      
+                      return (
+                        <>
+                          <p className="text-[var(--text-secondary)] mb-6 font-medium">
+                            You rank <strong className="text-[var(--text-primary)]">#{myRank}</strong> out of {allBiz.length} real local competitors near you.
+                          </p>
+                          <div className="space-y-5">
+                            {allBiz.map((biz, idx) => (
+                              <div key={idx}>
+                                <div className="flex justify-between mb-1.5 items-end">
+                                  <span className={`font-semibold text-sm ${biz.isMe ? 'text-[var(--accent)]' : 'text-[var(--text-primary)]'}`}>
+                                    {idx + 1}. {biz.name} {biz.distance_km ? <span className="text-xs font-normal text-[var(--text-secondary)] ml-1">({biz.distance_km} km)</span> : ""}
+                                  </span>
+                                  <span className={`font-bold text-sm ${biz.isMe ? 'text-[var(--accent)]' : 'text-[var(--text-secondary)]'}`}>
+                                    {biz.reviews} reviews
+                                  </span>
+                                </div>
+                                <div className="w-full bg-slate-100 rounded-full h-3">
+                                  <div 
+                                    className={`h-3 rounded-full ${biz.isMe ? 'bg-[var(--accent)]' : 'bg-slate-300'}`}
+                                    style={{ width: `${Math.max(2, (biz.reviews / maxReviews) * 100)}%` }}
+                                  ></div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </section>
+                )}
+
+                {/* City-wide Top Performers */}
                 <section className="bg-[var(--bg-card)] p-6 md:p-8 rounded-3xl border border-[var(--border-default)] shadow-sm">
                   <h3 className="text-xl font-bold mb-2 text-[var(--text-primary)] flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5 text-[var(--accent)]" /> 
-                    Local Competitor Leaderboard
+                    <TrendingUp className="w-5 h-5 text-[var(--text-secondary)]" /> 
+                    City-wide Top Performers
                   </h3>
                   
                   {(() => {
@@ -527,7 +578,7 @@ export function HealthCheckerFlow() {
                     return (
                       <>
                         <p className="text-[var(--text-secondary)] mb-6 font-medium">
-                          You rank <strong className="text-[var(--text-primary)]">#{myRank}</strong> out of {allBiz.length} top businesses in {category} near {scanResult.city || 'you'}.
+                          You rank <strong className="text-[var(--text-primary)]">#{myRank}</strong> out of {allBiz.length} benchmark businesses in {category} across the wider city area.
                         </p>
                         <div className="space-y-5">
                           {allBiz.map((biz, idx) => (
