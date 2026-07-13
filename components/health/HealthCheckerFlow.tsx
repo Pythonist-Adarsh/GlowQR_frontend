@@ -205,6 +205,7 @@ export function HealthCheckerFlow() {
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   className="w-full p-4 rounded-xl border-2 border-[var(--border-default)] bg-[var(--bg-primary)] focus:border-[var(--accent)] outline-none transition-colors font-medium text-[var(--text-primary)]"
+                >
                   <option value="Restaurant">Restaurant</option>
                   <option value="Cafe">Cafe</option>
                   <option value="CA Firm">CA Firm</option>
