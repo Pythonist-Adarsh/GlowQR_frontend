@@ -9,7 +9,7 @@ const quotes = [
     role: 'Restaurant Owner, Lucknow',
     businessName: 'Danbam Food Court',
     avatar: 'RG',
-    photoUrl: '', // placeholder: '/testimonials/ramesh-gupta.jpg'
+    photoUrl: 'https://randomuser.me/api/portraits/men/51.jpg',
     initialsUrl: 'https://ui-avatars.com/api/?name=Ramesh+Gupta&background=9B5DE5&color=fff&bold=true',
     rating: 5,
     verified: true,
@@ -21,7 +21,7 @@ const quotes = [
     role: 'Salon Owner, Kanpur',
     businessName: 'Glow Up Salon',
     avatar: 'PM',
-    photoUrl: '', // placeholder: '/testimonials/priya-mehta.jpg'
+    photoUrl: 'https://randomuser.me/api/portraits/women/57.jpg',
     initialsUrl: 'https://ui-avatars.com/api/?name=Priya+Mehta&background=9B5DE5&color=fff&bold=true',
     rating: 5,
     verified: true,
@@ -33,7 +33,7 @@ const quotes = [
     role: 'Clinic Operator',
     businessName: 'Sharma Dental Clinic',
     avatar: 'ASh',
-    photoUrl: '', // placeholder: '/testimonials/amit-sharma.jpg'
+    photoUrl: 'https://randomuser.me/api/portraits/men/80.jpg',
     initialsUrl: 'https://ui-avatars.com/api/?name=Amit+Sharma&background=9B5DE5&color=fff&bold=true',
     rating: 5,
     verified: true,
@@ -45,7 +45,7 @@ const quotes = [
     role: 'Cafe Owner, Noida',
     businessName: 'The Bean Diary',
     avatar: 'AS',
-    photoUrl: '', // placeholder: '/testimonials/anjali-singh.jpg'
+    photoUrl: 'https://randomuser.me/api/portraits/women/14.jpg',
     initialsUrl: 'https://ui-avatars.com/api/?name=Anjali+Singh&background=E85D9C&color=fff&bold=true',
     rating: 5,
     verified: true,
@@ -57,12 +57,23 @@ const quotes = [
     role: 'Multi-Location Restaurant Owner',
     businessName: 'Agarwal Sweets & Snacks',
     avatar: 'VA',
-    photoUrl: '', // placeholder: '/testimonials/vikram-agarwal.jpg'
+    photoUrl: 'https://randomuser.me/api/portraits/men/92.jpg',
     initialsUrl: 'https://ui-avatars.com/api/?name=Vikram+Agarwal&background=9B5DE5&color=fff&bold=true',
     rating: 5,
     verified: true,
     quote:
       "Managing reputation across three branches was a headache. Feedback was inconsistent and manual follow-ups just weren't working. Setting this up took minutes, and suddenly more customers started leaving feedback without us even asking. It just runs in the background and does its job.",
+  },
+  {
+    name: 'Rajesh Kumar',
+    role: 'Jewellery Store Owner',
+    businessName: 'Kumar Jewellers',
+    avatar: 'RK',
+    photoUrl: 'https://randomuser.me/api/portraits/men/24.jpg',
+    initialsUrl: 'https://ui-avatars.com/api/?name=Rajesh+Kumar&background=9B5DE5&color=fff&bold=true',
+    rating: 5,
+    verified: true,
+    quote: "We were struggling to build online trust for our store. After placing GlowQR stands on our counters, customers happily leave a review while their bill is being printed. It's completely transformed our local SEO.",
   },
 ]
 
@@ -88,7 +99,7 @@ export function Testimonials() {
           whileInView="visible"
           viewport={{ once: true }}
           variants={staggerContainer}
-          className="mt-14 grid gap-8 md:grid-cols-3"
+          className="mt-14 grid gap-8 sm:grid-cols-2 md:grid-cols-3"
         >
           {quotes.map((q) => (
             <motion.figure
@@ -103,6 +114,11 @@ export function Testimonials() {
                     src={q.photoUrl || q.initialsUrl}
                     alt={q.name}
                     className="h-12 w-12 shrink-0 rounded-full object-cover shadow-sm ring-1 ring-[var(--border-default)]"
+                    onError={(e) => {
+                      if (q.initialsUrl && e.currentTarget.src !== q.initialsUrl) {
+                        e.currentTarget.src = q.initialsUrl;
+                      }
+                    }}
                   />
                 ) : (
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-primary to-brand-accent font-display text-sm font-bold text-white shadow-sm">
