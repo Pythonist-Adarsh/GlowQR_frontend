@@ -9,7 +9,7 @@ const quotes = [
     role: 'Restaurant Owner, Lucknow',
     businessName: 'Danbam Food Court',
     avatar: 'RG',
-    photoUrl: 'https://randomuser.me/api/portraits/men/51.jpg',
+    photoUrl: 'https://ui-avatars.com/api/?name=Ramesh+Gupta&background=9B5DE5&color=fff&bold=true',
     rating: 5,
     verified: true,
     quote:
@@ -20,7 +20,7 @@ const quotes = [
     role: 'Salon Owner, Kanpur',
     businessName: 'Glow Up Salon',
     avatar: 'PM',
-    photoUrl: 'https://randomuser.me/api/portraits/women/57.jpg',
+    photoUrl: 'https://ui-avatars.com/api/?name=Priya+Mehta&background=9B5DE5&color=fff&bold=true',
     rating: 5,
     verified: true,
     quote:
@@ -31,7 +31,7 @@ const quotes = [
     role: 'Clinic Operator',
     businessName: 'Sharma Dental Clinic',
     avatar: 'ASh',
-    photoUrl: 'https://randomuser.me/api/portraits/men/80.jpg',
+    photoUrl: 'https://ui-avatars.com/api/?name=Amit+Sharma&background=9B5DE5&color=fff&bold=true',
     rating: 5,
     verified: true,
     quote:
@@ -42,7 +42,7 @@ const quotes = [
     role: 'Cafe Owner, Noida',
     businessName: 'The Bean Diary',
     avatar: 'AS',
-    photoUrl: 'https://randomuser.me/api/portraits/women/14.jpg',
+    photoUrl: 'https://ui-avatars.com/api/?name=Anjali+Singh&background=9B5DE5&color=fff&bold=true',
     rating: 5,
     verified: true,
     quote:
@@ -53,7 +53,7 @@ const quotes = [
     role: 'Multi-Location Restaurant Owner',
     businessName: 'Agarwal Sweets & Snacks',
     avatar: 'VA',
-    photoUrl: 'https://randomuser.me/api/portraits/men/92.jpg',
+    photoUrl: 'https://ui-avatars.com/api/?name=Vikram+Agarwal&background=9B5DE5&color=fff&bold=true',
     rating: 5,
     verified: true,
     quote:
