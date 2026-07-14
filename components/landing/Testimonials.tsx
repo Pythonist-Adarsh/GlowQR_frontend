@@ -9,7 +9,8 @@ const quotes = [
     role: 'Restaurant Owner, Lucknow',
     businessName: 'Danbam Food Court',
     avatar: 'RG',
-    photoUrl: 'https://ui-avatars.com/api/?name=Ramesh+Gupta&background=9B5DE5&color=fff&bold=true',
+    photoUrl: '', // placeholder: '/testimonials/ramesh-gupta.jpg'
+    initialsUrl: 'https://ui-avatars.com/api/?name=Ramesh+Gupta&background=9B5DE5&color=fff&bold=true',
     rating: 5,
     verified: true,
     quote:
@@ -20,7 +21,8 @@ const quotes = [
     role: 'Salon Owner, Kanpur',
     businessName: 'Glow Up Salon',
     avatar: 'PM',
-    photoUrl: 'https://ui-avatars.com/api/?name=Priya+Mehta&background=9B5DE5&color=fff&bold=true',
+    photoUrl: '', // placeholder: '/testimonials/priya-mehta.jpg'
+    initialsUrl: 'https://ui-avatars.com/api/?name=Priya+Mehta&background=9B5DE5&color=fff&bold=true',
     rating: 5,
     verified: true,
     quote:
@@ -31,7 +33,8 @@ const quotes = [
     role: 'Clinic Operator',
     businessName: 'Sharma Dental Clinic',
     avatar: 'ASh',
-    photoUrl: 'https://ui-avatars.com/api/?name=Amit+Sharma&background=9B5DE5&color=fff&bold=true',
+    photoUrl: '', // placeholder: '/testimonials/amit-sharma.jpg'
+    initialsUrl: 'https://ui-avatars.com/api/?name=Amit+Sharma&background=9B5DE5&color=fff&bold=true',
     rating: 5,
     verified: true,
     quote:
@@ -42,7 +45,8 @@ const quotes = [
     role: 'Cafe Owner, Noida',
     businessName: 'The Bean Diary',
     avatar: 'AS',
-    photoUrl: 'https://ui-avatars.com/api/?name=Anjali+Singh&background=9B5DE5&color=fff&bold=true',
+    photoUrl: '', // placeholder: '/testimonials/anjali-singh.jpg'
+    initialsUrl: 'https://ui-avatars.com/api/?name=Anjali+Singh&background=E85D9C&color=fff&bold=true',
     rating: 5,
     verified: true,
     quote:
@@ -53,7 +57,8 @@ const quotes = [
     role: 'Multi-Location Restaurant Owner',
     businessName: 'Agarwal Sweets & Snacks',
     avatar: 'VA',
-    photoUrl: 'https://ui-avatars.com/api/?name=Vikram+Agarwal&background=9B5DE5&color=fff&bold=true',
+    photoUrl: '', // placeholder: '/testimonials/vikram-agarwal.jpg'
+    initialsUrl: 'https://ui-avatars.com/api/?name=Vikram+Agarwal&background=9B5DE5&color=fff&bold=true',
     rating: 5,
     verified: true,
     quote:
@@ -93,9 +98,9 @@ export function Testimonials() {
               className="glass-card flex flex-col border-[var(--border-card)] p-6"
             >
               <div className="flex items-center gap-3">
-                {q.photoUrl ? (
+                {q.photoUrl || q.initialsUrl ? (
                   <img
-                    src={q.photoUrl}
+                    src={q.photoUrl || q.initialsUrl}
                     alt={q.name}
                     className="h-12 w-12 shrink-0 rounded-full object-cover shadow-sm ring-1 ring-[var(--border-default)]"
                   />
