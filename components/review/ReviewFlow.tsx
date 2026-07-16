@@ -31,7 +31,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
 
   const isSimplifiedFlow = isTaxFirm || isJewellery || isGym || isRealEstate;
 
-  const [step, setStep] = useState(isSimplifiedFlow ? STEPS.ENJOY : STEPS.WELCOME);
+  const [step, setStep] = useState(STEPS.ENJOY);
   
   const areaPart = data.area || data.area_locality || "";
   const cityPart = data.city || "Lucknow";
@@ -175,7 +175,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
   const [showEmpathy, setShowEmpathy] = useState(false);
 
   const nextStep = () => setStep(s => Math.min(s + 1, STEPS.COPIED));
-  const prevStep = () => setStep(s => Math.max(s - 1, STEPS.WELCOME));
+  const prevStep = () => setStep(s => Math.max(s - 1, STEPS.ENJOY));
 
   const handleGenerateReview = async () => {
     if (ratings.overall === 0) return;
@@ -330,45 +330,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
     <div className={`flex-1 flex flex-col h-full w-full relative bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans`} style={themeVars}>
       <AnimatePresence mode="wait">
         
-        {/* SCREEN 1: WELCOME */}
-        {step === STEPS.WELCOME && (
-          <motion.div 
-            key="welcome" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={transition}
-            className={`flex-1 flex flex-col items-center justify-center p-6 text-center h-full relative`}
-          >
-            <div className={`w-full max-w-[340px] bg-[var(--bg-card)] border border-[var(--border-default)] p-8 rounded-[20px] flex flex-col items-center`}>
-              <button className="absolute top-4 right-4 p-2 rounded-full opacity-50 hover:opacity-100 text-[var(--text-primary)]">
-                <X className="w-4 h-4" />
-              </button>
 
-              <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-6" style={{ backgroundColor: 'var(--accent)', color: 'white' }}>
-                <Sparkles className="w-6 h-6" />
-              </div>
-
-              <h1 className="text-2xl font-[600] mb-3 text-center leading-tight text-[var(--text-primary)]">Share your experience</h1>
-              
-              <p className={`text-[15px] font-medium mb-1 text-[var(--text-secondary)]`}>
-                Loved your time at {business.name}?
-              </p>
-              
-              <p className="text-sm font-[500] italic mb-5" style={{ color: 'var(--accent)' }}>
-                "{business.tagline}"
-              </p>
-
-              <p className={`text-[13px] leading-relaxed mb-8 max-w-[220px] text-[var(--text-muted)]`}>
-                Let's craft a beautiful review together in 2 simple steps.
-              </p>
-
-              <button 
-                onClick={nextStep}
-                className="w-full py-3.5 rounded-full font-[600] text-[15px] flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
-                style={{ backgroundColor: 'var(--accent)', color: 'white' }}
-              >
-                Get Started <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </motion.div>
-        )}
 
         {/* SCREEN 2: ENJOY */}
         {step === STEPS.ENJOY && (
@@ -757,14 +719,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
               </div>
             )}
             
-            {!isSimplifiedFlow && (
-              <button 
-                onClick={() => setStep(STEPS.WELCOME)}
-                className={`w-full max-w-[300px] py-4 rounded-full font-[600] text-[15px] flex items-center justify-center gap-2 transition-all active:scale-[0.98] border border-[var(--border-default)] text-[var(--text-primary)] bg-transparent hover:bg-[#F3F4F7] mb-8`}
-              >
-                Done <RefreshCw className="w-4 h-4" />
-              </button>
-            )}
+
           </motion.div>
         )}
 
