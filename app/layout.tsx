@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Script from 'next/script'
 import './globals.css'
 import { WhatsAppButton } from '@/components/WhatsAppButton'
+import { GoogleAnalytics } from '@next/third-parties/google'
 export const metadata: Metadata = {
   title: 'GlowQR — AI Google Review Generator for Indian Local Businesses',
   description: 'GlowQR helps restaurants, salons, cafes & clinics in India get more Google reviews automatically. Customers scan a QR code, AI drafts a review, they post in seconds. Start free — no card needed.',
@@ -33,6 +34,7 @@ export default function RootLayout({
         {children}
         <WhatsAppButton />
       </body>
+      <GoogleAnalytics gaId="G-DVHQW8Q44V" />
     </html>
   )
 }

@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/api-config';
 import { getThemeVariables } from './themeUtils';
+import { trackEvent } from '@/lib/analytics';
 
 const STEPS = {
   WELCOME: 1, // "Share Your Review"
@@ -233,6 +234,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
       if (res.ok) {
         const json = await res.json();
         setGeneratedReviews((json.variants && json.variants.length > 0) ? json.variants : [`Absolutely loved visiting ${business.name}! Highly recommend!`]);
+        trackEvent('review_generated', { business_id: data.qr_slug || window.location.pathname.split('/').pop() || '' });
       } else {
         setGeneratedReviews([`Absolutely loved visiting ${business.name}! Highly recommend!`]);
       }
@@ -271,6 +273,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
   };
 
   const handlePostReview = () => {
+    trackEvent('redirect_to_google', { business_id: data.qr_slug || window.location.pathname.split('/').pop() || '' });
     const reviewText = generatedReviews[activeReviewIndex] || '';
 
     try {

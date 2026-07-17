@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { Clock } from "lucide-react";
 import { ReviewPageOrchestrator } from "@/components/review/ReviewPageOrchestrator";
 import { API_BASE_URL } from "@/lib/api-config";
+import { EventTracker } from "@/components/analytics/EventTracker";
 
 // This is a mock function to fetch business data
 // In a real application, this would fetch from a database or external API
@@ -78,6 +79,7 @@ export default async function BusinessReviewPage({ params }: { params: Promise<{
   if (businessData && 'status' in businessData && businessData.status === "paused") {
     return (
       <main className="min-h-screen bg-slate-50 flex items-center justify-center p-6 font-sans">
+        <EventTracker eventName="trial_limit_reached" params={{ business_id: slug }} />
         <div className="bg-white p-10 rounded-[2.5rem] shadow-xl max-w-md w-full text-center border border-slate-200">
           <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <Clock className="w-10 h-10 text-slate-400" />

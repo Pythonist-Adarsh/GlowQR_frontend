@@ -4,6 +4,7 @@ import { ARExperience } from './ARExperience';
 import { ClientReviewFlow } from './ClientReviewFlow';
 import { getThemeVariables } from './themeUtils';
 import { API_BASE_URL } from '@/lib/api-config';
+import { trackEvent } from '@/lib/analytics';
 
 export function ReviewPageOrchestrator({ initialData, isEmbedded = false }: { initialData: any, isEmbedded?: boolean }) {
   const [showAR, setShowAR] = useState(true);
@@ -12,6 +13,10 @@ export function ReviewPageOrchestrator({ initialData, isEmbedded = false }: { in
     if (!isEmbedded) {
       const slug = typeof window !== 'undefined' ? window.location.pathname.split('/').pop() : '';
       if (slug) {
+        trackEvent('qr_scanned', { 
+          business_id: slug, 
+          category: initialData.business_category || initialData.category 
+        });
         fetch(`${API_BASE_URL}/api/scan/record`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
