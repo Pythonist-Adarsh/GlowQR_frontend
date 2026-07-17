@@ -76,6 +76,7 @@ function resolveItemName(rawName: string, b: any): string {
         const item = b.menu_items[idx];
         return typeof item === 'object' ? (item.name || "Unnamed service/item") : item;
       }
+      return "Unnamed service/item";
     }
     return rawName;
   }
