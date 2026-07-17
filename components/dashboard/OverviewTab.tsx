@@ -67,6 +67,99 @@ const SECTION_TITLES: Record<string, string> = {
   "real_estate": "Top Properties",
 };
 
+function resolveItemName(rawName: string, b: any): string {
+  if (!rawName) return "Unnamed service/item";
+  if (!rawName.startsWith('srv_') && !rawName.startsWith('tax_def_') && !rawName.startsWith('jewel_def_') && !rawName.startsWith('edu_def_') && !rawName.startsWith('salon_def_') && !rawName.startsWith('gym_def_') && !rawName.startsWith('real_def_') && !rawName.startsWith('cat_')) {
+    if (/^\d+$/.test(rawName)) {
+      const idx = parseInt(rawName);
+      if (b.menu_items && Array.isArray(b.menu_items) && b.menu_items[idx]) {
+        const item = b.menu_items[idx];
+        return typeof item === 'object' ? (item.name || "Unnamed service/item") : item;
+      }
+    }
+    return rawName;
+  }
+  
+  if (rawName.startsWith('srv_')) {
+    const servicesStr = b.highlighted_dishes || b.highlightDishes || "";
+    if (servicesStr) {
+      const services = servicesStr.split('\n').filter(Boolean).map((s: string) => s.trim());
+      const idx = parseInt(rawName.split('_')[1]);
+      if (!isNaN(idx) && idx >= 0 && idx < services.length) return services[idx];
+    }
+    return "Unnamed service/item";
+  }
+  
+  const defaults: Record<string, string> = {
+    "tax_def_1": "ITR Filing", "tax_def_2": "GST Registration", "tax_def_3": "Tax Consultation",
+    "jewel_def_1": "Bridal Set", "jewel_def_2": "Necklace Collection", "jewel_def_3": "Ring Collection", "jewel_def_4": "Earrings", "jewel_def_5": "Maang Tikka", "jewel_def_6": "Bangles & Kada", "jewel_def_7": "Custom Jewellery", "jewel_def_8": "Saree & Lehenga",
+    "edu_def_1": "JEE Preparation", "edu_def_2": "NEET Coaching", "edu_def_3": "Class 10 Board Prep", "edu_def_4": "Class 12 Board Prep", "edu_def_5": "Spoken English", "edu_def_6": "Computer Courses",
+    "salon_def_1": "Haircut & Styling", "salon_def_2": "Hair Color & Treatment", "salon_def_3": "Facial & Cleanup", "salon_def_4": "Waxing & Threading", "salon_def_5": "Bridal Makeup", "salon_def_6": "Manicure & Pedicure",
+    "gym_def_1": "Personal Training", "gym_def_2": "Group Classes (Zumba/Yoga/Aerobics)", "gym_def_3": "Gym Membership", "gym_def_4": "Diet & Nutrition Consultation", "gym_def_5": "CrossFit / Functional Training", "gym_def_6": "Physiotherapy & Recovery",
+    "real_def_1": "Residential Sales", "real_def_2": "Commercial Leasing", "real_def_3": "Property Management", "real_def_4": "Rental Properties", "real_def_5": "Plots & Land", "real_def_6": "Legal & Documentation"
+  };
+  
+  if (defaults[rawName]) return defaults[rawName];
+  
+  if (rawName.startsWith('cat_')) {
+    let rawData = b.menu_data || b.menuCategories;
+    if (typeof rawData === 'string') {
+      try { rawData = JSON.parse(rawData); } catch (e) {}
+    }
+    if (Array.isArray(rawData)) {
+      let idx = 0;
+      for (const c of rawData) {
+        if (c && Array.isArray(c.items)) {
+          for (const item of c.items) {
+            const idToCheck = typeof item === 'object' && item.id ? `cat_${idx}_${item.id}` : `cat_${idx}`;
+            if (idToCheck === rawName) return typeof item === 'object' ? item.name : item;
+            idx++;
+          }
+        }
+      }
+    }
+    return "Unnamed menu item";
+  }
+  return "Unnamed service/item";
+}
+
+function getDisplayMenuItems(b: any): string[] {
+  const catLower = (b.category || "").toLowerCase();
+  const isFoodCategory = ['restaurant', 'cafe', 'food', 'bar', 'bakery', 'qsr', 'lounge'].some(c => catLower.includes(c));
+  
+  if (!isFoodCategory) {
+    const servicesStr = b.highlighted_dishes || b.highlightDishes || "";
+    if (servicesStr) return servicesStr.split('\n').filter(Boolean).map((s: string) => s.trim());
+    if (catLower === 'tax / ca firm') return ["ITR Filing", "GST Registration", "Tax Consultation"];
+    if (catLower.includes('jewellery')) return ["Bridal Set", "Necklace Collection", "Ring Collection", "Earrings", "Maang Tikka", "Bangles & Kada", "Custom Jewellery", "Saree & Lehenga"];
+    if (catLower === 'education') return ["JEE Preparation", "NEET Coaching", "Class 10 Board Prep", "Class 12 Board Prep", "Spoken English", "Computer Courses"];
+    if (catLower === 'salon') return ["Haircut & Styling", "Hair Color & Treatment", "Facial & Cleanup", "Waxing & Threading", "Bridal Makeup", "Manicure & Pedicure"];
+    if (catLower === 'gym') return ["Personal Training", "Group Classes (Zumba/Yoga/Aerobics)", "Gym Membership", "Diet & Nutrition Consultation", "CrossFit / Functional Training", "Physiotherapy & Recovery"];
+    if (catLower.includes('real estate') || catLower === 'real_estate') return ["Residential Sales", "Commercial Leasing", "Property Management", "Rental Properties", "Plots & Land", "Legal & Documentation"];
+  }
+
+  let items: string[] = [];
+  if (b.menu_items && b.menu_items.length > 0) {
+    items = b.menu_items.map((i: any) => typeof i === 'object' ? (i.name || "Unnamed") : i);
+  } else if (b.menu_data || b.menuCategories) {
+    let rawData = b.menu_data || b.menuCategories;
+    if (typeof rawData === 'string') {
+      try { rawData = JSON.parse(rawData); } catch (e) {}
+    }
+    if (Array.isArray(rawData)) {
+      for (const c of rawData) {
+        if (c && Array.isArray(c.items)) {
+          for (const item of c.items) {
+            items.push(typeof item === 'object' ? item.name : item);
+          }
+        }
+      }
+    }
+  }
+
+  return items.map(raw => resolveItemName(raw, b)).filter((name, i, arr) => arr.indexOf(name) === i);
+}
+
 export function OverviewTab({
   user,
   b,
@@ -247,15 +340,22 @@ export function OverviewTab({
     const data = analyticsSummary?.reviews_data;
     
     const catLower = b.category?.toLowerCase() || "";
+    const isFoodCategory = ['restaurant', 'cafe', 'food', 'bar', 'bakery', 'qsr', 'lounge'].some(c => catLower.includes(c));
+    const defaultTopTitle = isFoodCategory ? "Top Menu Items" : "Top Services";
+    const defaultYourTitle = isFoodCategory ? "Your Menu Items" : "Your Services";
+    
     const ratingLabels = CATEGORY_RATING_LABELS[catLower] || CATEGORY_RATING_LABELS["other"];
-    const topItemsTitle = SECTION_TITLES[catLower] || "Top Menu Items";
-    const yourItemsTitle = SECTION_TITLES[catLower] ? SECTION_TITLES[catLower].replace("Top ", "Your ") : "Your Menu Items";
+    const topItemsTitle = SECTION_TITLES[catLower] || defaultTopTitle;
+    const yourItemsTitle = SECTION_TITLES[catLower] ? SECTION_TITLES[catLower].replace("Top ", "Your ") : defaultYourTitle;
 
-    const hasUnconfiguredTopItems = analyticsSummary?.top_menu_items?.items?.some((i: any) => i.name?.startsWith('srv_') || i.name?.startsWith('tax_def_'));
-    const hasUnconfiguredMenu = b.menu_items?.some((i: any) => {
-      const n = i.name || i;
-      return typeof n === 'string' && (n.startsWith('srv_') || n.startsWith('tax_def_'));
-    });
+    const resolvedTopItems = (analyticsSummary?.top_menu_items?.items || []).map((item: any) => ({
+      ...item,
+      resolvedName: resolveItemName(item.name, b)
+    }));
+
+    const hasUnconfiguredTopItems = resolvedTopItems.some((i: any) => i.resolvedName === "Unnamed service/item" || i.resolvedName === "Unnamed menu item");
+    const resolvedMenuItems = getDisplayMenuItems(b);
+    const hasUnconfiguredMenu = resolvedMenuItems.some((name: string) => name === "Unnamed service/item" || name === "Unnamed menu item");
 
     return (
       <div className="flex flex-col lg:flex-row gap-6 relative">
@@ -415,21 +515,21 @@ export function OverviewTab({
                     </div>
                   )}
                   <div className="space-y-4">
-                    {analyticsSummary?.top_menu_items?.items?.map((item: any, i: number) => (
+                    {resolvedTopItems.map((item: any, i: number) => (
                       <div key={i} className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-slate-700">{item.name}</span>
+                        <span className="text-sm font-medium text-slate-700">{item.resolvedName}</span>
                         <span className="text-xs font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md">{item.count}</span>
                       </div>
                     ))}
-                    {(!analyticsSummary?.top_menu_items?.items || analyticsSummary.top_menu_items.items.length === 0) && (
+                    {resolvedTopItems.length === 0 && (
                       <p className="text-sm text-slate-400">No data yet.</p>
                     )}
                   </div>
                 </div>
               ) : (
                 <LockedSection 
-                  title="Top Menu Items" 
-                  description="See which dishes your customers love most" 
+                  title={topItemsTitle} 
+                  description="See which items your customers love most" 
                   requiredPlan="Basic" 
                   price="₹199/mo" 
                 />
@@ -573,13 +673,13 @@ export function OverviewTab({
                 </div>
               )}
               <div className="flex flex-wrap gap-2">
-                {b.menu_items && b.menu_items.length > 0 ? (
-                  b.menu_items.map((item: any, i: number) => (
+                {resolvedMenuItems && resolvedMenuItems.length > 0 ? (
+                  resolvedMenuItems.map((name: string, i: number) => (
                     <span
                       key={i}
                       className="px-4 py-2 bg-slate-50 text-slate-700 rounded-xl text-sm font-bold border border-slate-200"
                     >
-                      {item.name || item}
+                      {name}
                     </span>
                   ))
                 ) : (
