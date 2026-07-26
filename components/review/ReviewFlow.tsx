@@ -140,8 +140,8 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
 
   useEffect(() => {
     const handleReturn = () => {
-      if (sessionStorage.getItem('glowqr_flow_finished') === 'true') {
-        sessionStorage.removeItem('glowqr_flow_finished');
+      if (sessionStorage.getItem('google_review_posted') === 'true' && sessionStorage.getItem('thank_you_shown') !== 'true') {
+        sessionStorage.setItem('thank_you_shown', 'true');
         flushSync(() => {
           setStep(STEPS.COPIED);
         });
@@ -283,7 +283,8 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
     const isPremium = ['premium', 'trial'].includes(business.plan?.toLowerCase() || '');
     const hasInstagram = !!business.instagramUrl;
 
-    sessionStorage.setItem('glowqr_flow_finished', 'true');
+    sessionStorage.setItem('google_review_posted', 'true');
+    sessionStorage.removeItem('thank_you_shown');
     
     setIsCopied(true);
 

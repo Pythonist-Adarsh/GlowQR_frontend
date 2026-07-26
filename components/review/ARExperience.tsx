@@ -59,19 +59,35 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
     let advanceTimer: NodeJS.Timeout;
     
     // Guard against auto-advancing if user already finished the flow
-    const hasFinished = typeof window !== 'undefined' && sessionStorage.getItem('glowqr_flow_finished') === 'true';
+    const googlePosted = typeof window !== 'undefined' && sessionStorage.getItem('google_review_posted') === 'true';
+    const thankYouShown = typeof window !== 'undefined' && sessionStorage.getItem('thank_you_shown') === 'true';
     
-    if (!hasFinished) {
-      // Auto-advance after 15s
+    if (googlePosted && !thankYouShown) {
+      // User returned from Google and hasn't seen the Thank You screen yet.
+      // Immediately transition to ReviewFlow to show the Thank You screen!
+      advanceTimer = setTimeout(() => {
+        onComplete();
+      }, 0);
+    } else if (googlePosted && thankYouShown) {
+      // User returned AGAIN. Do NOT re-trigger. Just show the static landing screen.
+      // Do not set advanceTimer.
+    } else {
+      // Fresh visitor. Normal auto-advance behavior.
       advanceTimer = setTimeout(() => {
         onComplete();
       }, 15000);
     }
 
     const handlePageShow = (e: PageTransitionEvent) => {
-      // Cancel auto-advance if restored from history/bfcache or if flow is marked finished
-      if (e.persisted || (typeof window !== 'undefined' && sessionStorage.getItem('glowqr_flow_finished') === 'true')) {
-        if (advanceTimer) clearTimeout(advanceTimer);
+      if (e.persisted) {
+        const _googlePosted = sessionStorage.getItem('google_review_posted') === 'true';
+        const _thankYouShown = sessionStorage.getItem('thank_you_shown') === 'true';
+        
+        if (_googlePosted && !_thankYouShown) {
+          onComplete();
+        } else if (_googlePosted && _thankYouShown) {
+          if (advanceTimer) clearTimeout(advanceTimer);
+        }
       }
     };
     
