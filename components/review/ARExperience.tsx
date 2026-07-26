@@ -37,32 +37,51 @@ export function ARExperience({ businessData, plan, onComplete }: ARExperiencePro
   useEffect(() => {
     // Welcome message fade-in / typewriter
     const welcomeText = businessData?.welcomeMessage || 'Welcome to ' + businessData.name;
-    let timer: NodeJS.Timeout;
+    let typeTimer: NodeJS.Timeout;
+    let fallbackTimer: NodeJS.Timeout;
 
     if (isPremium) {
       let i = 0;
-      timer = setInterval(() => {
+      typeTimer = setInterval(() => {
         setTypedMessage(welcomeText.slice(0, i + 1));
         i++;
         if (i >= welcomeText.length) {
-          clearInterval(timer);
+          clearInterval(typeTimer);
           setShowContent(true);
         }
       }, 35);
     } else {
-      setTimeout(() => {
+      fallbackTimer = setTimeout(() => {
         setShowContent(true);
       }, 1500);
     }
 
-    // Auto-advance after 15s
-    const advanceTimer = setTimeout(() => {
-      onComplete();
-    }, 15000);
+    let advanceTimer: NodeJS.Timeout;
+    
+    // Guard against auto-advancing if user already finished the flow
+    const hasFinished = typeof window !== 'undefined' && sessionStorage.getItem('glowqr_flow_finished') === 'true';
+    
+    if (!hasFinished) {
+      // Auto-advance after 15s
+      advanceTimer = setTimeout(() => {
+        onComplete();
+      }, 15000);
+    }
+
+    const handlePageShow = (e: PageTransitionEvent) => {
+      // Cancel auto-advance if restored from history/bfcache or if flow is marked finished
+      if (e.persisted || (typeof window !== 'undefined' && sessionStorage.getItem('glowqr_flow_finished') === 'true')) {
+        if (advanceTimer) clearTimeout(advanceTimer);
+      }
+    };
+    
+    window.addEventListener('pageshow', handlePageShow);
 
     return () => {
-      clearInterval(timer);
-      clearTimeout(advanceTimer);
+      if (typeTimer) clearInterval(typeTimer);
+      if (fallbackTimer) clearTimeout(fallbackTimer);
+      if (advanceTimer) clearTimeout(advanceTimer);
+      window.removeEventListener('pageshow', handlePageShow);
     };
   }, [businessData.name, businessData.welcomeMessage, isPremium, onComplete]);
 
