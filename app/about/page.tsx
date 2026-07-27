@@ -88,6 +88,36 @@ export default function AboutPage() {
           </div>
         </section>
 
+        {/* Meet the Founder Section */}
+        <section className="mb-20">
+          <div className="bg-[var(--bg-secondary)] p-8 md:p-12 rounded-3xl border border-[var(--border-default)] flex flex-col md:flex-row items-center gap-10">
+            <div className="shrink-0">
+              <img 
+                src="/founder.jpg" 
+                alt="Adarsh, Founder of GlowQR" 
+                className="w-48 h-48 md:w-64 md:h-64 rounded-full object-cover shadow-lg border-4 border-[var(--brand-primary)]/20"
+              />
+            </div>
+            <div>
+              <h2 className="text-3xl font-bold text-[var(--text-primary)] mb-6 flex items-center">
+                Meet the Founder
+                <div className="h-px bg-[var(--brand-primary)]/50 flex-1 ml-6 hidden md:block"></div>
+              </h2>
+              <div className="space-y-4">
+                <p className="text-[var(--text-primary)] text-lg leading-relaxed font-medium">
+                  "I'm Adarsh, the founder of GlowQR. While working closely with local businesses in Lucknow, I noticed a common problem — most had happy customers and strong Google ratings potential, but no simple way to convert that satisfaction into actual reviews. Asking customers felt awkward, and follow-ups rarely worked.
+                </p>
+                <p className="text-[var(--text-primary)] text-lg leading-relaxed font-medium">
+                  GlowQR was built to solve exactly that: a QR code that turns a satisfied customer into a written Google review in under a minute, powered by AI.
+                </p>
+                <p className="text-[var(--text-primary)] text-lg leading-relaxed font-medium">
+                  Today, restaurants, salons, CA firms, and retail businesses across Lucknow use GlowQR to grow their online reputation — and I work directly with every client to make sure it delivers real results."
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <div className="mt-32 text-center bg-[var(--bg-secondary)] p-12 rounded-3xl border border-[var(--border-default)] shadow-sm">
           <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">Start your 3-day free trial today</h2>
           <p className="text-sm text-[var(--text-secondary)] mb-8">No credit card. No setup fees. Full premium access for a week.</p>
