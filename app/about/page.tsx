@@ -95,7 +95,7 @@ export default function AboutPage() {
               <img 
                 src="/founder.png" 
                 alt="Adarsh, Founder of GlowQR" 
-                className="w-48 h-48 md:w-64 md:h-64 rounded-full object-cover object-top shadow-lg border-4 border-[var(--brand-primary)]/20"
+                className="w-48 h-48 md:w-64 md:h-64 rounded-full object-cover shadow-lg border-4 border-[var(--brand-primary)]/20"
               />
             </div>
             <div>
