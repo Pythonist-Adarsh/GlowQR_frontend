@@ -75,6 +75,17 @@ const quotes = [
     verified: true,
     quote: "We were struggling to build online trust for our store. After placing GlowQR stands on our counters, customers happily leave a review while their bill is being printed. It's completely transformed our local SEO.",
   },
+  {
+    name: 'Vaishnavi Jaiswal',
+    role: 'Owner',
+    businessName: 'House of Aadayein',
+    avatar: 'VJ',
+    photoUrl: '/testimonials/house-of-aadayein.png',
+    initialsUrl: 'https://ui-avatars.com/api/?name=Vaishnavi+Jaiswal&background=E85D9C&color=fff&bold=true',
+    rating: 5,
+    verified: true,
+    quote: "Thank you so much, Glow QR, for making the review process so easy and seamless for House of Aadayein! It has made it much more convenient for our customers to share their feedback without the hassle of typing everything from scratch. The whole process is quick, simple, and attractive, which has definitely made collecting customer reviews easier for us. Really happy with the experience. Highly recommended for businesses looking to make customer feedback effortless! 🤗",
+  },
 ]
 
 export function Testimonials() {
