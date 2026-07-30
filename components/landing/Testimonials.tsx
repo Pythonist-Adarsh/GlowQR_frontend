@@ -69,7 +69,7 @@ const quotes = [
     role: 'Owner',
     businessName: 'House of Aadayein',
     avatar: 'VJ',
-    photoUrl: '',
+    photoUrl: '/testimonials/house-of-aadayein.jpg',
     initialsUrl: 'https://ui-avatars.com/api/?name=Vaishnavi+Jaiswal&background=E85D9C&color=fff&bold=true',
     rating: 5,
     verified: true,
