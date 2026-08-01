@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { fadeUp, staggerContainer } from '@/lib/animations'
 
@@ -10,7 +11,7 @@ const quotes = [
     businessName: 'Danbam Food Court',
     avatar: 'RG',
     photoUrl: '/testimonials/ramesh-gupta.png',
-    initialsUrl: 'https://ui-avatars.com/api/?name=Ramesh+Gupta&background=9B5DE5&color=fff&bold=true',
+    gradient: 'linear-gradient(135deg, #9B5DE5, #7C3AED)',
     rating: 5,
     verified: true,
     quote:
@@ -22,7 +23,7 @@ const quotes = [
     businessName: 'Glow Up Salon',
     avatar: 'PM',
     photoUrl: '/testimonials/priya-mehta.png',
-    initialsUrl: 'https://ui-avatars.com/api/?name=Priya+Mehta&background=9B5DE5&color=fff&bold=true',
+    gradient: 'linear-gradient(135deg, #E85D9C, #9B5DE5)',
     rating: 5,
     verified: true,
     quote:
@@ -34,7 +35,7 @@ const quotes = [
     businessName: 'Sharma Dental Clinic',
     avatar: 'ASh',
     photoUrl: '/testimonials/amit-sharma.png',
-    initialsUrl: 'https://ui-avatars.com/api/?name=Amit+Sharma&background=9B5DE5&color=fff&bold=true',
+    gradient: 'linear-gradient(135deg, #00B4D8, #9B5DE5)',
     rating: 5,
     verified: true,
     quote:
@@ -46,7 +47,7 @@ const quotes = [
     businessName: 'The Bean Diary',
     avatar: 'AS',
     photoUrl: '/testimonials/anjali-singh.png',
-    initialsUrl: 'https://ui-avatars.com/api/?name=Anjali+Singh&background=E85D9C&color=fff&bold=true',
+    gradient: 'linear-gradient(135deg, #F72585, #E85D9C)',
     rating: 5,
     verified: true,
     quote:
@@ -58,7 +59,7 @@ const quotes = [
     businessName: 'Agarwal Sweets & Snacks',
     avatar: 'VA',
     photoUrl: '/testimonials/vikram-agarwal.png',
-    initialsUrl: 'https://ui-avatars.com/api/?name=Vikram+Agarwal&background=9B5DE5&color=fff&bold=true',
+    gradient: 'linear-gradient(135deg, #FF9E00, #9B5DE5)',
     rating: 5,
     verified: true,
     quote:
@@ -69,13 +70,38 @@ const quotes = [
     role: 'Owner',
     businessName: 'House of Aadayein',
     avatar: 'VJ',
-    photoUrl: '/testimonials/house-of-aadayein.jpg',
-    initialsUrl: 'https://ui-avatars.com/api/?name=Vaishnavi+Jaiswal&background=E85D9C&color=fff&bold=true',
+    photoUrl: '/testimonials/vaishnavi.jpg',
+    gradient: 'linear-gradient(135deg, #E85D9C, #F72585)',
     rating: 5,
     verified: true,
     quote: "Thank you so much, Glow QR, for making the review process so easy and seamless for House of Aadayein! It has made it much more convenient for our customers to share their feedback without the hassle of typing everything from scratch. The whole process is quick, simple, and attractive, which has definitely made collecting customer reviews easier for us. Really happy with the experience. Highly recommended for businesses looking to make customer feedback effortless! 🤗",
   },
 ]
+
+function Avatar({ q }: { q: any }) {
+  const [error, setError] = useState(false);
+  const baseClasses = "flex h-12 w-12 shrink-0 items-center justify-center rounded-full object-cover shadow-[0_4px_12px_rgba(0,0,0,0.15)] border-2 border-[#7C3AED] hover:scale-[1.08] transition-transform duration-200 ease-out";
+  
+  if (q.photoUrl && !error) {
+    return (
+      <img
+        src={q.photoUrl}
+        alt={q.name}
+        className={baseClasses}
+        onError={() => setError(true)}
+      />
+    );
+  }
+  
+  return (
+    <div
+      className={`${baseClasses} text-white font-display text-sm font-bold`}
+      style={{ background: q.gradient || 'linear-gradient(135deg, #9B5DE5, #E85D9C)' }}
+    >
+      {q.avatar}
+    </div>
+  );
+}
 
 export function Testimonials() {
   return (
@@ -105,26 +131,10 @@ export function Testimonials() {
             <motion.figure
               key={q.name}
               variants={fadeUp}
-              whileHover={{ y: -4 }}
-              className="glass-card flex flex-col border-[var(--border-card)] p-6"
+              className="glass-card flex flex-col border-[var(--border-card)] p-6 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/5 transition-all duration-300"
             >
               <div className="flex items-center gap-3">
-                {q.photoUrl || q.initialsUrl ? (
-                  <img
-                    src={q.photoUrl || q.initialsUrl}
-                    alt={q.name}
-                    className="h-12 w-12 shrink-0 rounded-full object-cover shadow-sm ring-1 ring-[var(--border-default)]"
-                    onError={(e) => {
-                      if (q.initialsUrl && e.currentTarget.src !== q.initialsUrl) {
-                        e.currentTarget.src = q.initialsUrl;
-                      }
-                    }}
-                  />
-                ) : (
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-primary to-brand-accent font-display text-sm font-bold text-white shadow-sm">
-                    {q.avatar}
-                  </div>
-                )}
+                <Avatar q={q} />
                 <div>
                   <div className="flex items-center flex-wrap gap-x-2 gap-y-1">
                     <figcaption className="font-semibold text-[var(--text-primary)]">{q.name}</figcaption>
