@@ -93,9 +93,9 @@ export default function AboutPage() {
           <div className="bg-[var(--bg-secondary)] p-8 md:p-12 rounded-3xl border border-[var(--border-default)] flex flex-col items-center">
             <div className="shrink-0 mb-6">
               <img 
-                src="/founder.jpg" 
+                src="/founder.png" 
                 alt="Adarsh, Founder of GlowQR" 
-                className="w-[140px] h-[140px] rounded-full object-cover object-center shadow-lg border-4 border-[var(--brand-primary)]/20"
+                className="w-[140px] h-[140px] rounded-full object-cover object-[center_20%] shadow-lg border-4 border-[var(--brand-primary)]/20"
               />
             </div>
             <div className="max-w-[600px] w-full mx-auto text-center">
