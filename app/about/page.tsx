@@ -1,6 +1,7 @@
 import { LandingNavbar } from '@/components/landing/LandingNavbar'
 import { Footer } from '@/components/landing/Footer'
 import { AnimatedGetStartedButton } from '@/components/marketing/AnimatedGetStartedButton'
+import { MeetTheFounder } from '@/components/about/MeetTheFounder'
 import { Check, X } from 'lucide-react'
 
 export const metadata = {
@@ -89,33 +90,7 @@ export default function AboutPage() {
         </section>
 
         {/* Meet the Founder Section */}
-        <section className="mb-20">
-          <div className="bg-[var(--bg-secondary)] p-8 md:p-12 rounded-3xl border border-[var(--border-default)] flex flex-col items-center">
-            <div className="shrink-0 mb-6">
-              <img 
-                src="/founder.png" 
-                alt="Adarsh, Founder of GlowQR" 
-                className="w-[140px] h-[140px] rounded-full object-cover object-[center_20%] shadow-lg border-4 border-[var(--brand-primary)]/20"
-              />
-            </div>
-            <div className="max-w-[600px] w-full mx-auto text-center">
-              <h2 className="text-3xl font-bold text-[var(--text-primary)] mb-6">
-                Meet the Founder
-              </h2>
-              <div className="space-y-4">
-                <p className="text-[var(--text-primary)] text-lg leading-relaxed font-medium">
-                  "I'm Adarsh, the founder of GlowQR. While working closely with local businesses in Lucknow, I noticed a common problem — most had happy customers and strong Google ratings potential, but no simple way to convert that satisfaction into actual reviews. Asking customers felt awkward, and follow-ups rarely worked.
-                </p>
-                <p className="text-[var(--text-primary)] text-lg leading-relaxed font-medium">
-                  GlowQR was built to solve exactly that: a QR code that turns a satisfied customer into a written Google review in under a minute, powered by AI.
-                </p>
-                <p className="text-[var(--text-primary)] text-lg leading-relaxed font-medium">
-                  Today, restaurants, salons, CA firms, and retail businesses across Lucknow use GlowQR to grow their online reputation — and I work directly with every client to make sure it delivers real results."
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
+        <MeetTheFounder />
 
         <div className="mt-32 text-center bg-[var(--bg-secondary)] p-12 rounded-3xl border border-[var(--border-default)] shadow-sm">
           <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">Start your 3-day free trial today</h2>
