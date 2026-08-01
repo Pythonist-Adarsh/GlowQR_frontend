@@ -35,7 +35,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
   const [step, setStep] = useState(STEPS.ENJOY);
   
   const areaPart = data.area || data.area_locality || "";
-  const cityPart = data.city || "Lucknow";
+  const cityPart = data.city || "your city";
   const defaultAddress = [areaPart, cityPart].filter(Boolean).join(", ");
   
   const business = {
@@ -46,7 +46,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
     primaryColor: data.primaryColor || data.brandColor || "#2F5FE0",
     googleReviewUrl: data.googleReviewUrl || "#",
     plan: data.plan || (data.theme === 'free' ? 'free' : data.theme === 'classic' ? 'basic' : 'premium'),
-    city: data.city || "Lucknow",
+    city: data.city || "Mumbai",
     area: data.area || data.area_locality || "",
     instagramUrl: data.instagram_url || data.instagramUrl || "",
     negativeFilterEnabled: data.negativeFilterEnabled ?? true

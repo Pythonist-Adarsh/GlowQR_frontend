@@ -6,7 +6,7 @@ import { Check, X } from 'lucide-react'
 
 export const metadata = {
   title: "About GlowQR — AI Review Platform for Indian Local Businesses",
-  description: "GlowQR was built in Lucknow to help Indian restaurants, salons, cafes and clinics collect more Google reviews automatically using AI and smart QR codes.",
+  description: "GlowQR was built to help Indian restaurants, salons, cafes and clinics collect more Google reviews automatically using AI and smart QR codes.",
   alternates: {
     canonical: 'https://www.glowqr.com/about',
   }
@@ -50,7 +50,7 @@ export default function AboutPage() {
             <span className="text-[var(--brand-primary)]">deserves to be found</span>
           </h1>
           <p className="text-lg text-[var(--text-secondary)] max-w-2xl mx-auto mt-6 leading-relaxed">
-            GlowQR is a Lucknow-born SaaS that turns a customer's genuine experience into a published Google review — in under 60 seconds, without awkward asks.
+            GlowQR is a SaaS platform that turns a customer's genuine experience into a published Google review — in under 60 seconds, without awkward asks.
           </p>
         </div>
 

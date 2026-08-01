@@ -7,7 +7,7 @@ import { fadeUp, staggerContainer } from '@/lib/animations'
 const quotes = [
   {
     name: 'Ramesh Gupta',
-    role: 'Restaurant Owner, Lucknow',
+    role: 'Restaurant Owner',
     businessName: 'Danbam Food Court',
     avatar: 'RG',
     photoUrl: '/testimonials/ramesh-gupta.png',
@@ -19,7 +19,7 @@ const quotes = [
   },
   {
     name: 'Priya Mehta',
-    role: 'Salon Owner, Kanpur',
+    role: 'Salon Owner',
     businessName: 'Glow Up Salon',
     avatar: 'PM',
     photoUrl: '/testimonials/priya-mehta.png',
@@ -43,7 +43,7 @@ const quotes = [
   },
   {
     name: 'Anjali Singh',
-    role: 'Cafe Owner, Noida',
+    role: 'Cafe Owner',
     businessName: 'The Bean Diary',
     avatar: 'AS',
     photoUrl: '/testimonials/anjali-singh.png',

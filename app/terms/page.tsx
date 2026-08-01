@@ -17,7 +17,7 @@ export default function TermsPage() {
           <p>Last updated: {new Date().toLocaleDateString()}</p>
 
           <h2 className="text-[var(--text-primary)]">1. Acceptance of Terms</h2>
-          <p>By accessing or using GlowQR ("the Service"), operated by GlowQR, Lucknow, you agree to be bound by these Terms of Service. If you do not agree, please do not use the Service.</p>
+          <p>By accessing or using GlowQR ("the Service"), operated by GlowQR, you agree to be bound by these Terms of Service. If you do not agree, please do not use the Service.</p>
 
           <h2 className="text-[var(--text-primary)]">2. Description of Service</h2>
           <p>GlowQR provides QR code-based tools that help businesses collect AI-assisted Google reviews from their customers, along with analytics, GMB health scoring, and related dashboard features.</p>

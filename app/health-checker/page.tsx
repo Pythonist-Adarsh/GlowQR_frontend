@@ -119,7 +119,7 @@ export default function HealthCheckerPage() {
                 For years, ranking well on Google Maps was the finish line for local business 
                 visibility. That's no longer the full picture. A growing share of customers 
                 now ask AI tools directly for recommendations — "what's the best bakery near 
-                me," "which CA firm should I use in Lucknow" — instead of scrolling through 
+                me," "which CA firm should I use in my city" — instead of scrolling through 
                 search results themselves. This shift has a name: <strong>Generative Engine 
                 Optimization (GEO)</strong> and <strong>Answer Engine Optimization (AEO)</strong> — the practice 
                 of making a business's information structured and trustworthy enough for AI 

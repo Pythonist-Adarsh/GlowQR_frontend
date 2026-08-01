@@ -187,7 +187,7 @@ const Step1 = ({ data, updateData }: any) => (
         badge="optional"
         value={data.tagline} 
         onChange={(e: any) => updateData({ tagline: e.target.value })} 
-        placeholder="Best brunch in Lucknow"
+        placeholder="Best brunch in town"
         hint="Used by AI as a keyword"
       />
       <InputField 
@@ -268,7 +268,7 @@ const Step2 = ({ data, updateData }: any) => {
           variant="warning"
         />
         <div className="grid grid-cols-2 gap-4">
-          <InputField label="City" badge="required" value={data.city} onChange={(e: any) => updateData({ city: e.target.value })} placeholder="Lucknow" hint="e.g. Hazratganj" />
+          <InputField label="City" badge="required" value={data.city} onChange={(e: any) => updateData({ city: e.target.value })} placeholder="Mumbai" hint="e.g. Andheri West" />
           <InputField label="Area/Locality" badge="optional" value={data.area} onChange={(e: any) => updateData({ area: e.target.value })} placeholder="Hazratganj" />
         </div>
         <InputField label="Full Address" badge="optional" value={data.address} onChange={(e: any) => updateData({ address: e.target.value })} placeholder="12/45, Hazratganj Cross Roads" />

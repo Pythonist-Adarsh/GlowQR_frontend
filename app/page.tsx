@@ -52,8 +52,8 @@ export default function Home() {
               "name": "GlowQR",
               "url": "https://www.glowqr.com",
               "logo": "https://www.glowqr.com/logo.png",
-              "foundingLocation": "Lucknow, India",
-              "description": "GlowQR is a Lucknow-based SaaS that helps local businesses in India collect Google reviews using AI-powered QR codes.",
+              "foundingLocation": "India",
+              "description": "GlowQR is a SaaS platform that helps local businesses in India collect Google reviews using AI-powered QR codes.",
               "founder": {
                 "@type": "Person",
                 "name": "Adarsh"

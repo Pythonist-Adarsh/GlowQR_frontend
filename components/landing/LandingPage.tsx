@@ -11,6 +11,7 @@ import { UseCases } from '@/components/landing/UseCases'
 import { HowItWorks } from '@/components/landing/HowItWorks'
 import { Pricing } from '@/components/landing/Pricing'
 import { DashboardPreview } from '@/components/landing/DashboardPreview'
+import { TrustedBy } from '@/components/landing/TrustedBy'
 import { Testimonials } from '@/components/landing/Testimonials'
 import { FAQ } from '@/components/landing/FAQ'
 import { Footer } from '@/components/landing/Footer'
@@ -30,6 +31,7 @@ export function LandingPage() {
           <DashboardPreview />
         </section>
         <Pricing />
+        <TrustedBy />
         <Testimonials />
         <FAQ />
       </main>

@@ -214,7 +214,7 @@ export function DashboardClient({
     phone_number: "+1 234 567 8900",
     website: "yourwebsite.com",
     google_review_url: "google.com",
-    address: "Lucknow, India",
+    address: "India",
     primaryColor: "#1a8a3c",
     logo: null,
   };

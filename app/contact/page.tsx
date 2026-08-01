@@ -81,7 +81,7 @@ export default function ContactPage() {
             <div className="bg-[var(--bg-glass)] p-8 rounded-3xl border border-[var(--border-default)] shadow-sm backdrop-blur-sm">
               <MapPin className="w-6 h-6 text-[var(--brand-primary)] mb-4" />
               <h3 className="text-sm font-bold text-[var(--text-primary)] mb-2">Office location</h3>
-              <p className="text-xs text-[var(--text-secondary)] leading-relaxed">Lucknow, Uttar Pradesh, India.<br/>We do in-person demos for Lucknow businesses — book a slot on WhatsApp.</p>
+              <p className="text-xs text-[var(--text-secondary)] leading-relaxed">India.<br/>We do personalized demos for local businesses — book a slot on WhatsApp.</p>
             </div>
             <div className="bg-[var(--bg-glass)] p-8 rounded-3xl border border-[var(--border-default)] shadow-sm backdrop-blur-sm">
               <Clock className="w-6 h-6 text-[var(--brand-primary)] mb-4" />

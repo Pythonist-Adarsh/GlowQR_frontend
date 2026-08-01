@@ -122,7 +122,7 @@ export function DashboardClient({
     name: "Your Business",
     tagline: "Premium Experience",
     category: "Restaurant",
-    address: "Lucknow, India",
+    address: "India",
     primaryColor: "#1a8a3c",
     logo: null,
   };

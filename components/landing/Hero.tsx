@@ -71,7 +71,7 @@ export function Hero() {
             variants={fadeUp}
             className="mt-8 text-sm font-medium text-neutral-500"
           >
-            Trusted by restaurants, salons & clinics in Lucknow
+            Trusted by restaurants, salons & clinics
           </motion.p>
         </motion.div>
       </div>
