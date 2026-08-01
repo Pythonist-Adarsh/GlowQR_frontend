@@ -90,18 +90,17 @@ export default function AboutPage() {
 
         {/* Meet the Founder Section */}
         <section className="mb-20">
-          <div className="bg-[var(--bg-secondary)] p-8 md:p-12 rounded-3xl border border-[var(--border-default)] flex flex-col md:flex-row items-center gap-10">
-            <div className="shrink-0">
+          <div className="bg-[var(--bg-secondary)] p-8 md:p-12 rounded-3xl border border-[var(--border-default)] flex flex-col items-center">
+            <div className="shrink-0 mb-6">
               <img 
                 src="/founder.jpg" 
                 alt="Adarsh, Founder of GlowQR" 
-                className="w-48 h-48 md:w-64 md:h-64 rounded-full object-cover shadow-lg border-4 border-[var(--brand-primary)]/20"
+                className="w-[140px] h-[140px] rounded-full object-cover shadow-md border-[3px] border-[#7C3AED]"
               />
             </div>
-            <div>
-              <h2 className="text-3xl font-bold text-[var(--text-primary)] mb-6 flex items-center">
+            <div className="max-w-[600px] w-full mx-auto text-center">
+              <h2 className="text-3xl font-bold text-[var(--text-primary)] mb-6">
                 Meet the Founder
-                <div className="h-px bg-[var(--brand-primary)]/50 flex-1 ml-6 hidden md:block"></div>
               </h2>
               <div className="space-y-4">
                 <p className="text-[var(--text-primary)] text-lg leading-relaxed font-medium">
