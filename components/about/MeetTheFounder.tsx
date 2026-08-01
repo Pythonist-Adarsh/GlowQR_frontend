@@ -1,7 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Quote } from 'lucide-react'
 
 const LinkedinIcon = (props: any) => (
@@ -22,30 +21,7 @@ const TwitterIcon = (props: any) => (
   </svg>
 )
 
-// Simple count up component
-function AnimatedCounter({ end, duration = 2000, suffix = "" }: { end: number, duration?: number, suffix?: string }) {
-  const [count, setCount] = useState(0)
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: "-50px" })
 
-  useEffect(() => {
-    if (!inView) return;
-    let startTimestamp: number;
-    const step = (timestamp: number) => {
-      if (!startTimestamp) startTimestamp = timestamp;
-      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-      // easeOutExpo
-      const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-      setCount(Math.floor(easeProgress * end));
-      if (progress < 1) {
-        window.requestAnimationFrame(step);
-      }
-    };
-    window.requestAnimationFrame(step);
-  }, [end, duration, inView]);
-
-  return <span ref={ref}>{count}{suffix}</span>
-}
 
 export function MeetTheFounder() {
   const containerVariants = {
@@ -76,34 +52,12 @@ export function MeetTheFounder() {
           
           {/* Left Column: Photo + Stats + Socials */}
           <div className="flex flex-col items-center shrink-0 w-full md:w-auto">
-            <div className="mb-8">
+            <div className="mb-6">
               <img 
                 src="/founder.png" 
                 alt="Adarsh, Founder of GlowQR" 
                 className="w-[140px] h-[140px] rounded-full object-cover object-[center_20%] shadow-lg border-4 border-[var(--brand-primary)]/20 relative z-10"
               />
-            </div>
-
-            {/* Stats */}
-            <div className="flex gap-6 mb-8 text-center justify-center">
-              <div>
-                <div className="text-2xl font-bold text-[var(--text-primary)]">
-                  <AnimatedCounter end={50} suffix="+" duration={1500} />
-                </div>
-                <div className="text-[10px] uppercase tracking-wider text-[var(--text-tertiary)] font-bold mt-1">Businesses</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-[var(--text-primary)]">
-                  <AnimatedCounter end={1000} suffix="+" duration={2000} />
-                </div>
-                <div className="text-[10px] uppercase tracking-wider text-[var(--text-tertiary)] font-bold mt-1">Reviews</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-[var(--text-primary)]">
-                  <AnimatedCounter end={100} suffix="%" duration={1000} />
-                </div>
-                <div className="text-[10px] uppercase tracking-wider text-[var(--text-tertiary)] font-bold mt-1">Support</div>
-              </div>
             </div>
 
             {/* Socials */}
