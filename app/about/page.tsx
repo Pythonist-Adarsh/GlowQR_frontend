@@ -12,9 +12,32 @@ export const metadata = {
   }
 }
 
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Adarsh",
+  "jobTitle": "Founder & CEO",
+  "worksFor": {
+    "@type": "Organization",
+    "name": "GlowQR",
+    "url": "https://glowqr.com"
+  },
+  "description": "Founder of GlowQR — an AI-powered QR code platform that helps local businesses collect Google reviews effortlessly.",
+  "url": "https://glowqr.com",
+  "sameAs": [
+    "https://www.instagram.com/solojourney.ai",
+    "https://www.linkedin.com/in/adarsh-tiwari-78271a266"
+  ],
+  "image": "https://glowqr.com/founder.png"
+}
+
 export default function AboutPage() {
   return (
     <div className="bg-[var(--bg-primary)] text-[var(--text-primary)] antialiased min-h-screen transition-colors duration-300">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+      />
       <LandingNavbar forceScrolled={true} />
       
       <main className="mx-auto max-w-4xl px-6 py-20">
