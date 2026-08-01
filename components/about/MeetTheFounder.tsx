@@ -48,11 +48,11 @@ export function MeetTheFounder() {
         {/* Large decorative quote mark */}
         <Quote className="absolute right-8 top-8 w-32 h-32 text-[var(--border-default)] opacity-20 pointer-events-none rotate-12" />
 
-        <div className="relative flex flex-col md:flex-row gap-12 md:gap-16">
+        <div className="relative flex flex-col md:flex-row md:items-center gap-12 md:gap-16">
           
           {/* Left Column: Photo + Stats + Socials */}
           <div className="flex flex-col items-center shrink-0 w-full md:w-auto">
-            <div className="mb-6">
+            <div className="mb-4">
               <img 
                 src="/founder.png" 
                 alt="Adarsh, Founder of GlowQR" 
@@ -67,9 +67,6 @@ export function MeetTheFounder() {
               </a>
               <a href="#" className="w-10 h-10 rounded-full bg-[var(--bg-primary)] border border-[var(--border-default)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[#7C3AED] hover:border-[#7C3AED] hover:scale-110 transition-all duration-200">
                 <InstagramIcon className="w-4 h-4" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-[var(--bg-primary)] border border-[var(--border-default)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[#7C3AED] hover:border-[#7C3AED] hover:scale-110 transition-all duration-200">
-                <TwitterIcon className="w-4 h-4" />
               </a>
             </div>
           </div>
@@ -91,13 +88,13 @@ export function MeetTheFounder() {
               className="space-y-6"
             >
               <motion.p variants={itemVariants} className="text-[var(--text-primary)] text-lg leading-relaxed font-medium">
-                "I'm Adarsh, the founder of GlowQR. While working closely with local businesses in Lucknow, I noticed a common problem — most had happy customers and strong Google ratings potential, but no simple way to convert that satisfaction into actual reviews. Asking customers felt awkward, and follow-ups rarely worked.
+                "I'm Adarsh, the founder of GlowQR. While working closely with local businesses, I noticed a common problem — most had happy customers and strong Google ratings potential, but no simple way to convert that satisfaction into actual reviews. Asking customers felt awkward, and follow-ups rarely worked.
               </motion.p>
               <motion.p variants={itemVariants} className="text-[var(--text-primary)] text-lg leading-relaxed font-medium">
                 GlowQR was built to solve exactly that: a QR code that turns a satisfied customer into a written Google review in under a minute, powered by AI.
               </motion.p>
               <motion.p variants={itemVariants} className="text-[var(--text-primary)] text-lg leading-relaxed font-medium">
-                Today, restaurants, salons, CA firms, and retail businesses across Lucknow use GlowQR to grow their online reputation — and I work directly with every client to make sure it delivers real results."
+                Today, restaurants, salons, CA firms, and retail businesses use GlowQR to grow their online reputation — and I work directly with every client to make sure it delivers real results."
               </motion.p>
             </motion.div>
           </div>
