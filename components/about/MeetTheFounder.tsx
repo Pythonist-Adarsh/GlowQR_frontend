@@ -62,10 +62,10 @@ export function MeetTheFounder() {
 
             {/* Socials */}
             <div className="flex gap-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-[var(--bg-primary)] border border-[var(--border-default)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[#7C3AED] hover:border-[#7C3AED] hover:scale-110 transition-all duration-200">
+              <a href="https://www.linkedin.com/in/adarsh-tiwari-78271a266/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[var(--bg-primary)] border border-[var(--border-default)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[#7C3AED] hover:border-[#7C3AED] hover:scale-110 transition-all duration-200">
                 <LinkedinIcon className="w-4 h-4" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-[var(--bg-primary)] border border-[var(--border-default)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[#7C3AED] hover:border-[#7C3AED] hover:scale-110 transition-all duration-200">
+              <a href="https://www.instagram.com/solojourney.ai" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[var(--bg-primary)] border border-[var(--border-default)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[#7C3AED] hover:border-[#7C3AED] hover:scale-110 transition-all duration-200">
                 <InstagramIcon className="w-4 h-4" />
               </a>
             </div>
