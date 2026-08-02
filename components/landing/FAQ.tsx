@@ -7,24 +7,28 @@ import { fadeUp } from '@/lib/animations'
 
 const faqs = [
   {
-    q: 'Do customers need an app?',
-    a: 'No. GlowQR opens in the mobile browser — fast loads, no installs, no friction.',
+    q: 'Do my customers need to download an app?',
+    a: 'No. Customers simply scan the QR code with their phone camera — no app, no login, no signup. They land directly on a page that helps them write and post a Google review in under a minute.',
   },
   {
-    q: 'How does AI drafting stay authentic?',
-    a: 'We generate suggestions from your menu, tone presets, and the rating guests choose — they always approve before posting.',
+    q: 'How does the AI-written review stay authentic and not sound fake?',
+    a: 'The AI drafts a review based on the specific items or services the customer actually used at your business, in their own selected tone. Every review is personalized per customer, never copy-pasted, and customers can edit it before posting — so it always sounds genuine and reads naturally on Google.',
   },
   {
-    q: 'Can we route unhappy guests privately?',
-    a: 'Yes. Configure thresholds so critical feedback lands in your inbox instead of public listings.',
+    q: 'What if a customer had a bad experience? Will GlowQR force a fake 5-star review?',
+    a: 'No. If a customer indicates a negative experience, GlowQR privately routes their feedback to you instead of pushing them to post publicly — protecting your Google rating while still capturing honest feedback you can act on.',
   },
   {
-    q: 'What analytics ship out of the box?',
-    a: 'Scan volume, conversion to posted reviews, channel breakdown, and rolling sentiment themes.',
+    q: 'What do I see on my dashboard?',
+    a: 'You get a simple dashboard showing total scans, reviews generated, conversion rate, and trends over time — so you know exactly how GlowQR is performing for your business, no technical setup needed.',
   },
   {
-    q: 'Is there an Enterprise SLA?',
-    a: 'Enterprise plans include uptime commitments, SSO, and dedicated success engineering.',
+    q: 'How long does it take to set up?',
+    a: 'Under 10 minutes. Add your business details and menu/services once, we generate your QR code and print-ready card, and you\'re live — no developer or technical help required.',
+  },
+  {
+    q: 'Can I switch or cancel my plan anytime?',
+    a: 'Yes. You can upgrade, downgrade, or cancel anytime — no long-term lock-in, no cancellation fees.',
   },
 ]
 
@@ -41,7 +45,7 @@ export function FAQ() {
         >
           <h2 className="font-display text-3xl font-bold md:text-4xl">FAQs.</h2>
           <p className="mt-4 text-[var(--text-secondary)]">
-            Straight answers — ping us if you need anything deeper.
+            Straight answers — reach out if you need anything deeper.
           </p>
         </motion.div>
 
