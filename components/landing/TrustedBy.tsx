@@ -17,22 +17,25 @@ function LogoItem({ item }: { item: typeof businesses[0] }) {
   const [error, setError] = useState(false)
 
   return (
-    <div className="flex items-center gap-3 px-4 py-2 shrink-0 transition-all duration-300 group/logo">
-      <div className="relative flex items-center justify-center h-8 opacity-60 grayscale transition-all duration-300 group-hover/logo:opacity-100 group-hover/logo:grayscale-0">
-        {!error ? (
-          <img 
-            src={item.logo} 
-            alt={item.name} 
-            className="h-full w-auto object-contain"
-            onError={() => setError(true)}
-          />
-        ) : (
-          <div className="flex items-center justify-center h-8 px-3 bg-gray-100 text-gray-500 rounded font-bold text-sm tracking-widest border border-gray-200">
-            {item.initials}
-          </div>
-        )}
+    <div className="flex items-center shrink-0 group/logo">
+      <div className="flex items-center gap-3 transition-transform duration-300 group-hover/logo:scale-105 pr-6 cursor-pointer">
+        <div className="relative flex items-center justify-center h-10 opacity-[0.85] grayscale transition-all duration-300 group-hover/logo:opacity-100 group-hover/logo:grayscale-0">
+          {!error ? (
+            <img 
+              src={item.logo} 
+              alt={item.name} 
+              className="h-full w-auto object-contain"
+              onError={() => setError(true)}
+            />
+          ) : (
+            <div className="flex items-center justify-center h-10 px-3 bg-gray-100 text-gray-500 rounded font-bold text-sm tracking-widest border border-gray-200">
+              {item.initials}
+            </div>
+          )}
+        </div>
+        <span className="text-sm font-semibold text-[var(--text-secondary)] tracking-wide group-hover/logo:text-[var(--text-primary)] transition-colors duration-300">{item.name}</span>
       </div>
-      <span className="text-sm font-semibold text-[var(--text-secondary)] tracking-wide group-hover/logo:text-[var(--text-primary)] transition-colors duration-300">{item.name}</span>
+      <div className="h-6 w-px bg-gray-300 dark:bg-gray-700 opacity-50"></div>
     </div>
   )
 }
@@ -54,10 +57,10 @@ export function TrustedBy() {
           animation-play-state: paused;
         }
         
-        /* Optional: Add gradient masks to the edges for a fade effect */
+        /* Ensure the mask uses rgba for better cross-browser fade support */
         .marquee-mask {
-          mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-          -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+          mask-image: linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 15%, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%);
+          -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 15%, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%);
         }
       `}} />
       <div className="max-w-7xl mx-auto px-6 text-center mb-10 relative z-10">
@@ -67,7 +70,7 @@ export function TrustedBy() {
       </div>
 
       <div className="relative flex overflow-hidden marquee-container w-full marquee-mask">
-        <div className="animate-marquee-scroll gap-12 px-6">
+        <div className="animate-marquee-scroll gap-6 px-3">
           {allItems.map((item, idx) => (
             <LogoItem key={idx} item={item} />
           ))}
