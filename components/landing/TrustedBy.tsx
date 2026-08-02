@@ -18,8 +18,8 @@ function LogoItem({ item }: { item: typeof businesses[0] }) {
 
   return (
     <div className="flex items-center shrink-0 group/logo">
-      <div className="flex items-center gap-3 transition-transform duration-300 group-hover/logo:scale-105 pr-6 cursor-pointer">
-        <div className="relative flex items-center justify-center h-10 opacity-[0.85] grayscale transition-all duration-300 group-hover/logo:opacity-100 group-hover/logo:grayscale-0">
+      <div className="flex items-center gap-3 transition-transform duration-300 group-hover/logo:scale-105 pr-7 cursor-pointer">
+        <div className="relative flex items-center justify-center h-14 opacity-[0.85] grayscale transition-all duration-300 group-hover/logo:opacity-100 group-hover/logo:grayscale-0">
           {!error ? (
             <img 
               src={item.logo} 
@@ -28,14 +28,14 @@ function LogoItem({ item }: { item: typeof businesses[0] }) {
               onError={() => setError(true)}
             />
           ) : (
-            <div className="flex items-center justify-center h-10 px-3 bg-gray-100 text-gray-500 rounded font-bold text-sm tracking-widest border border-gray-200">
+            <div className="flex items-center justify-center h-14 px-4 bg-gray-100 text-gray-500 rounded font-bold text-base tracking-widest border border-gray-200">
               {item.initials}
             </div>
           )}
         </div>
-        <span className="text-sm font-semibold text-[var(--text-secondary)] tracking-wide group-hover/logo:text-[var(--text-primary)] transition-colors duration-300">{item.name}</span>
+        <span className="text-base font-semibold text-[var(--text-secondary)] tracking-wide group-hover/logo:text-[var(--text-primary)] transition-colors duration-300">{item.name}</span>
       </div>
-      <div className="h-6 w-px bg-gray-300 dark:bg-gray-700 opacity-50"></div>
+      <div className="h-8 w-px bg-gray-300 dark:bg-gray-700 opacity-50"></div>
     </div>
   )
 }
@@ -70,7 +70,7 @@ export function TrustedBy() {
       </div>
 
       <div className="relative flex overflow-hidden marquee-container w-full marquee-mask">
-        <div className="animate-marquee-scroll gap-6 px-3">
+        <div className="animate-marquee-scroll gap-7 px-4">
           {allItems.map((item, idx) => (
             <LogoItem key={idx} item={item} />
           ))}
