@@ -54,8 +54,10 @@ export function MeetTheFounder() {
           <div className="flex flex-col items-center shrink-0 w-full md:w-auto">
             <div className="mb-4">
               <img 
-                src="/founder.png" 
-                alt="Adarsh, Founder of GlowQR" 
+                src="/adarsh-tiwari-founder-glowqr.png" 
+                alt="Adarsh Tiwari, Founder of GlowQR - AI Google Review Platform" 
+                width={140}
+                height={140}
                 className="w-[140px] h-[140px] rounded-full object-cover object-[center_20%] shadow-lg border-4 border-[var(--brand-primary)]/20 relative z-10"
               />
             </div>

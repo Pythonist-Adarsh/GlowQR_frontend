@@ -28,7 +28,7 @@ const personSchema = {
     "https://www.instagram.com/solojourney.ai",
     "https://www.linkedin.com/in/adarsh-tiwari-78271a266"
   ],
-  "image": "https://glowqr.com/founder.png"
+  "image": "https://www.glowqr.com/adarsh-tiwari-founder-glowqr.png"
 }
 
 export default function AboutPage() {
