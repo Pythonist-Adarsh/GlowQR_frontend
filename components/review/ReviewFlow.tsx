@@ -337,7 +337,31 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
 
 
         {/* SCREEN 2: ENJOY */}
-        {step === STEPS.ENJOY && (
+        {isGenerating && !showEmpathy && (
+          <motion.div 
+            key="generating" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={transition}
+            className="absolute inset-0 z-50 flex-1 flex flex-col items-center justify-center p-6 text-center h-full bg-[var(--bg-primary)]"
+          >
+            <div className="w-16 h-16 mb-6 text-[var(--accent)] relative">
+              <Loader2 className="w-full h-full animate-spin opacity-50" />
+              <Sparkles className="w-6 h-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-pulse" />
+            </div>
+            <h2 className="text-2xl font-[600] mb-3 text-[var(--text-primary)]">Crafting your review...</h2>
+            <p className="text-[14px] leading-relaxed max-w-[250px] text-[var(--text-secondary)]">
+              Our AI is analyzing your selections to write the perfect review variants for you.
+            </p>
+            <div className="w-full max-w-[200px] h-1.5 bg-[#E2E4E9] rounded-full overflow-hidden mt-8">
+              <motion.div 
+                initial={{ width: '0%' }}
+                animate={{ width: '100%' }}
+                transition={{ duration: 4, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}
+                className="h-full bg-[var(--accent)] rounded-full"
+              />
+            </div>
+          </motion.div>
+        )}
+
+        {step === STEPS.ENJOY && !isGenerating && (
           <motion.div 
             key="enjoy" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={transition}
             className="flex-1 flex flex-col h-full overflow-hidden relative"
@@ -462,7 +486,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
         )}
 
         {/* SCREEN 3: RATE */}
-        {step === STEPS.RATE && (
+        {step === STEPS.RATE && !isGenerating && (
           <motion.div 
             key="rate" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={transition}
             className="flex-1 flex flex-col p-6 h-full bg-[var(--bg-primary)]"

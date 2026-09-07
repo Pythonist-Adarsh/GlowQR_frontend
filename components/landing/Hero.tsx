@@ -61,7 +61,7 @@ export function Hero() {
             <AnimatedGetStartedButton size="lg">Start free trial</AnimatedGetStartedButton>
             <button
               type="button"
-              className="min-w-[200px] h-14 inline-flex items-center justify-center rounded-2xl font-bold transition-all px-8 text-base border border-white/10 bg-white/5 text-white hover:bg-white/10"
+              className="inline-flex items-center justify-center font-medium transition-all px-4 text-sm text-neutral-400 hover:text-white underline-offset-4 hover:underline"
               onClick={() => setShowDemoModal(true)}
             >
               View demo

@@ -8,7 +8,7 @@ type Props = {
   onClick?: () => void
 }
 
-export function GoogleContinueButton({ label = "Continue with GlowQR", onClick }: Props) {
+export function GoogleContinueButton({ label = "Continue with Google", onClick }: Props) {
   return (
     <button
       type="button"
@@ -20,7 +20,7 @@ export function GoogleContinueButton({ label = "Continue with GlowQR", onClick }
       </div>
       <div className="flex flex-col items-start leading-tight">
         <span className="text-[15px] font-medium text-[#111111] dark:text-white">{label}</span>
-        <span className="text-[11px] font-normal text-[#666666] dark:text-[#999999]">AI-powered review platform</span>
+        <span className="text-[11px] font-normal text-[#666666] dark:text-[#999999]">Fastest way to sign up</span>
       </div>
     </button>
   )
