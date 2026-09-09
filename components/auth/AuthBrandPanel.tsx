@@ -31,11 +31,6 @@ export function AuthBrandPanel({ className = '' }: Props) {
     >
       <QrBarcodeBackdrop />
 
-      <Link href="/" className="relative z-[1] inline-flex items-center gap-3 transition-opacity hover:opacity-90">
-        <GlowLogo size={44} />
-        <span className="font-serif text-xl font-semibold tracking-tight text-white">GlowQR</span>
-      </Link>
-
       <div className="relative z-[1] flex flex-1 flex-col justify-center py-12 lg:py-0 min-h-[160px]">
         <AnimatePresence mode="wait">
           <motion.div

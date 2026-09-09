@@ -95,9 +95,9 @@ export function Pricing() {
             
             if (isPremium) {
               if (billingCycle === 'quarterly') {
-                displayPrice = '₹1,099'
+                displayPrice = '₹999'
                 displayPeriod = '/quarter'
-                subtext = '~₹366/month'
+                subtext = '~₹333/month'
               } else if (billingCycle === 'yearly') {
                 displayPrice = '₹3,999'
                 displayPeriod = '/year'

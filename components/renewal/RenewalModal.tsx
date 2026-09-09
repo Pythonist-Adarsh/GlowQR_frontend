@@ -38,7 +38,7 @@ export function RenewalModal({ isOpen, onClose, currentPlan = 'premium', upiId, 
   }, [isOpen]);
 
   let price = 399;
-  if (billingCycle === 'quarterly') price = 1099;
+  if (billingCycle === 'quarterly') price = 999;
   if (billingCycle === 'yearly') price = 3999;
   
   const planName = 'Premium Plan';
@@ -137,7 +137,7 @@ export function RenewalModal({ isOpen, onClose, currentPlan = 'premium', upiId, 
                       <div className="flex justify-between items-center">
                         <span className="font-bold capitalize text-slate-900">Premium Plan</span>
                         <span className="font-bold text-slate-900">
-                          {billingCycle === 'yearly' ? '₹3,999/yr' : billingCycle === 'quarterly' ? '₹1,099/qtr' : '₹399/mo'}
+                          {billingCycle === 'yearly' ? '₹3,999/yr' : billingCycle === 'quarterly' ? '₹999/qtr' : '₹399/mo'}
                         </span>
                       </div>
                     </div>
