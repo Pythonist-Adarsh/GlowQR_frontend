@@ -82,9 +82,7 @@ export function SignUpView() {
         transition={{ duration: 0.45 }}
         className="order-1 flex flex-col justify-center bg-white px-6 py-12 sm:px-12 lg:order-1 lg:px-16"
       >
-        <Link href="/" className="mb-8 text-sm font-medium text-[#666666] hover:text-[#111111] lg:hidden">
-          ← Back home
-        </Link>
+
 
         <h1 className="font-serif text-3xl font-semibold tracking-tight text-[#111111] md:text-4xl">
           Create your account

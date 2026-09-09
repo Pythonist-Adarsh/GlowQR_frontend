@@ -136,7 +136,8 @@ export function RenewalModal({ isOpen, onClose, currentPlan = 'premium', upiId, 
                     >
                       <div className="flex justify-between items-center">
                         <span className="font-bold capitalize text-slate-900">Premium Plan</span>
-                        <span className="font-bold text-slate-900">
+                        <span className="font-bold text-slate-900 flex items-center gap-2">
+                          {billingCycle === 'quarterly' && <span className="text-slate-400 line-through text-sm">₹1,099</span>}
                           {billingCycle === 'yearly' ? '₹3,999/yr' : billingCycle === 'quarterly' ? '₹999/qtr' : '₹399/mo'}
                         </span>
                       </div>

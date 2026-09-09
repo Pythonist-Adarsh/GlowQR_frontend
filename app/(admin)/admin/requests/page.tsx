@@ -175,7 +175,7 @@ export default function RequestsPage() {
               <div className="flex justify-between"><span>Amount:</span> <span className="font-bold">₹{selectedReq.amount_paid/100}</span></div>
               <div className="flex justify-between"><span>UTR:</span> <span className="font-mono bg-slate-200 px-1 rounded">{selectedReq.utr_number}</span></div>
             </div>
-            <p className="text-sm text-slate-600 mb-6">This will activate the {selectedReq.plan_requested} plan for 30 days and send an activation email to the user.</p>
+            <p className="text-sm text-slate-600 mb-6">This will activate the {selectedReq.plan_requested} plan and send an activation email to the user.</p>
             <div className="flex gap-3 justify-end">
               <button onClick={() => setModalType(null)} className="px-4 py-2 font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">Cancel</button>
               <button onClick={() => handleAction(selectedReq.id, 'approve')} className="px-4 py-2 font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition">Confirm Approve</button>

@@ -92,16 +92,18 @@ export function Pricing() {
             let displayPrice = t.price
             let displayPeriod = t.period
             let subtext = ''
+            let originalPrice = ''
             
             if (isPremium) {
               if (billingCycle === 'quarterly') {
                 displayPrice = '₹999'
+                originalPrice = '₹1,099'
                 displayPeriod = '/quarter'
-                subtext = '~₹333/month'
+                subtext = '3 Months • ~₹333/month'
               } else if (billingCycle === 'yearly') {
                 displayPrice = '₹3,999'
                 displayPeriod = '/year'
-                subtext = '~₹333/month'
+                subtext = '12 Months • ~₹333/month'
               }
             }
 
@@ -154,7 +156,10 @@ export function Pricing() {
                       Standee Included FREE
                     </span>
                   )}
-                  <div className="flex items-baseline gap-1">
+                  <div className="flex items-baseline gap-2">
+                    {originalPrice && (
+                      <span className="font-display text-2xl font-bold text-gray-400 line-through">{originalPrice}</span>
+                    )}
                     <span className="font-display text-4xl font-bold text-gray-900">{displayPrice}</span>
                     <span className="text-gray-500">{displayPeriod}</span>
                   </div>
