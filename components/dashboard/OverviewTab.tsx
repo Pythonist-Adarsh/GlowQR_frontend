@@ -189,7 +189,7 @@ export function OverviewTab({
         return (
           <div className="w-full bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-xl mb-6 flex justify-between items-center">
             <div className="font-medium">🔴 Your trial expires tomorrow! Upgrade now to keep your QR active.</div>
-            <button onClick={() => openUpgradeModal("basic")} className="px-3 py-1.5 border border-red-300 rounded-lg text-sm font-bold hover:bg-red-100 transition-colors">
+            <button onClick={() => openUpgradeModal("premium")} className="px-3 py-1.5 border border-red-300 rounded-lg text-sm font-bold hover:bg-red-100 transition-colors">
               Upgrade Now →
             </button>
           </div>
@@ -198,7 +198,7 @@ export function OverviewTab({
         return (
           <div className="w-full bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-xl mb-6 flex justify-between items-center">
             <div className="font-medium">🟡 Your free trial ends in {daysLeft} days — Upgrade to keep your QR active.</div>
-            <button onClick={() => openUpgradeModal("basic")} className="px-3 py-1.5 border border-amber-300 rounded-lg text-sm font-bold hover:bg-amber-100 transition-colors">
+            <button onClick={() => openUpgradeModal("premium")} className="px-3 py-1.5 border border-amber-300 rounded-lg text-sm font-bold hover:bg-amber-100 transition-colors">
               Upgrade Now →
             </button>
           </div>
@@ -219,7 +219,7 @@ export function OverviewTab({
       return (
         <div className="w-full bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-xl mb-6 flex justify-between items-center">
           <div className="font-medium">🔴 Your plan has expired. Your QR is inactive. Upgrade to reactivate.</div>
-          <button onClick={() => openUpgradeModal("basic")} className="px-3 py-1.5 border border-red-300 rounded-lg text-sm font-bold hover:bg-red-100 transition-colors">
+          <button onClick={() => openUpgradeModal("premium")} className="px-3 py-1.5 border border-red-300 rounded-lg text-sm font-bold hover:bg-red-100 transition-colors">
             Upgrade Now →
           </button>
         </div>
@@ -500,8 +500,8 @@ export function OverviewTab({
                 <LockedSection 
                   title="Rating Breakdown" 
                   description="See how customers rate you — 5★ to 1★ distribution" 
-                  requiredPlan="Basic" 
-                  price="₹199/mo" 
+                  requiredPlan="Premium" 
+                  price="₹399/mo" 
                 />
               )}
             </div>
@@ -531,8 +531,8 @@ export function OverviewTab({
                 <LockedSection 
                   title={topItemsTitle} 
                   description="See which items your customers love most" 
-                  requiredPlan="Basic" 
-                  price="₹199/mo" 
+                  requiredPlan="Premium" 
+                  price="₹399/mo" 
                 />
               )}
             </div>

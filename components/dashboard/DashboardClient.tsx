@@ -488,16 +488,10 @@ export function DashboardClient({
 
               <div className="space-y-3 mb-6">
                 <button
-                  onClick={() => openUpgradeModal("basic")}
-                  className="w-full py-4 border-2 border-slate-200 rounded-xl font-bold text-slate-900 hover:border-slate-900 transition-all"
-                >
-                  Upgrade to Basic ₹199/month
-                </button>
-                <button
                   onClick={() => openUpgradeModal("premium")}
                   className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-all"
                 >
-                  Upgrade to Premium ₹499/month
+                  Upgrade to Premium ₹399/month
                 </button>
               </div>
               <p className="text-xs text-slate-500 font-medium">

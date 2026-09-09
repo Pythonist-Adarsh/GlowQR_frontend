@@ -10,10 +10,10 @@ import { QRCodeSVG } from 'qrcode.react';
 interface UpgradeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  defaultPlan?: 'basic' | 'premium';
+  defaultPlan?: 'premium';
 }
 
-export function UpgradeModal({ isOpen, onClose, defaultPlan = 'basic' }: UpgradeModalProps) {
+export function UpgradeModal({ isOpen, onClose, defaultPlan = 'premium' }: UpgradeModalProps) {
   const [step, setStep] = useState(1);
   const [selectedPlan, setSelectedPlan] = useState(defaultPlan);
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
@@ -30,10 +30,10 @@ export function UpgradeModal({ isOpen, onClose, defaultPlan = 'basic' }: Upgrade
       const storedPlan = localStorage.getItem('glowqr_intended_plan');
       const storedBilling = localStorage.getItem('glowqr_intended_billing');
       
-      if (storedPlan === 'basic' || storedPlan === 'premium') {
-        setSelectedPlan(storedPlan);
+      if (storedPlan === 'premium') {
+        setSelectedPlan('premium');
       } else {
-        setSelectedPlan(defaultPlan);
+        setSelectedPlan('premium');
       }
       
       if (storedBilling === 'monthly' || storedBilling === 'yearly') {
@@ -42,12 +42,10 @@ export function UpgradeModal({ isOpen, onClose, defaultPlan = 'basic' }: Upgrade
         setBillingCycle('monthly');
       }
     }
-  }, [isOpen, defaultPlan]);
+  }, [isOpen]);
 
-  const price = selectedPlan === 'premium' 
-    ? (billingCycle === 'yearly' ? 4799 : 499) 
-    : (billingCycle === 'yearly' ? 1899 : 199);
-  const planName = selectedPlan === 'premium' ? 'Premium Plan' : 'Basic Plan';
+  const price = billingCycle === 'yearly' ? 3999 : 399;
+  const planName = 'Premium Plan';
 
   const handleContinueToPayment = async () => {
     setLoading(true);
@@ -146,10 +144,10 @@ export function UpgradeModal({ isOpen, onClose, defaultPlan = 'basic' }: Upgrade
                   </div>
 
                   <div className="space-y-3 mt-4">
-                    {['basic', 'premium'].map((plan) => (
+                    {['premium'].map((plan) => (
                       <div 
                         key={plan}
-                        onClick={() => setSelectedPlan(plan as 'basic' | 'premium')}
+                        onClick={() => setSelectedPlan(plan as 'premium')}
                         className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
                           selectedPlan === plan 
                             ? 'border-slate-900 bg-slate-50' 
@@ -159,7 +157,7 @@ export function UpgradeModal({ isOpen, onClose, defaultPlan = 'basic' }: Upgrade
                         <div className="flex justify-between items-center">
                           <span className="font-bold capitalize text-slate-900">{plan} Plan</span>
                           <span className="font-bold text-slate-900">
-                            {plan === 'premium' ? (billingCycle === 'yearly' ? '₹4,799/yr' : '₹499/mo') : (billingCycle === 'yearly' ? '₹1,899/yr' : '₹199/mo')}
+                            {billingCycle === 'yearly' ? '₹3,999/yr' : '₹399/mo'}
                           </span>
                         </div>
                       </div>
