@@ -1,5 +1,3 @@
-'use client'
-
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { fadeUp, staggerContainer } from '@/lib/animations'
@@ -20,24 +18,8 @@ const tiers = [
     highlighted: false,
   },
   {
-    name: 'Basic',
-    price: '₹199',
-    period: '/month',
-    desc: 'Essential tools to grow your reviews',
-    features: [
-      '3 AI-generated review suggestions',
-      'Logo embedded in QR code',
-      'Glow AR animation on scan',
-      'Basic analytics dashboard',
-      'Scan count + conversion rate',
-      'Top menu items report',
-    ],
-    highlighted: true,
-    badge: 'POPULAR',
-  },
-  {
     name: 'Premium',
-    price: '₹499',
+    price: '₹399',
     period: '/month',
     desc: 'Advanced tools and AI insights',
     features: [
@@ -50,12 +32,13 @@ const tiers = [
       'Category ratings (Food/Service/Atmosphere)',
       'Actionable weekly insights',
     ],
-    highlighted: false,
+    highlighted: true,
+    badge: 'POPULAR',
   },
 ]
 
 export function Pricing() {
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly')
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'quarterly' | 'yearly'>('monthly')
 
   return (
     <section id="pricing" className="border-b border-[var(--border-default)] py-20 md:py-28 bg-white">
@@ -74,23 +57,25 @@ export function Pricing() {
             Transparent tiers — upgrade when results compound.
           </p>
 
-          <div className="mt-10 flex items-center justify-center gap-3">
-            <span className={`text-sm font-semibold ${billingCycle === 'monthly' ? 'text-gray-900' : 'text-gray-500'}`}>
-              Monthly
-            </span>
+          <div className="mt-10 flex items-center justify-center gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200 w-fit mx-auto">
             <button
-              onClick={() => setBillingCycle(b => b === 'monthly' ? 'yearly' : 'monthly')}
-              className="relative inline-flex h-7 w-14 items-center rounded-full bg-slate-900 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              onClick={() => setBillingCycle('monthly')}
+              className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${billingCycle === 'monthly' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200'}`}
             >
-              <span
-                className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${
-                  billingCycle === 'yearly' ? 'translate-x-8' : 'translate-x-1'
-                }`}
-              />
+              Monthly
             </button>
-            <span className={`text-sm font-semibold ${billingCycle === 'yearly' ? 'text-gray-900' : 'text-gray-500'}`}>
+            <button
+              onClick={() => setBillingCycle('quarterly')}
+              className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${billingCycle === 'quarterly' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200'}`}
+            >
+              Quarterly
+            </button>
+            <button
+              onClick={() => setBillingCycle('yearly')}
+              className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${billingCycle === 'yearly' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200'}`}
+            >
               Yearly
-            </span>
+            </button>
           </div>
         </motion.div>
 
@@ -99,29 +84,26 @@ export function Pricing() {
           whileInView="visible"
           viewport={{ once: true }}
           variants={staggerContainer}
-          className="mt-14 grid gap-8 lg:grid-cols-3"
+          className="mt-14 grid gap-8 lg:grid-cols-2 max-w-4xl mx-auto"
         >
           {tiers.map((t) => {
-            const isYearly = billingCycle === 'yearly' && t.name !== 'Free Trial'
+            const isPremium = t.name === 'Premium'
             
             let displayPrice = t.price
             let displayPeriod = t.period
             let subtext = ''
-            let strikethrough = ''
             
-            if (isYearly && t.name === 'Basic') {
-              displayPrice = '₹158'
-              displayPeriod = '/month'
-              subtext = 'billed as ₹1,899/year'
-              strikethrough = '₹2,388'
-            } else if (isYearly && t.name === 'Premium') {
-              displayPrice = '₹400'
-              displayPeriod = '/month'
-              subtext = 'billed as ₹4,799/year'
-              strikethrough = '₹5,988'
+            if (isPremium) {
+              if (billingCycle === 'quarterly') {
+                displayPrice = '₹1,099'
+                displayPeriod = '/quarter'
+                subtext = '~₹366/month'
+              } else if (billingCycle === 'yearly') {
+                displayPrice = '₹3,999'
+                displayPeriod = '/year'
+                subtext = '~₹333/month'
+              }
             }
-            
-            const showSaveBadge = isYearly && (t.name === 'Basic' || t.name === 'Premium')
 
             return (
               <motion.div
@@ -134,21 +116,43 @@ export function Pricing() {
                     : 'border-gray-200 bg-gray-50/50'
                 }`}
               >
-                {t.badge && !showSaveBadge && (
+                {t.badge && (
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gray-900 px-3 py-1 text-xs font-bold text-white shadow-md">
                     {t.badge}
                   </span>
                 )}
-                {showSaveBadge && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-green-600 px-3 py-1 text-xs font-bold text-white shadow-md whitespace-nowrap">
-                    Save 20% — Pay Yearly
-                  </span>
-                )}
+                
                 <h3 className="font-display text-xl font-bold text-gray-900">{t.name}</h3>
                 <p className="mt-2 text-sm text-gray-600">{t.desc}</p>
-                <div className="mt-6 flex flex-col">
-                  {strikethrough && (
-                    <span className="text-sm text-gray-400 line-through decoration-red-500 font-semibold">{strikethrough}</span>
+                
+                {isPremium && (
+                  <div className="mt-6 mb-2 rounded-xl bg-amber-50 border border-amber-200 p-4 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 bg-amber-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg">
+                      ONE-TIME ENTRY OFFER
+                    </div>
+                    <h4 className="font-bold text-amber-900 mt-2 text-lg">₹999 <span className="text-sm font-normal">— First Month + Standee Included</span></h4>
+                    <button 
+                      className="mt-3 w-full bg-amber-500 hover:bg-amber-600 text-white py-2.5 rounded-lg text-sm font-bold transition-colors shadow-sm"
+                      onClick={() => window.location.href = `/register?plan=premium&offer=onetime999`}
+                    >
+                      Claim Offer & Get Standee →
+                    </button>
+                  </div>
+                )}
+                
+                {isPremium && (
+                  <div className="flex items-center gap-4 my-4">
+                    <div className="h-px bg-gray-200 flex-1"></div>
+                    <span className="text-xs text-gray-400 font-bold uppercase">OR SKIP OFFER</span>
+                    <div className="h-px bg-gray-200 flex-1"></div>
+                  </div>
+                )}
+
+                <div className="mt-2 flex flex-col">
+                  {isPremium && billingCycle === 'yearly' && (
+                    <span className="inline-block bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded w-fit mb-2">
+                      Standee Included FREE
+                    </span>
                   )}
                   <div className="flex items-baseline gap-1">
                     <span className="font-display text-4xl font-bold text-gray-900">{displayPrice}</span>
@@ -156,6 +160,7 @@ export function Pricing() {
                   </div>
                   {subtext && <span className="text-xs text-green-600 font-medium mt-1">{subtext}</span>}
                 </div>
+                
                 <ul className="mt-8 flex-1 space-y-3 text-sm text-gray-600">
                   {t.features.map((f) => (
                     <li key={f} className="flex gap-2">
@@ -164,6 +169,7 @@ export function Pricing() {
                     </li>
                   ))}
                 </ul>
+                
                 <button
                   className={`mt-10 w-full rounded-xl py-4 font-bold transition-all active:scale-[0.98] ${t.highlighted ? 'bg-slate-900 text-white shadow-xl hover:bg-slate-800' : 'bg-white text-slate-900 border-2 border-slate-200 shadow-sm hover:border-slate-300'}`}
                   onClick={() => {
@@ -174,7 +180,7 @@ export function Pricing() {
                     }
                   }}
                 >
-                  {t.name === 'Free Trial' ? 'Start Free Trial →' : `Get ${t.name} →`}
+                  {t.name === 'Free Trial' ? 'Start Free Trial →' : `Commit to ${t.name} →`}
                 </button>
               </motion.div>
             )

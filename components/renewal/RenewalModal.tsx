@@ -14,10 +14,10 @@ interface RenewalModalProps {
   upiQrUrl?: string;
 }
 
-export function RenewalModal({ isOpen, onClose, currentPlan = 'basic', upiId, upiQrUrl }: RenewalModalProps) {
+export function RenewalModal({ isOpen, onClose, currentPlan = 'premium', upiId, upiQrUrl }: RenewalModalProps) {
   const [step, setStep] = useState(1);
-  const [selectedPlan, setSelectedPlan] = useState(currentPlan === 'premium' ? 'premium' : 'basic');
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+  const [selectedPlan, setSelectedPlan] = useState('premium');
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'quarterly' | 'yearly'>('monthly');
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showUpi, setShowUpi] = useState(false);
@@ -29,18 +29,19 @@ export function RenewalModal({ isOpen, onClose, currentPlan = 'basic', upiId, up
   useEffect(() => {
     if (isOpen) {
       setStep(1);
-      setSelectedPlan(currentPlan === 'premium' ? 'premium' : 'basic');
+      setSelectedPlan('premium');
       setBillingCycle('monthly');
       setFormData({ utrNumber: '' });
       setCopied(false);
       setShowUpi(false);
     }
-  }, [isOpen, currentPlan]);
+  }, [isOpen]);
 
-  const price = selectedPlan === 'premium' 
-    ? (billingCycle === 'yearly' ? 4799 : 499) 
-    : (billingCycle === 'yearly' ? 1899 : 199);
-  const planName = selectedPlan === 'premium' ? 'Premium Plan' : 'Basic Plan';
+  let price = 399;
+  if (billingCycle === 'quarterly') price = 1099;
+  if (billingCycle === 'yearly') price = 3999;
+  
+  const planName = 'Premium Plan';
   
   const displayUpiId = upiId || 'adarshtiwari2412-4@okhdfcbank';
 
@@ -106,36 +107,40 @@ export function RenewalModal({ isOpen, onClose, currentPlan = 'basic', upiId, up
                 <div className="space-y-6">
                   <h2 className="text-2xl font-bold text-slate-900">Renew Your Plan</h2>
                   
-                  <div className="flex items-center justify-center gap-3 bg-slate-50 p-2 rounded-xl border border-slate-200">
-                    <span className={`text-sm font-semibold ${billingCycle === 'monthly' ? 'text-slate-900' : 'text-slate-500'}`}>Monthly</span>
-                    <button
-                      onClick={() => setBillingCycle(b => b === 'monthly' ? 'yearly' : 'monthly')}
-                      className="relative inline-flex h-6 w-11 items-center rounded-full bg-slate-900 transition-colors"
-                    >
-                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${billingCycle === 'yearly' ? 'translate-x-6' : 'translate-x-1'}`} />
-                    </button>
-                    <span className={`text-sm font-semibold ${billingCycle === 'yearly' ? 'text-slate-900' : 'text-slate-500'}`}>Yearly <span className="text-green-600">(Save 20%)</span></span>
+                  <div className="flex flex-col gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200">
+                    <div className="grid grid-cols-3 gap-1">
+                      <button
+                        onClick={() => setBillingCycle('monthly')}
+                        className={`py-1 text-sm font-semibold rounded-lg transition-colors ${billingCycle === 'monthly' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200'}`}
+                      >
+                        Monthly
+                      </button>
+                      <button
+                        onClick={() => setBillingCycle('quarterly')}
+                        className={`py-1 text-sm font-semibold rounded-lg transition-colors ${billingCycle === 'quarterly' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200'}`}
+                      >
+                        Quarterly
+                      </button>
+                      <button
+                        onClick={() => setBillingCycle('yearly')}
+                        className={`py-1 text-sm font-semibold rounded-lg transition-colors ${billingCycle === 'yearly' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200'}`}
+                      >
+                        Yearly
+                      </button>
+                    </div>
                   </div>
 
                   <div className="space-y-3 mt-4">
-                    {['basic', 'premium'].map((plan) => (
-                      <div 
-                        key={plan}
-                        onClick={() => setSelectedPlan(plan as 'basic' | 'premium')}
-                        className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                          selectedPlan === plan 
-                            ? 'border-slate-900 bg-slate-50' 
-                            : 'border-slate-200 hover:border-slate-300'
-                        }`}
-                      >
-                        <div className="flex justify-between items-center">
-                          <span className="font-bold capitalize text-slate-900">{plan} Plan</span>
-                          <span className="font-bold text-slate-900">
-                            {plan === 'premium' ? (billingCycle === 'yearly' ? '₹4,799/yr' : '₹499/mo') : (billingCycle === 'yearly' ? '₹1,899/yr' : '₹199/mo')}
-                          </span>
-                        </div>
+                    <div 
+                      className="p-4 rounded-xl border-2 border-slate-900 bg-slate-50 transition-all"
+                    >
+                      <div className="flex justify-between items-center">
+                        <span className="font-bold capitalize text-slate-900">Premium Plan</span>
+                        <span className="font-bold text-slate-900">
+                          {billingCycle === 'yearly' ? '₹3,999/yr' : billingCycle === 'quarterly' ? '₹1,099/qtr' : '₹399/mo'}
+                        </span>
                       </div>
-                    ))}
+                    </div>
                   </div>
 
                   <button 
