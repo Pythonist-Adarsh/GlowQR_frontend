@@ -135,7 +135,11 @@ export function RenewalModal({ isOpen, onClose, currentPlan = 'premium', upiId, 
                       className="p-4 rounded-xl border-2 border-slate-900 bg-slate-50 transition-all"
                     >
                       <div className="flex justify-between items-center">
-                        <span className="font-bold capitalize text-slate-900">Premium Plan</span>
+                        <div>
+                          <span className="font-bold capitalize text-slate-900 block">Premium Plan</span>
+                          {billingCycle === 'quarterly' && <span className="text-xs text-green-600 font-medium">3 Months • ~₹333/mo</span>}
+                          {billingCycle === 'yearly' && <span className="text-xs text-green-600 font-medium">12 Months • ~₹333/mo</span>}
+                        </div>
                         <span className="font-bold text-slate-900 flex items-center gap-2">
                           {billingCycle === 'quarterly' && <span className="text-slate-400 line-through text-sm">₹1,099</span>}
                           {billingCycle === 'yearly' ? '₹3,999/yr' : billingCycle === 'quarterly' ? '₹999/qtr' : '₹399/mo'}

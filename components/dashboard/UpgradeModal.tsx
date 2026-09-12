@@ -16,7 +16,7 @@ interface UpgradeModalProps {
 export function UpgradeModal({ isOpen, onClose, defaultPlan = 'premium' }: UpgradeModalProps) {
   const [step, setStep] = useState(1);
   const [selectedPlan, setSelectedPlan] = useState(defaultPlan);
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'quarterly' | 'yearly'>('monthly');
   const [loading, setLoading] = useState(false);
   
   const [orderId, setOrderId] = useState('');
@@ -36,15 +36,17 @@ export function UpgradeModal({ isOpen, onClose, defaultPlan = 'premium' }: Upgra
         setSelectedPlan('premium');
       }
       
-      if (storedBilling === 'monthly' || storedBilling === 'yearly') {
-        setBillingCycle(storedBilling as 'monthly' | 'yearly');
+      if (storedBilling === 'monthly' || storedBilling === 'quarterly' || storedBilling === 'yearly') {
+        setBillingCycle(storedBilling as 'monthly' | 'quarterly' | 'yearly');
       } else {
         setBillingCycle('monthly');
       }
     }
   }, [isOpen]);
 
-  const price = billingCycle === 'yearly' ? 3999 : 399;
+  let price = 399;
+  if (billingCycle === 'quarterly') price = 999;
+  if (billingCycle === 'yearly') price = 3999;
   const planName = 'Premium Plan';
 
   const handleContinueToPayment = async () => {
@@ -132,15 +134,27 @@ export function UpgradeModal({ isOpen, onClose, defaultPlan = 'premium' }: Upgra
                 <div className="space-y-6">
                   <h2 className="text-2xl font-bold text-slate-900">Upgrade Plan</h2>
                   
-                  <div className="flex items-center justify-center gap-3 bg-slate-50 p-2 rounded-xl border border-slate-200">
-                    <span className={`text-sm font-semibold ${billingCycle === 'monthly' ? 'text-slate-900' : 'text-slate-500'}`}>Monthly</span>
-                    <button
-                      onClick={() => setBillingCycle(b => b === 'monthly' ? 'yearly' : 'monthly')}
-                      className="relative inline-flex h-6 w-11 items-center rounded-full bg-slate-900 transition-colors"
-                    >
-                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${billingCycle === 'yearly' ? 'translate-x-6' : 'translate-x-1'}`} />
-                    </button>
-                    <span className={`text-sm font-semibold ${billingCycle === 'yearly' ? 'text-slate-900' : 'text-slate-500'}`}>Yearly <span className="text-green-600">(Save 20%)</span></span>
+                  <div className="flex flex-col gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200">
+                    <div className="grid grid-cols-3 gap-1">
+                      <button
+                        onClick={() => setBillingCycle('monthly')}
+                        className={`py-1 text-sm font-semibold rounded-lg transition-colors ${billingCycle === 'monthly' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200'}`}
+                      >
+                        Monthly
+                      </button>
+                      <button
+                        onClick={() => setBillingCycle('quarterly')}
+                        className={`py-1 text-sm font-semibold rounded-lg transition-colors ${billingCycle === 'quarterly' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200'}`}
+                      >
+                        Quarterly
+                      </button>
+                      <button
+                        onClick={() => setBillingCycle('yearly')}
+                        className={`py-1 text-sm font-semibold rounded-lg transition-colors ${billingCycle === 'yearly' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200'}`}
+                      >
+                        Yearly
+                      </button>
+                    </div>
                   </div>
 
                   <div className="space-y-3 mt-4">
@@ -155,9 +169,14 @@ export function UpgradeModal({ isOpen, onClose, defaultPlan = 'premium' }: Upgra
                         }`}
                       >
                         <div className="flex justify-between items-center">
-                          <span className="font-bold capitalize text-slate-900">{plan} Plan</span>
-                          <span className="font-bold text-slate-900">
-                            {billingCycle === 'yearly' ? '₹3,999/yr' : '₹399/mo'}
+                          <div>
+                            <span className="font-bold capitalize text-slate-900 block">{plan} Plan</span>
+                            {billingCycle === 'quarterly' && <span className="text-xs text-green-600 font-medium">3 Months • ~₹333/mo</span>}
+                            {billingCycle === 'yearly' && <span className="text-xs text-green-600 font-medium">12 Months • ~₹333/mo</span>}
+                          </div>
+                          <span className="font-bold text-slate-900 flex items-center gap-2">
+                            {billingCycle === 'quarterly' && <span className="text-slate-400 line-through text-sm">₹1,099</span>}
+                            {billingCycle === 'yearly' ? '₹3,999/yr' : billingCycle === 'quarterly' ? '₹999/qtr' : '₹399/mo'}
                           </span>
                         </div>
                       </div>
