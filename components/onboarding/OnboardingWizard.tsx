@@ -416,14 +416,16 @@ const Step3 = ({ data, updateData }: any) => {
     { id: 'real_estate', name: 'Real Estate', icon: 'Building2', enabled: true },
     { id: 'domestic mart', name: 'Domestic Mart', icon: 'ShoppingBag', enabled: true },
     { id: 'doctor clinic', name: 'Doctor Clinic', icon: 'Stethoscope', enabled: true },
+    { id: 'grocery/general retail', name: 'Grocery/Retail', icon: 'ShoppingBag', enabled: true },
+    { id: 'dental clinic', name: 'Dental Clinic', icon: 'Stethoscope', enabled: true },
     { id: 'other', name: 'Other', icon: 'Layout', enabled: false },
   ];
 
-  const isNonFood = ['tax / ca firm', 'education', 'bridal & festive jewellery', 'salon', 'spa', 'gym', 'medical', 'retail', 'hotel', 'jewellery', 'other', 'real_estate', 'domestic mart', 'doctor clinic'].includes(data.category?.toLowerCase() || "");
+  const isNonFood = ['tax / ca firm', 'education', 'bridal & festive jewellery', 'salon', 'spa', 'gym', 'medical', 'retail', 'hotel', 'jewellery', 'other', 'real_estate', 'domestic mart', 'doctor clinic', 'grocery/general retail', 'dental clinic'].includes(data.category?.toLowerCase() || "");
 
   return (
     <div className="space-y-8">
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-4 gap-3 max-h-[300px] overflow-y-auto custom-scrollbar pr-2 py-1">
         {categories.map(cat => (
           <button 
             key={cat.id}
@@ -635,7 +637,9 @@ const Step4 = ({ data, updateData }: any) => {
   const isRealEstateCategory = data.category === 'real_estate';
   const isDoctorClinicCategory = data.category === 'doctor clinic';
   const isDomesticMartCategory = data.category === 'domestic mart';
-  const isServiceCategory = isTaxCategory || isJewelleryCategory || isEducationCategory || isSalonCategory || isGymCategory || isRealEstateCategory || isDoctorClinicCategory || isDomesticMartCategory;
+  const isGroceryCategory = data.category === 'grocery/general retail';
+  const isDentalClinicCategory = data.category === 'dental clinic';
+  const isServiceCategory = isTaxCategory || isJewelleryCategory || isEducationCategory || isSalonCategory || isGymCategory || isRealEstateCategory || isDoctorClinicCategory || isDomesticMartCategory || isGroceryCategory || isDentalClinicCategory;
 
   return (
     <div className="space-y-6">
