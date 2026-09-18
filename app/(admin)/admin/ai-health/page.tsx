@@ -1,9 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/Button'
 import { RefreshCw, Activity, AlertTriangle, CheckCircle, Clock } from 'lucide-react'
 import { formatDistanceToNow, format } from 'date-fns'
 
@@ -52,12 +50,6 @@ export default function AIHealthDashboard() {
     return 'text-green-500'
   }
 
-  const getRateBg = (rate: number) => {
-    if (rate > 0.05) return 'bg-red-100 text-red-800'
-    if (rate >= 0.01) return 'bg-yellow-100 text-yellow-800'
-    return 'bg-green-100 text-green-800'
-  }
-
   const formatRate = (rate: number) => `${(rate * 100).toFixed(1)}%`
 
   if (!data && loading) {
@@ -71,8 +63,8 @@ export default function AIHealthDashboard() {
           <h1 className="text-2xl font-bold tracking-tight">AI Generation Health</h1>
           <p className="text-muted-foreground">Monitor AI fallback rates and generation errors.</p>
         </div>
-        <Button onClick={fetchData} disabled={loading} variant="outline">
-          <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+        <Button onClick={fetchData} disabled={loading} variant="secondary">
+          <RefreshCw className={`w-4 h-4 mr-2 inline-block ${loading ? 'animate-spin' : ''}`} />
           Refresh Data
         </Button>
       </div>
@@ -80,66 +72,66 @@ export default function AIHealthDashboard() {
       {data && (
         <>
           <div className="grid gap-4 md:grid-cols-3">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Fallback Rate (24h)</CardTitle>
-                <Activity className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
+            <div className="rounded-xl border bg-card text-card-foreground shadow-sm p-6 bg-slate-800 border-slate-700">
+              <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <h3 className="text-sm font-medium text-slate-200">Fallback Rate (24h)</h3>
+                <Activity className="h-4 w-4 text-slate-400" />
+              </div>
+              <div>
                 <div className={`text-2xl font-bold ${getRateColor(data.windows['24h'].fallback_rate)}`}>
                   {formatRate(data.windows['24h'].fallback_rate)}
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-slate-400 mt-1">
                   {data.windows['24h'].fallbacks} fallbacks out of {data.windows['24h'].total} requests
                 </p>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Fallback Rate (7d)</CardTitle>
-                <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
+            <div className="rounded-xl border bg-card text-card-foreground shadow-sm p-6 bg-slate-800 border-slate-700">
+              <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <h3 className="text-sm font-medium text-slate-200">Fallback Rate (7d)</h3>
+                <AlertTriangle className="h-4 w-4 text-slate-400" />
+              </div>
+              <div>
                 <div className={`text-2xl font-bold ${getRateColor(data.windows['7d'].fallback_rate)}`}>
                   {formatRate(data.windows['7d'].fallback_rate)}
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-slate-400 mt-1">
                   {data.windows['7d'].fallbacks} fallbacks out of {data.windows['7d'].total} requests
                 </p>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Last Successful Generation</CardTitle>
-                <CheckCircle className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-xl font-bold">
+            <div className="rounded-xl border bg-card text-card-foreground shadow-sm p-6 bg-slate-800 border-slate-700">
+              <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <h3 className="text-sm font-medium text-slate-200">Last Successful Generation</h3>
+                <CheckCircle className="h-4 w-4 text-slate-400" />
+              </div>
+              <div>
+                <div className="text-xl font-bold text-white">
                   {data.last_success_at ? formatDistanceToNow(new Date(data.last_success_at), { addSuffix: true }) : 'Never'}
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-slate-400 mt-1">
                   {data.last_success_at ? format(new Date(data.last_success_at), 'PPp') : '-'}
                 </p>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Fallback Events</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <div className="rounded-xl border shadow-sm bg-slate-800 border-slate-700 mt-6">
+            <div className="p-6">
+              <h3 className="font-semibold text-white">Recent Fallback Events</h3>
+            </div>
+            <div className="px-6 pb-6">
               {data.recent_fallbacks.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  <CheckCircle className="w-12 h-12 mx-auto text-green-300 mb-3" />
+                <div className="text-center py-8 text-slate-400">
+                  <CheckCircle className="w-12 h-12 mx-auto text-emerald-400 mb-3" />
                   <p>No recent fallbacks to show. The AI is working perfectly!</p>
                 </div>
               ) : (
-                <div className="rounded-md border">
-                  <table className="w-full text-sm text-left text-gray-500">
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b">
+                <div className="rounded-md border border-slate-700 overflow-hidden">
+                  <table className="w-full text-sm text-left text-slate-300">
+                    <thead className="text-xs uppercase bg-slate-900 text-slate-400 border-b border-slate-700">
                       <tr>
                         <th className="px-6 py-3">Time</th>
                         <th className="px-6 py-3">Business</th>
@@ -147,23 +139,23 @@ export default function AIHealthDashboard() {
                         <th className="px-6 py-3">Reason</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="divide-y divide-slate-700">
                       {data.recent_fallbacks.map((f, idx) => (
-                        <tr key={idx} className="bg-white border-b hover:bg-gray-50">
+                        <tr key={idx} className="bg-slate-800 hover:bg-slate-700/50 transition">
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
-                              <Clock className="w-3 h-3 mr-1 text-gray-400" />
+                              <Clock className="w-3 h-3 mr-2 text-slate-400" />
                               {formatDistanceToNow(new Date(f.timestamp), { addSuffix: true })}
                             </div>
                           </td>
-                          <td className="px-6 py-4 font-medium text-gray-900">
+                          <td className="px-6 py-4 font-medium text-white">
                             {f.business_name || 'N/A'}
                           </td>
                           <td className="px-6 py-4 capitalize">{f.category || 'N/A'}</td>
                           <td className="px-6 py-4">
-                            <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200 capitalize">
+                            <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20 capitalize">
                               {f.reason?.replace(/_/g, ' ') || 'Unknown Error'}
-                            </Badge>
+                            </span>
                           </td>
                         </tr>
                       ))}
@@ -171,8 +163,8 @@ export default function AIHealthDashboard() {
                   </table>
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </>
       )}
     </div>
