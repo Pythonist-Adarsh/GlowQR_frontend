@@ -29,8 +29,11 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
   const isSalon = data.business_category?.toLowerCase() === 'salon' || data.category?.toLowerCase() === 'salon';
   const isGym = data.business_category?.toLowerCase() === 'gym' || data.category?.toLowerCase() === 'gym';
   const isRealEstate = data.business_category?.toLowerCase() === 'real_estate' || data.category?.toLowerCase() === 'real_estate' || data.business_category?.toLowerCase() === 'real estate' || data.category?.toLowerCase() === 'real estate';
+  const isDoctorClinic = data.business_category?.toLowerCase() === 'doctor clinic' || data.category?.toLowerCase() === 'doctor clinic';
+  const isDentalClinic = data.business_category?.toLowerCase() === 'dental clinic' || data.category?.toLowerCase() === 'dental clinic';
+  const isGrocery = data.business_category?.toLowerCase() === 'grocery/general retail' || data.category?.toLowerCase() === 'grocery/general retail' || data.business_category?.toLowerCase() === 'domestic mart' || data.category?.toLowerCase() === 'domestic mart';
 
-  const isSimplifiedFlow = isTaxFirm || isJewellery || isGym || isRealEstate;
+  const isSimplifiedFlow = isTaxFirm || isJewellery || isGym || isRealEstate || isDoctorClinic || isDentalClinic || isGrocery;
 
   const [step, setStep] = useState(STEPS.ENJOY);
   
@@ -68,12 +71,12 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
     if (!Array.isArray(rawData) || rawData.length === 0) return null;
     
     const hasCategories = rawData.some((c: any) => c && typeof c === 'object' && 'category' in c && Array.isArray(c.items));
-    if (hasCategories && !isTaxFirm && !isJewellery && !isEducation && !isSalon && !isGym && !isRealEstate) {
+    if (hasCategories && !isTaxFirm && !isJewellery && !isEducation && !isSalon && !isGym && !isRealEstate && !isDoctorClinic && !isDentalClinic && !isGrocery) {
       const valid = rawData.filter((c: any) => c && c.category && Array.isArray(c.items) && c.items.length > 0);
       return valid.length > 0 ? valid : null;
     }
     return null;
-  }, [data.menu_data, data.menuCategories, isTaxFirm, isJewellery, isEducation]);
+  }, [data.menu_data, data.menuCategories, isTaxFirm, isJewellery, isEducation, isSalon, isGym, isRealEstate, isDoctorClinic, isDentalClinic, isGrocery]);
 
   const menuItems = useMemo(() => {
     if (parsedMenuData) {
@@ -91,7 +94,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
       return flat;
     }
 
-    if (isTaxFirm || isJewellery || isEducation || isSalon || isGym || isRealEstate) {
+    if (isTaxFirm || isJewellery || isEducation || isSalon || isGym || isRealEstate || isDoctorClinic || isDentalClinic || isGrocery) {
       const servicesStr = data.highlighted_dishes || data.highlightDishes || "";
       if (servicesStr) {
         return servicesStr.split('\n').filter(Boolean).map((name: string, i: number) => ({ id: `srv_${i}`, name: name.trim() }));
@@ -102,6 +105,9 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
       if (isSalon) return [{ id: "salon_def_1", name: "Haircut & Styling" }, { id: "salon_def_2", name: "Hair Color & Treatment" }, { id: "salon_def_3", name: "Facial & Cleanup" }, { id: "salon_def_4", name: "Waxing & Threading" }, { id: "salon_def_5", name: "Bridal Makeup" }, { id: "salon_def_6", name: "Manicure & Pedicure" }];
       if (isGym) return [{ id: "gym_def_1", name: "Personal Training" }, { id: "gym_def_2", name: "Group Classes (Zumba/Yoga/Aerobics)" }, { id: "gym_def_3", name: "Gym Membership" }, { id: "gym_def_4", name: "Diet & Nutrition Consultation" }, { id: "gym_def_5", name: "CrossFit / Functional Training" }, { id: "gym_def_6", name: "Physiotherapy & Recovery" }];
       if (isRealEstate) return [{ id: "real_def_1", name: "Residential Sales" }, { id: "real_def_2", name: "Commercial Leasing" }, { id: "real_def_3", name: "Property Management" }, { id: "real_def_4", name: "Rental Properties" }, { id: "real_def_5", name: "Plots & Land" }, { id: "real_def_6", name: "Legal & Documentation" }];
+      if (isDoctorClinic) return [{ id: "doc_def_1", name: "General Consultation" }, { id: "doc_def_2", name: "Specialist Consultation" }, { id: "doc_def_3", name: "Health Checkup" }, { id: "doc_def_4", name: "Diagnostics" }];
+      if (isDentalClinic) return [{ id: "den_def_1", name: "Teeth Cleaning" }, { id: "den_def_2", name: "Root Canal" }, { id: "den_def_3", name: "Dental Checkup" }, { id: "den_def_4", name: "Teeth Whitening" }];
+      if (isGrocery) return [{ id: "gro_def_1", name: "Daily Groceries" }, { id: "gro_def_2", name: "Fresh Fruits & Veggies" }, { id: "gro_def_3", name: "Dairy & Bakery" }, { id: "gro_def_4", name: "Home Care" }];
     }
     
     let rawData = data.menu_data || data.menuCategories;
@@ -382,7 +388,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
             <div className="flex-1 overflow-y-auto px-6 pb-6 custom-scrollbar bg-[var(--bg-primary)]">
               <div className="mt-6 mb-8 w-full overflow-hidden">
                 <p className={`text-[13px] font-[500] tracking-[0.3px] mb-3 text-[var(--text-secondary)]`}>
-                  {isTaxFirm ? "Which services did you use?" : isJewellery ? "What did you look at?" : isEducation ? "Which courses did you take?" : (isSalon || isGym || isRealEstate) ? "Which services did you use?" : "Select dishes you tried"} <span className="opacity-70 text-[var(--text-muted)]">(Max 5)</span>
+                  {isTaxFirm ? "Which services did you use?" : isJewellery ? "What did you look at?" : isEducation ? "Which courses did you take?" : isGrocery ? "What did you shop for?" : (isSalon || isGym || isRealEstate || isDoctorClinic || isDentalClinic) ? "Which services did you use?" : "Select dishes you tried"} <span className="opacity-70 text-[var(--text-muted)]">(Max 5)</span>
                 </p>
                 {parsedMenuData && parsedMenuData.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-4">
@@ -415,14 +421,14 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                         className={`shrink-0 px-3 py-2 rounded-full text-[13px] font-[500] flex items-center gap-2 transition-all`}
                         style={isSelected ? { backgroundColor: 'var(--accent)', color: 'white' } : { backgroundColor: '#F3F4F7', color: '#62687A' }}
                       >
-                        {isTaxFirm ? <Briefcase className="w-3 h-3 opacity-70" /> : isJewellery ? <Sparkles className="w-3 h-3 opacity-70" /> : isEducation ? <GraduationCap className="w-3 h-3 opacity-70" /> : isSalon ? <Sparkles className="w-3 h-3 opacity-70" /> : isGym ? <Check className="w-3 h-3 opacity-70" /> : isRealEstate ? <MapPin className="w-3 h-3 opacity-70" /> : <Utensils className="w-3 h-3 opacity-70" />} {item.name}
+                        {isTaxFirm ? <Briefcase className="w-3 h-3 opacity-70" /> : isJewellery ? <Sparkles className="w-3 h-3 opacity-70" /> : isEducation ? <GraduationCap className="w-3 h-3 opacity-70" /> : isSalon ? <Sparkles className="w-3 h-3 opacity-70" /> : isGym ? <Check className="w-3 h-3 opacity-70" /> : isRealEstate ? <MapPin className="w-3 h-3 opacity-70" /> : isDoctorClinic || isDentalClinic ? <Check className="w-3 h-3 opacity-70" /> : isGrocery ? <Check className="w-3 h-3 opacity-70" /> : <Utensils className="w-3 h-3 opacity-70" />} {item.name}
                       </button>
                     )
                   })}
                 </div>
               </div>
 
-              {(!isTaxFirm && !isJewellery && !isEducation && !isSalon && !isGym && !isRealEstate) && (
+              {(!isTaxFirm && !isJewellery && !isEducation && !isSalon && !isGym && !isRealEstate && !isDoctorClinic && !isDentalClinic && !isGrocery) && (
                 <>
               <div className="mb-8 w-full overflow-hidden">
                 <p className={`text-[13px] font-[500] tracking-[0.3px] mb-3 text-[var(--text-secondary)]`}>How was the value for money?</p>
@@ -544,9 +550,9 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
             ) : (
               <div className="space-y-4 mb-auto">
                 {[
-                  { key: 'food', label: isTaxFirm ? 'Expertise' : isJewellery ? 'Product Quality' : isEducation ? 'Faculty' : isSalon ? 'Service Quality' : isGym ? 'Equipment & Facility' : isRealEstate ? 'Property / Deal Quality' : 'Food', icon: isTaxFirm ? Briefcase : isJewellery ? Sparkles : isEducation ? GraduationCap : isSalon ? Sparkles : isGym ? Check : isRealEstate ? MapPin : Utensils },
-                  { key: 'service', label: isJewellery ? 'Staff Helpfulness' : isEducation ? 'Support & Doubts' : isSalon ? 'Staff Behaviour' : isGym ? 'Trainer Support' : isRealEstate ? 'Agent Professionalism' : 'Service', icon: Sparkles },
-                  { key: 'atmosphere', label: isTaxFirm ? 'Professionalism' : isJewellery ? 'Store Experience' : isEducation ? 'Learning Environment' : isSalon ? 'Cleanliness' : isGym ? 'Cleanliness' : isRealEstate ? 'Transparency & Process' : 'Atmosphere', icon: isTaxFirm ? Shield : isJewellery ? Check : isEducation ? Check : isSalon ? Check : isGym ? Check : isRealEstate ? Shield : Check }
+                  { key: 'food', label: isTaxFirm ? 'Expertise' : isJewellery ? 'Product Quality' : isEducation ? 'Faculty' : isSalon ? 'Service Quality' : isGym ? 'Equipment & Facility' : isRealEstate ? 'Property / Deal Quality' : isDoctorClinic || isDentalClinic ? 'Doctor/Dentist Care' : isGrocery ? 'Product Quality & Variety' : 'Food', icon: isTaxFirm ? Briefcase : isJewellery ? Sparkles : isEducation ? GraduationCap : isSalon ? Sparkles : isGym ? Check : isRealEstate ? MapPin : isDoctorClinic || isDentalClinic ? Check : isGrocery ? Check : Utensils },
+                  { key: 'service', label: isJewellery ? 'Staff Helpfulness' : isEducation ? 'Support & Doubts' : isSalon ? 'Staff Behaviour' : isGym ? 'Trainer Support' : isRealEstate ? 'Agent Professionalism' : isDoctorClinic || isDentalClinic ? 'Staff & Waiting Time' : isGrocery ? 'Staff Helpfulness' : 'Service', icon: Sparkles },
+                  { key: 'atmosphere', label: isTaxFirm ? 'Professionalism' : isJewellery ? 'Store Experience' : isEducation ? 'Learning Environment' : isSalon ? 'Cleanliness' : isGym ? 'Cleanliness' : isRealEstate ? 'Transparency & Process' : isDoctorClinic || isDentalClinic ? 'Cleanliness & Hygiene' : isGrocery ? 'Store Layout & Cleanliness' : 'Atmosphere', icon: isTaxFirm ? Shield : isJewellery ? Check : isEducation ? Check : isSalon ? Check : isGym ? Check : isRealEstate ? Shield : isDoctorClinic || isDentalClinic ? Check : isGrocery ? Check : Check }
                 ].map(({ key, label, icon: Icon }) => (
                   <div key={key} className={`flex items-center justify-between p-4 rounded-[16px] border border-[var(--border-default)] bg-[var(--bg-card)]`}>
                     <div className="flex items-center gap-3">
