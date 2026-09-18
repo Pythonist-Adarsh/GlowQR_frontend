@@ -828,7 +828,15 @@ const Step4 = ({ data, updateData }: any) => {
               ? ["Personal Training", "Group Classes (Zumba/Yoga/Aerobics)", "Gym Membership", "Diet & Nutrition Consultation", "CrossFit / Functional Training", "Physiotherapy & Recovery"]
               : isRealEstateCategory
               ? ["Residential Sales", "Commercial Leasing", "Property Management", "Rental Properties", "Plots & Land", "Legal & Documentation"]
-              : ["ITR Filing", "GST Registration", "Company Registration"]
+              : isDoctorClinicCategory
+              ? ["General Consultation", "Specialist Consultation", "Health Checkup", "Diagnostics", "Teleconsultation", "Prescription Refill"]
+              : isDentalClinicCategory
+              ? ["Teeth Cleaning", "Root Canal", "Teeth Whitening", "Tooth Extraction", "Dental Implants", "Braces & Aligners", "Dental Checkup"]
+              : isGroceryCategory
+              ? ["Daily Groceries", "Fresh Fruits & Veggies", "Dairy & Bakery", "Home Care", "Personal Care", "Snacks & Beverages", "Baby Care"]
+              : isTaxCategory
+              ? ["ITR Filing", "GST Registration", "Company Registration", "Tax Audit", "Accounting & Bookkeeping"]
+              : ["General Services", "Consultation", "Support"]
             ).map(svc => {
               const currentServices = data.highlightDishes ? data.highlightDishes.split('\n').filter(Boolean) : [];
               const isSelected = currentServices.includes(svc);
@@ -856,7 +864,7 @@ const Step4 = ({ data, updateData }: any) => {
               <input 
                 type="text"
                 className="flex-1 bg-[var(--color-bg-secondary)] border border-[var(--color-border-default)] rounded-xl px-4 py-3 text-sm focus:border-[var(--color-brand-primary)] outline-none transition-all"
-                placeholder={isJewelleryCategory ? "Add item (e.g. Bridal Set, Necklace, Ring Collection...)" : isEducationCategory ? "Add course (e.g. JEE Preparation, NEET Coaching...)" : isGymCategory ? "Add your membership plans or classes" : isSalonCategory ? "Add your services" : "e.g. Payroll Management"}
+                placeholder={isJewelleryCategory ? "Add item (e.g. Bridal Set...)" : isEducationCategory ? "Add course (e.g. JEE Prep...)" : isGymCategory ? "Add your membership plans" : isSalonCategory ? "Add your services" : isDoctorClinicCategory || isDentalClinicCategory ? "Add medical service (e.g. Checkup)" : isGroceryCategory ? "Add product category (e.g. Dairy)" : isTaxCategory ? "e.g. Payroll Management" : "e.g. Custom Service"}
                 value={newService}
                 onChange={e => setNewService(e.target.value)}
                 onKeyDown={(e) => {
