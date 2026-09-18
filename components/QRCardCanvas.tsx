@@ -38,28 +38,32 @@ const QRCardCanvas = forwardRef<QRCardRef, QRCardCanvasProps>(({
     let y = 80 // Top margin
 
     // 2. LOGO
-    const LOGO_SIZE = 380
+    const MAX_LOGO_WIDTH = 720
+    const MAX_LOGO_HEIGHT = 380
     const logoX = CENTER
-    const logoY = y + LOGO_SIZE / 2
+    const logoY = y + MAX_LOGO_HEIGHT / 2
 
     ctx.save()
 
     try {
       const logoImg = await loadImage(logoUrl)
-      // Implement object-fit: contain to fit any shape without cropping
       const aspect = logoImg.width / logoImg.height
-      let drawW = LOGO_SIZE
-      let drawH = LOGO_SIZE
+      let drawW = MAX_LOGO_WIDTH
+      let drawH = MAX_LOGO_HEIGHT
       
-      if (aspect > 1) { // wider
-        drawH = LOGO_SIZE / aspect
-      } else if (aspect < 1) { // taller
-        drawW = LOGO_SIZE * aspect
+      if (logoImg.width / MAX_LOGO_WIDTH > logoImg.height / MAX_LOGO_HEIGHT) {
+        // Bound by width
+        drawW = MAX_LOGO_WIDTH
+        drawH = MAX_LOGO_WIDTH / aspect
+      } else {
+        // Bound by height
+        drawH = MAX_LOGO_HEIGHT
+        drawW = MAX_LOGO_HEIGHT * aspect
       }
       ctx.drawImage(logoImg, logoX - drawW/2, logoY - drawH/2, drawW, drawH)
     } catch {
       ctx.fillStyle = '#c0392b'
-      ctx.fillRect(logoX - LOGO_SIZE/2, logoY - LOGO_SIZE/2, LOGO_SIZE, LOGO_SIZE)
+      ctx.fillRect(logoX - MAX_LOGO_HEIGHT/2, logoY - MAX_LOGO_HEIGHT/2, MAX_LOGO_HEIGHT, MAX_LOGO_HEIGHT)
       ctx.fillStyle = '#fff'
       ctx.font = 'bold 120px Arial'
       ctx.textAlign = 'center'
@@ -68,7 +72,7 @@ const QRCardCanvas = forwardRef<QRCardRef, QRCardCanvasProps>(({
     }
     ctx.restore()
 
-    y += LOGO_SIZE + 48 // Bottom margin to business name
+    y += MAX_LOGO_HEIGHT + 48 // Bottom margin to business name
 
     // 3. BUSINESS NAME
     ctx.fillStyle = '#1a2340'
