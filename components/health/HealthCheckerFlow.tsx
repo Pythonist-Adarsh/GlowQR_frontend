@@ -218,7 +218,6 @@ export function HealthCheckerFlow() {
                   <option value="Coaching Institute">Coaching Institute</option>
                   <option value="Boutique">Boutique</option>
                   <option value="Grocery/General Retail">Grocery/General Retail</option>
-                  <option value="Domestic Mart">Domestic Mart</option>
                   <option value="Dental Clinic">Dental Clinic</option>
                   <option value="Medical Clinic">Medical Clinic</option>
                   <option value="Hotel">Hotel</option>

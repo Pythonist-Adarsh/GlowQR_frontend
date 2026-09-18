@@ -414,14 +414,13 @@ const Step3 = ({ data, updateData }: any) => {
     { id: 'gym', name: 'Gym', icon: 'Dumbbell', enabled: true },
     { id: 'medical', name: 'Medical', icon: 'Stethoscope', enabled: false },
     { id: 'real_estate', name: 'Real Estate', icon: 'Building2', enabled: true },
-    { id: 'domestic mart', name: 'Domestic Mart', icon: 'ShoppingBag', enabled: true },
     { id: 'doctor clinic', name: 'Doctor Clinic', icon: 'Stethoscope', enabled: true },
     { id: 'grocery/general retail', name: 'Grocery/Retail', icon: 'ShoppingBag', enabled: true },
     { id: 'dental clinic', name: 'Dental Clinic', icon: 'Stethoscope', enabled: true },
     { id: 'other', name: 'Other', icon: 'Layout', enabled: false },
   ];
 
-  const isNonFood = ['tax / ca firm', 'education', 'bridal & festive jewellery', 'salon', 'spa', 'gym', 'medical', 'retail', 'hotel', 'jewellery', 'other', 'real_estate', 'domestic mart', 'doctor clinic', 'grocery/general retail', 'dental clinic'].includes(data.category?.toLowerCase() || "");
+  const isNonFood = ['tax / ca firm', 'education', 'bridal & festive jewellery', 'salon', 'spa', 'gym', 'medical', 'retail', 'hotel', 'jewellery', 'other', 'real_estate', 'doctor clinic', 'grocery/general retail', 'dental clinic'].includes(data.category?.toLowerCase() || "");
 
   return (
     <div className="space-y-8">
@@ -636,10 +635,9 @@ const Step4 = ({ data, updateData }: any) => {
   const isGymCategory = data.category === 'gym';
   const isRealEstateCategory = data.category === 'real_estate';
   const isDoctorClinicCategory = data.category === 'doctor clinic';
-  const isDomesticMartCategory = data.category === 'domestic mart';
   const isGroceryCategory = data.category === 'grocery/general retail';
   const isDentalClinicCategory = data.category === 'dental clinic';
-  const isServiceCategory = isTaxCategory || isJewelleryCategory || isEducationCategory || isSalonCategory || isGymCategory || isRealEstateCategory || isDoctorClinicCategory || isDomesticMartCategory || isGroceryCategory || isDentalClinicCategory;
+  const isServiceCategory = isTaxCategory || isJewelleryCategory || isEducationCategory || isSalonCategory || isGymCategory || isRealEstateCategory || isDoctorClinicCategory || isGroceryCategory || isDentalClinicCategory;
 
   return (
     <div className="space-y-6">
