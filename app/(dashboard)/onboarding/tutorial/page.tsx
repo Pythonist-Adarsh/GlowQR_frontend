@@ -75,7 +75,7 @@ export default function TutorialPage() {
                preload="metadata"
                poster="/images/tutorial-poster.jpg"
              >
-               <source src="https://res.cloudinary.com/dblijhoto/video/upload/v1782575123/GloQR_Review_System_Setup_Guide_1_qnsnfs.mp4" type="video/mp4" />
+               <source src="https://res.cloudinary.com/dblijhoto/video/upload/v1789810472/latest_mzqlrm.mp4" type="video/mp4" />
                Your browser does not support the video tag.
              </video>
           </div>
