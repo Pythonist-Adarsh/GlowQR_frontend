@@ -73,7 +73,7 @@ export default function TutorialPage() {
                className="w-full h-full object-contain"
                controls 
                preload="metadata"
-               poster="/images/tutorial-poster.jpg"
+               poster="https://res.cloudinary.com/dblijhoto/image/upload/v1789808796/GloQR_Review_System_Setup_Guide_1_qnsnfs_poster.png"
              >
                <source src="https://res.cloudinary.com/dblijhoto/video/upload/v1789810472/latest_mzqlrm.mp4" type="video/mp4" />
                Your browser does not support the video tag.
