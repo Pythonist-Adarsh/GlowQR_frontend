@@ -65,7 +65,7 @@ export default function ContactPage() {
             </div>
             <div className="bg-[var(--bg-secondary)] p-6 rounded-2xl border border-[var(--border-default)] text-center">
               <div className="text-2xl font-black text-[var(--text-primary)] mb-1">2–4 hrs</div>
-              <div className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest">Plan activation after payment verified</div>
+              <div className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest">Instant activation for successful payments</div>
             </div>
           </div>
         </section>
@@ -91,7 +91,7 @@ export default function ContactPage() {
             <div className="bg-[var(--bg-glass)] p-8 rounded-3xl border border-[var(--border-default)] shadow-sm backdrop-blur-sm">
               <CreditCard className="w-6 h-6 text-[var(--brand-primary)] mb-4" />
               <h3 className="text-sm font-bold text-[var(--text-primary)] mb-2">Payment queries</h3>
-              <p className="text-xs text-[var(--text-secondary)] leading-relaxed">Paid via UPI but plan not activated? Send your UTR number to billing@glowqr.in and we activate within 30 minutes.</p>
+              <p className="text-xs text-[var(--text-secondary)] leading-relaxed">Payment failed but money deducted? It usually refunds automatically. If not, email billing@glowqr.in with your transaction details.</p>
             </div>
             <div className="bg-[var(--bg-glass)] p-8 rounded-3xl border border-[var(--border-default)] shadow-sm backdrop-blur-sm">
               <Handshake className="w-6 h-6 text-[var(--brand-primary)] mb-4" />
@@ -106,10 +106,10 @@ export default function ContactPage() {
           <div className="bg-[var(--bg-glass)] rounded-3xl border border-[var(--border-default)] shadow-sm overflow-hidden divide-y divide-[var(--border-default)] backdrop-blur-sm">
             <div className="p-6">
               <div className="flex items-center justify-between cursor-pointer group">
-                <h3 className="text-sm font-bold text-[var(--text-primary)] group-hover:text-[var(--brand-primary)] transition-colors">I paid via UPI but my plan is still showing trial. What can I do?</h3>
+                <h3 className="text-sm font-bold text-[var(--text-primary)] group-hover:text-[var(--brand-primary)] transition-colors">I made a payment but my plan is still showing trial. What can I do?</h3>
                 <ChevronDown className="w-5 h-5 text-[var(--text-tertiary)]" />
               </div>
-              <p className="text-xs text-[var(--text-secondary)] mt-4 leading-relaxed">Send your UTR (12-digit transaction reference) to billing@glowqr.in or on WhatsApp. We verify and activate your plan within 30 minutes — usually faster.</p>
+              <p className="text-xs text-[var(--text-secondary)] mt-4 leading-relaxed">Log out and log back into your dashboard. If it still doesn't update, reach out to billing@glowqr.in with the email associated with your account.</p>
             </div>
             {[
               "Can I request a live demo before buying?",

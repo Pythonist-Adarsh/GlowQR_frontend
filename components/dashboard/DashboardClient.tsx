@@ -665,8 +665,6 @@ export function DashboardClient({
           isOpen={isRenewalModalOpen} 
           onClose={() => setIsRenewalModalOpen(false)} 
           currentPlan={renewalStatus?.plan}
-          upiId={adminSettings?.upi_id}
-          upiQrUrl={adminSettings?.upi_qr_url}
         />
       )}
     </div>

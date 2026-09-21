@@ -86,7 +86,7 @@ export default function RevenuePage() {
                 <th className="p-4 font-medium">Business</th>
                 <th className="p-4 font-medium">Plan</th>
                 <th className="p-4 font-medium">Amount</th>
-                <th className="p-4 font-medium">UTR</th>
+                <th className="p-4 font-medium">Legacy UTR (manual payments)</th>
                 <th className="p-4 font-medium">Activated On</th>
                 <th className="p-4 font-medium">Expires On</th>
                 <th className="p-4 font-medium">Status</th>

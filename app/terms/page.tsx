@@ -26,7 +26,7 @@ export default function TermsPage() {
           <p>Access to GlowQR requires business registration on our platform. Subscription plans (Trial, Basic, Premium) are billed as described on our Pricing page. Trial access is limited to 3 days or 5 AI-generated reviews, whichever comes first.</p>
 
           <h2 className="text-[var(--text-primary)]">4. Payments</h2>
-          <p>Payments are processed via UPI. Manual verification may apply. All fees are non-refundable except where required by law.</p>
+          <p>Payments are processed securely via Cashfree. All fees are non-refundable except where required by law.</p>
 
           <h2 className="text-[var(--text-primary)]">5. Acceptable Use</h2>
           <p>You agree not to use GlowQR to generate fake, misleading, or fraudulent reviews, or to violate Google's review policies. GlowQR reserves the right to suspend accounts found violating this clause.</p>

@@ -111,10 +111,7 @@ export default function SettingsPage() {
             <h2 className="text-lg font-bold text-slate-900">Payment Settings</h2>
           </div>
           <div className="p-6 space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">UPI ID (For manual payments)</label>
-              <input type="text" name="upi_id" value={settings.upi_id || ''} onChange={handleChange} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-slate-900 text-slate-900" placeholder="e.g. merchant@upi" />
-            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Basic Plan Price (₹)</label>

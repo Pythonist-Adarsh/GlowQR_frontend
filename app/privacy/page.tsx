@@ -17,7 +17,7 @@ export default function PrivacyPage() {
           <p>Last updated: {new Date().toLocaleDateString()}</p>
           
           <h2 className="text-[var(--text-primary)]">1. Information We Collect</h2>
-          <p>We collect business information (name, contact, category), customer scan/review interaction data, and payment verification details (UPI transaction ID) necessary to operate the Service.</p>
+          <p>We collect business information (name, contact, category), customer scan/review interaction data, and payment verification details (transaction ID) necessary to operate the Service.</p>
           
           <h2 className="text-[var(--text-primary)]">2. How We Use Information</h2>
           <ul>
