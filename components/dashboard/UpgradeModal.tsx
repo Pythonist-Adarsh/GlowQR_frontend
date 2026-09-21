@@ -67,7 +67,7 @@ export function UpgradeModal({ isOpen, onClose, defaultPlan = 'premium' }: Upgra
       const data = await res.json();
       
       const cashfree = await load({
-        mode: 'sandbox', 
+        mode: 'production', 
       });
       
       cashfree.checkout({

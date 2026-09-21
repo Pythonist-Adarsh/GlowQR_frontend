@@ -54,7 +54,7 @@ export function RenewalModal({ isOpen, onClose, currentPlan = 'premium' }: Renew
       const data = await res.json();
       
       const cashfree = await load({
-        mode: 'sandbox', 
+        mode: 'production', 
       });
       
       cashfree.checkout({
