@@ -3,61 +3,38 @@ import { toast } from 'react-hot-toast';
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Copy, X, Eye, EyeOff } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/api-config';
+import { load } from '@cashfreepayments/cashfree-js';
 
 interface RenewalModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentPlan?: 'basic' | 'premium' | 'trial' | 'expired' | string;
-  upiId?: string;
-  upiQrUrl?: string;
 }
 
-export function RenewalModal({ isOpen, onClose, currentPlan = 'premium', upiId, upiQrUrl }: RenewalModalProps) {
-  const [step, setStep] = useState(1);
+export function RenewalModal({ isOpen, onClose, currentPlan = 'premium' }: RenewalModalProps) {
   const [selectedPlan, setSelectedPlan] = useState('premium');
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'quarterly' | 'yearly'>('monthly');
   const [loading, setLoading] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [showUpi, setShowUpi] = useState(false);
-  
-  const [formData, setFormData] = useState({
-    utrNumber: '',
-  });
 
   useEffect(() => {
     if (isOpen) {
-      setStep(1);
       setSelectedPlan('premium');
       setBillingCycle('monthly');
-      setFormData({ utrNumber: '' });
-      setCopied(false);
-      setShowUpi(false);
+      setLoading(false);
     }
   }, [isOpen]);
 
   let price = 399;
   if (billingCycle === 'quarterly') price = 999;
   if (billingCycle === 'yearly') price = 3999;
-  
-  const planName = 'Premium Plan';
-  
-  const displayUpiId = upiId || 'adarshtiwari2412-4@okhdfcbank';
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(displayUpiId);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handlePayment = async () => {
     setLoading(true);
     try {
       const accessToken = localStorage.getItem('token');
-      // POST /api/renewal/request
-      const res = await fetch(`${API_BASE_URL}/api/renewal/request`, {
+      const res = await fetch(`${API_BASE_URL}/api/renewal/cashfree/create-order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -67,20 +44,26 @@ export function RenewalModal({ isOpen, onClose, currentPlan = 'premium', upiId, 
           plan: selectedPlan,
           amount_paid: price,
           billing_cycle: billingCycle,
-          utr_number: formData.utrNumber,
-          payment_method: 'upi'
         })
       });
+      
       if (!res.ok) {
-        throw new Error('Failed to submit renewal request');
+        throw new Error('Failed to create order');
       }
-      setStep(3);
-      // We do not close automatically to let user see success screen
-      // When closed, they will see pending banner if the parent page refreshes or updates state
+      
+      const data = await res.json();
+      
+      const cashfree = await load({
+        mode: 'sandbox', 
+      });
+      
+      cashfree.checkout({
+        paymentSessionId: data.payment_session_id
+      });
+      
     } catch (err) {
       console.error(err);
-      toast.error("Failed to submit request. Please try again.");
-    } finally {
+      toast.error("Failed to initiate payment. Please try again.");
       setLoading(false);
     }
   };
@@ -98,137 +81,68 @@ export function RenewalModal({ isOpen, onClose, currentPlan = 'premium', upiId, 
             <button 
               onClick={onClose}
               className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors"
+              disabled={loading}
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="p-8">
-              {step === 1 && (
-                <div className="space-y-6">
-                  <h2 className="text-2xl font-bold text-slate-900">Renew Your Plan</h2>
-                  
-                  <div className="flex flex-col gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200">
-                    <div className="grid grid-cols-3 gap-1">
-                      <button
-                        onClick={() => setBillingCycle('monthly')}
-                        className={`py-1 text-sm font-semibold rounded-lg transition-colors ${billingCycle === 'monthly' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200'}`}
-                      >
-                        Monthly
-                      </button>
-                      <button
-                        onClick={() => setBillingCycle('quarterly')}
-                        className={`py-1 text-sm font-semibold rounded-lg transition-colors ${billingCycle === 'quarterly' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200'}`}
-                      >
-                        Quarterly
-                      </button>
-                      <button
-                        onClick={() => setBillingCycle('yearly')}
-                        className={`py-1 text-sm font-semibold rounded-lg transition-colors ${billingCycle === 'yearly' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200'}`}
-                      >
-                        Yearly
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3 mt-4">
-                    <div 
-                      className="p-4 rounded-xl border-2 border-slate-900 bg-slate-50 transition-all"
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold text-slate-900">Renew Your Plan</h2>
+                
+                <div className="flex flex-col gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200">
+                  <div className="grid grid-cols-3 gap-1">
+                    <button
+                      onClick={() => setBillingCycle('monthly')}
+                      disabled={loading}
+                      className={`py-1 text-sm font-semibold rounded-lg transition-colors ${billingCycle === 'monthly' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200'}`}
                     >
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <span className="font-bold capitalize text-slate-900 block">Premium Plan</span>
-                          {billingCycle === 'quarterly' && <span className="text-xs text-green-600 font-medium">3 Months • ~₹333/mo</span>}
-                          {billingCycle === 'yearly' && <span className="text-xs text-green-600 font-medium">12 Months • ~₹333/mo</span>}
-                        </div>
-                        <span className="font-bold text-slate-900 flex items-center gap-2">
-                          {billingCycle === 'quarterly' && <span className="text-slate-400 line-through text-sm">₹1,099</span>}
-                          {billingCycle === 'yearly' ? '₹3,999/yr' : billingCycle === 'quarterly' ? '₹999/qtr' : '₹399/mo'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <button 
-                    onClick={() => setStep(2)}
-                    className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-colors"
-                  >
-                    Continue to Payment →
-                  </button>
-                </div>
-              )}
-
-              {step === 2 && (
-                <div className="space-y-6">
-                  <h2 className="text-2xl font-bold text-slate-900">Manual Payment</h2>
-                  <p className="text-slate-600 text-sm">
-                    Pay ₹{price} via UPI to renew the {planName}.
-                  </p>
-
-                  <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex justify-between items-center">
-                    <div>
-                      <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">UPI ID</p>
-                      <p className="font-mono text-slate-900">{showUpi ? displayUpiId : '*****************************'}</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <button 
-                        onClick={() => setShowUpi(!showUpi)}
-                        className="p-2 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors"
-                      >
-                        {showUpi ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
-                      <button 
-                        onClick={handleCopy}
-                        className="p-2 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors"
-                      >
-                        {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
-                      </button>
-                    </div>
-                  </div>
-                  
-                  {upiQrUrl && (
-                    <div className="flex justify-center my-4">
-                      <img src={upiQrUrl} alt="UPI QR Code" className="w-48 h-48 object-contain border border-slate-200 rounded-xl" />
-                    </div>
-                  )}
-
-                  <form onSubmit={handleSubmit} className="space-y-4 pt-4 border-t border-slate-100">
-                    <p className="text-sm font-bold text-slate-900">After paying, fill this:</p>
-                    
-                    <input 
-                      required type="text" placeholder="12-digit UTR from UPI app"
-                      value={formData.utrNumber} onChange={e => setFormData({...formData, utrNumber: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder-slate-500 outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
-                    />
-
-                    <button 
-                      type="submit" disabled={loading}
-                      className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-colors disabled:opacity-70"
-                    >
-                      {loading ? 'Submitting...' : 'Submit Renewal Request →'}
+                      Monthly
                     </button>
-                  </form>
-                </div>
-              )}
-
-              {step === 3 && (
-                <div className="text-center space-y-6 py-6">
-                  <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6 text-emerald-600">
-                    <Check className="w-8 h-8" />
+                    <button
+                      onClick={() => setBillingCycle('quarterly')}
+                      disabled={loading}
+                      className={`py-1 text-sm font-semibold rounded-lg transition-colors ${billingCycle === 'quarterly' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200'}`}
+                    >
+                      Quarterly
+                    </button>
+                    <button
+                      onClick={() => setBillingCycle('yearly')}
+                      disabled={loading}
+                      className={`py-1 text-sm font-semibold rounded-lg transition-colors ${billingCycle === 'yearly' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200'}`}
+                    >
+                      Yearly
+                    </button>
                   </div>
-                  <h2 className="text-2xl font-bold text-slate-900">Request received!</h2>
-                  <p className="text-slate-600">We'll verify and reactivate within a few hours.</p>
-
-                  <button 
-                    onClick={() => {
-                      onClose();
-                      window.location.reload(); // Quick way to refresh dashboard state
-                    }}
-                    className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-colors mt-6"
-                  >
-                    Back to Dashboard
-                  </button>
                 </div>
-              )}
+
+                <div className="space-y-3 mt-4">
+                  <div 
+                    className="p-4 rounded-xl border-2 border-slate-900 bg-slate-50 transition-all"
+                  >
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <span className="font-bold capitalize text-slate-900 block">Premium Plan</span>
+                        {billingCycle === 'quarterly' && <span className="text-xs text-green-600 font-medium">3 Months • ~₹333/mo</span>}
+                        {billingCycle === 'yearly' && <span className="text-xs text-green-600 font-medium">12 Months • ~₹333/mo</span>}
+                      </div>
+                      <span className="font-bold text-slate-900 flex items-center gap-2">
+                        {billingCycle === 'quarterly' && <span className="text-slate-400 line-through text-sm">₹1,099</span>}
+                        {billingCycle === 'yearly' ? '₹3,999/yr' : billingCycle === 'quarterly' ? '₹999/qtr' : '₹399/mo'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <button 
+                  onClick={handlePayment}
+                  disabled={loading}
+                  className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-colors disabled:opacity-70 flex items-center justify-center gap-2"
+                >
+                  {loading ? 'Processing...' : 'Pay Securely →'}
+                </button>
+                <p className="text-center text-xs text-slate-400 font-medium">Secured by Cashfree Payments</p>
+              </div>
             </div>
           </motion.div>
         </div>

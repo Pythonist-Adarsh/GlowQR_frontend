@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@cashfreepayments/cashfree-js": "^1.0.7",
     "@clerk/nextjs": "^7.3.7",
     "@next/third-parties": "^16.2.10",
     "@radix-ui/react-accordion": "^1.2.2",
