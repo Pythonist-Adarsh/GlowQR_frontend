@@ -516,32 +516,47 @@ export function HealthCheckerFlow() {
                     </h3>
                     
                     {(() => {
-                      // Combine business with top 5 competitors and sort
-                      const allBiz = [
-                        { isMe: true, name: "You (Searched Business)", rating: scanResult.business_rating, reviews: scanResult.business_reviews, distance_km: 0 },
-                        ...(scanResult.local_competitors || []).slice(0, 5).map((c: any, i: number) => ({
-                          isMe: false, name: c.name || `Competitor ${i+1}`, rating: c.rating, reviews: c.reviews, distance_km: c.distance_km
-                        }))
-                      ].sort((a, b) => b.reviews - a.reviews);
+                      const myRank = scanResult.business_local_rank || 1;
+                      const competitors = (scanResult.local_competitors || []).map((c: any) => ({
+                        isMe: false, name: c.name, rating: c.rating, reviews: c.reviews, distance_km: c.distance_km, composite_score: c.composite_score
+                      }));
                       
-                      const myRank = allBiz.findIndex(b => b.isMe) + 1;
-                      const maxReviews = Math.max(1, ...allBiz.map(b => b.reviews));
+                      const myBiz = {
+                        isMe: true, name: "You (Searched Business)", rating: scanResult.business_rating, reviews: scanResult.business_reviews, distance_km: 0
+                      };
+                      
+                      const allBiz = [...competitors];
+                      if (myRank <= allBiz.length + 1) {
+                        allBiz.splice(myRank - 1, 0, myBiz);
+                      } else {
+                        allBiz.push(myBiz);
+                      }
+                      
+                      const displayBiz = allBiz.slice(0, 6);
+                      const totalCompetitors = (scanResult.local_competitors || []).length + 1;
+                      const maxReviews = Math.max(1, ...displayBiz.map(b => b.reviews));
                       
                       return (
                         <>
-                          <p className="text-[var(--text-secondary)] mb-6 font-medium">
-                            You rank <strong className="text-[var(--text-primary)]">#{myRank}</strong> out of {allBiz.length} real local competitors near you.
+                          <p className="text-[var(--text-secondary)] mb-6 font-medium flex items-center gap-1.5 flex-wrap">
+                            Estimated Rank <strong className="text-[var(--text-primary)] text-lg">#{myRank}</strong> out of {totalCompetitors} local competitors.
+                            <span className="text-xs text-[var(--text-secondary)] cursor-help border-b border-dashed border-[var(--text-secondary)] ml-1" title="Estimated using Google's documented local ranking factors: relevance, distance, and prominence — not literal search position, but a directional signal of competitive standing.">How is this calculated?</span>
                           </p>
                           <div className="space-y-5">
-                            {allBiz.map((biz, idx) => (
+                            {displayBiz.map((biz, idx) => {
+                              const displayRank = biz.isMe ? myRank : (allBiz.indexOf(biz) + 1);
+                              return (
                               <div key={idx}>
                                 <div className="flex justify-between mb-1.5 items-end">
                                   <span className={`font-semibold text-sm ${biz.isMe ? 'text-[var(--accent)]' : 'text-[var(--text-primary)]'}`}>
-                                    {idx + 1}. {biz.name} {biz.distance_km ? <span className="text-xs font-normal text-[var(--text-secondary)] ml-1">({biz.distance_km} km)</span> : ""}
+                                    {displayRank}. {biz.name} {biz.distance_km ? <span className="text-xs font-normal text-[var(--text-secondary)] ml-1">({biz.distance_km} km)</span> : ""}
                                   </span>
-                                  <span className={`font-bold text-sm ${biz.isMe ? 'text-[var(--accent)]' : 'text-[var(--text-secondary)]'}`}>
-                                    {biz.reviews} reviews
-                                  </span>
+                                  <div className="text-right">
+                                    <span className={`font-bold text-sm ${biz.isMe ? 'text-[var(--accent)]' : 'text-[var(--text-secondary)]'}`}>
+                                      {biz.reviews} reviews
+                                    </span>
+                                    {biz.composite_score ? <div className="text-[10px] text-slate-400">Score: {biz.composite_score}</div> : null}
+                                  </div>
                                 </div>
                                 <div className="w-full bg-slate-100 rounded-full h-3">
                                   <div 
@@ -550,7 +565,7 @@ export function HealthCheckerFlow() {
                                   ></div>
                                 </div>
                               </div>
-                            ))}
+                            )})}
                           </div>
                         </>
                       );
@@ -566,45 +581,60 @@ export function HealthCheckerFlow() {
                   </h3>
                   
                   {(() => {
-                    // Combine business with top 5 competitors and sort
-                    const allBiz = [
-                      { isMe: true, name: "You (Searched Business)", rating: scanResult.business_rating, reviews: scanResult.business_reviews },
-                      ...(scanResult.competitors || []).slice(0, 5).map((c: any, i: number) => ({
-                        isMe: false, name: c.name || `Competitor ${i+1}`, rating: c.rating, reviews: c.reviews
-                      }))
-                    ].sort((a, b) => b.reviews - a.reviews);
-                    
-                    const myRank = allBiz.findIndex(b => b.isMe) + 1;
-                    const maxReviews = Math.max(1, ...allBiz.map(b => b.reviews));
-                    
-                    return (
-                      <>
-                        <p className="text-[var(--text-secondary)] mb-6 font-medium">
-                          You rank <strong className="text-[var(--text-primary)]">#{myRank}</strong> out of {allBiz.length} benchmark businesses in {category} across the wider city area.
-                        </p>
-                        <div className="space-y-5">
-                          {allBiz.map((biz, idx) => (
-                            <div key={idx}>
-                              <div className="flex justify-between mb-1.5 items-end">
-                                <span className={`font-semibold text-sm ${biz.isMe ? 'text-[var(--accent)]' : 'text-[var(--text-primary)]'}`}>
-                                  {idx + 1}. {biz.name}
-                                </span>
-                                <span className={`font-bold text-sm ${biz.isMe ? 'text-[var(--accent)]' : 'text-[var(--text-secondary)]'}`}>
-                                  {biz.reviews} reviews
-                                </span>
+                      const myRank = scanResult.business_city_rank || 1;
+                      const competitors = (scanResult.competitors || []).map((c: any) => ({
+                        isMe: false, name: c.name, rating: c.rating, reviews: c.reviews, distance_km: c.distance_km, composite_score: c.composite_score
+                      }));
+                      
+                      const myBiz = {
+                        isMe: true, name: "You (Searched Business)", rating: scanResult.business_rating, reviews: scanResult.business_reviews, distance_km: 0
+                      };
+                      
+                      const allBiz = [...competitors];
+                      if (myRank <= allBiz.length + 1) {
+                        allBiz.splice(myRank - 1, 0, myBiz);
+                      } else {
+                        allBiz.push(myBiz);
+                      }
+                      
+                      const displayBiz = allBiz.slice(0, 6);
+                      const totalCompetitors = (scanResult.competitors || []).length + 1;
+                      const maxReviews = Math.max(1, ...displayBiz.map(b => b.reviews));
+                      
+                      return (
+                        <>
+                          <p className="text-[var(--text-secondary)] mb-6 font-medium flex items-center gap-1.5 flex-wrap">
+                            Estimated Rank <strong className="text-[var(--text-primary)] text-lg">#{myRank}</strong> out of {totalCompetitors} benchmark businesses across the city.
+                            <span className="text-xs text-[var(--text-secondary)] cursor-help border-b border-dashed border-[var(--text-secondary)] ml-1" title="Estimated using Google's documented local ranking factors: relevance, distance, and prominence — not literal search position, but a directional signal of competitive standing.">How is this calculated?</span>
+                          </p>
+                          <div className="space-y-5">
+                            {displayBiz.map((biz, idx) => {
+                              const displayRank = biz.isMe ? myRank : (allBiz.indexOf(biz) + 1);
+                              return (
+                              <div key={idx}>
+                                <div className="flex justify-between mb-1.5 items-end">
+                                  <span className={`font-semibold text-sm ${biz.isMe ? 'text-[var(--accent)]' : 'text-[var(--text-primary)]'}`}>
+                                    {displayRank}. {biz.name}
+                                  </span>
+                                  <div className="text-right">
+                                    <span className={`font-bold text-sm ${biz.isMe ? 'text-[var(--accent)]' : 'text-[var(--text-secondary)]'}`}>
+                                      {biz.reviews} reviews
+                                    </span>
+                                    {biz.composite_score ? <div className="text-[10px] text-slate-400">Score: {biz.composite_score}</div> : null}
+                                  </div>
+                                </div>
+                                <div className="w-full bg-slate-100 rounded-full h-3">
+                                  <div 
+                                    className={`h-3 rounded-full ${biz.isMe ? 'bg-[var(--accent)]' : 'bg-slate-300'}`}
+                                    style={{ width: `${Math.max(2, (biz.reviews / maxReviews) * 100)}%` }}
+                                  ></div>
+                                </div>
                               </div>
-                              <div className="w-full bg-slate-100 rounded-full h-3">
-                                <div 
-                                  className={`h-3 rounded-full ${biz.isMe ? 'bg-[var(--accent)]' : 'bg-slate-300'}`}
-                                  style={{ width: `${Math.max(2, (biz.reviews / maxReviews) * 100)}%` }}
-                                ></div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </>
-                    );
-                  })()}
+                            )})}
+                          </div>
+                        </>
+                      );
+                    })()}
                 </section>
 
                 {/* Growth Path */}
