@@ -518,28 +518,24 @@ export function HealthCheckerFlow() {
                     {(() => {
                       const myRank = scanResult.business_local_rank || 1;
                       const competitors = (scanResult.local_competitors || []).map((c: any) => ({
-                        isMe: false, name: c.name, rating: c.rating, reviews: c.reviews, distance_km: c.distance_km, composite_score: c.composite_score
+                        isMe: false, name: c.name, rating: c.rating, reviews: c.reviews, distance_km: c.distance_km, composite_score: c.composite_score || 0
                       }));
                       
                       const myBiz = {
-                        isMe: true, name: "You (Searched Business)", rating: scanResult.business_rating, reviews: scanResult.business_reviews, distance_km: 0, composite_score: scanResult.business_composite_score_local
+                        isMe: true, name: "You (Searched Business)", rating: scanResult.business_rating, reviews: scanResult.business_reviews, distance_km: 0, composite_score: scanResult.business_composite_score_local || 0
                       };
                       
-                      const allBiz = [];
-                      let currentRank = 1;
-                      for (let c of competitors) {
-                          if (currentRank === myRank) {
-                              allBiz.push({...myBiz, rank: myRank});
-                              currentRank++;
-                          }
-                          allBiz.push({...c, rank: currentRank});
-                          currentRank++;
-                      }
-                      if (myRank >= currentRank) {
-                          allBiz.push({...myBiz, rank: myRank});
-                      }
+                      // Combine and sort locally by composite score to guarantee mathematical correctness
+                      const allBiz = [...competitors, myBiz].sort((a, b) => b.composite_score - a.composite_score);
                       
-                      const displayBiz = allBiz.slice(0, 6);
+                      // Assign true 1-based ranks
+                      allBiz.forEach((biz, index) => {
+                          biz.rank = index + 1;
+                      });
+                      
+                      const myTrueRank = allBiz.find(b => b.isMe)?.rank || 1;
+                      
+                      let displayBiz = allBiz.slice(0, 6);
                       if (!displayBiz.some(b => b.isMe)) {
                           const meIndex = allBiz.findIndex(b => b.isMe);
                           if (meIndex !== -1) {
@@ -554,7 +550,7 @@ export function HealthCheckerFlow() {
                       return (
                         <>
                           <p className="text-[var(--text-secondary)] mb-6 font-medium flex items-center gap-1.5 flex-wrap">
-                            Estimated Rank <strong className="text-[var(--text-primary)] text-lg">#{myRank}</strong> out of {totalCompetitors} local competitors.
+                            Estimated Rank <strong className="text-[var(--text-primary)] text-lg">#{myTrueRank}</strong> out of {totalCompetitors} local competitors.
                             <span className="text-xs text-[var(--text-secondary)] cursor-help border-b border-dashed border-[var(--text-secondary)] ml-1" title="Estimated using Google's documented local ranking factors: relevance, distance, and prominence — not literal search position, but a directional signal of competitive standing.">How is this calculated?</span>
                           </p>
                           <div className="space-y-5">
@@ -598,28 +594,24 @@ export function HealthCheckerFlow() {
                   {(() => {
                       const myRank = scanResult.business_city_rank || 1;
                       const competitors = (scanResult.competitors || []).map((c: any) => ({
-                        isMe: false, name: c.name, rating: c.rating, reviews: c.reviews, distance_km: c.distance_km, composite_score: c.composite_score
+                        isMe: false, name: c.name, rating: c.rating, reviews: c.reviews, distance_km: c.distance_km, composite_score: c.composite_score || 0
                       }));
                       
                       const myBiz = {
-                        isMe: true, name: "You (Searched Business)", rating: scanResult.business_rating, reviews: scanResult.business_reviews, distance_km: 0, composite_score: scanResult.business_composite_score_city
+                        isMe: true, name: "You (Searched Business)", rating: scanResult.business_rating, reviews: scanResult.business_reviews, distance_km: 0, composite_score: scanResult.business_composite_score_city || 0
                       };
                       
-                      const allBiz = [];
-                      let currentRank = 1;
-                      for (let c of competitors) {
-                          if (currentRank === myRank) {
-                              allBiz.push({...myBiz, rank: myRank});
-                              currentRank++;
-                          }
-                          allBiz.push({...c, rank: currentRank});
-                          currentRank++;
-                      }
-                      if (myRank >= currentRank) {
-                          allBiz.push({...myBiz, rank: myRank});
-                      }
+                      // Combine and sort locally by composite score to guarantee mathematical correctness
+                      const allBiz = [...competitors, myBiz].sort((a, b) => b.composite_score - a.composite_score);
                       
-                      const displayBiz = allBiz.slice(0, 6);
+                      // Assign true 1-based ranks
+                      allBiz.forEach((biz, index) => {
+                          biz.rank = index + 1;
+                      });
+                      
+                      const myTrueRank = allBiz.find(b => b.isMe)?.rank || 1;
+                      
+                      let displayBiz = allBiz.slice(0, 6);
                       if (!displayBiz.some(b => b.isMe)) {
                           const meIndex = allBiz.findIndex(b => b.isMe);
                           if (meIndex !== -1) {
@@ -634,7 +626,7 @@ export function HealthCheckerFlow() {
                       return (
                         <>
                           <p className="text-[var(--text-secondary)] mb-6 font-medium flex items-center gap-1.5 flex-wrap">
-                            Estimated Rank <strong className="text-[var(--text-primary)] text-lg">#{myRank}</strong> out of {totalCompetitors} benchmark businesses across the city.
+                            Estimated Rank <strong className="text-[var(--text-primary)] text-lg">#{myTrueRank}</strong> out of {totalCompetitors} benchmark businesses across the city.
                             <span className="text-xs text-[var(--text-secondary)] cursor-help border-b border-dashed border-[var(--text-secondary)] ml-1" title="Estimated using Google's documented local ranking factors: relevance, distance, and prominence — not literal search position, but a directional signal of competitive standing.">How is this calculated?</span>
                           </p>
                           <div className="space-y-5">
