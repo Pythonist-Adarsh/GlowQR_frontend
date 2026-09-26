@@ -522,7 +522,7 @@ export function HealthCheckerFlow() {
                       }));
                       
                       const myBiz = {
-                        isMe: true, name: "You (Searched Business)", rating: scanResult.business_rating, reviews: scanResult.business_reviews, distance_km: 0
+                        isMe: true, name: "You (Searched Business)", rating: scanResult.business_rating, reviews: scanResult.business_reviews, distance_km: 0, composite_score: scanResult.business_composite_score_local
                       };
                       
                       const allBiz = [...competitors];
@@ -587,7 +587,7 @@ export function HealthCheckerFlow() {
                       }));
                       
                       const myBiz = {
-                        isMe: true, name: "You (Searched Business)", rating: scanResult.business_rating, reviews: scanResult.business_reviews, distance_km: 0
+                        isMe: true, name: "You (Searched Business)", rating: scanResult.business_rating, reviews: scanResult.business_reviews, distance_km: 0, composite_score: scanResult.business_composite_score_city
                       };
                       
                       const allBiz = [...competitors];
