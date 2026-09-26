@@ -525,15 +525,30 @@ export function HealthCheckerFlow() {
                         isMe: true, name: "You (Searched Business)", rating: scanResult.business_rating, reviews: scanResult.business_reviews, distance_km: 0, composite_score: scanResult.business_composite_score_local
                       };
                       
-                      const allBiz = [...competitors];
-                      if (myRank <= allBiz.length + 1) {
-                        allBiz.splice(myRank - 1, 0, myBiz);
-                      } else {
-                        allBiz.push(myBiz);
+                      const allBiz = [];
+                      let currentRank = 1;
+                      for (let c of competitors) {
+                          if (currentRank === myRank) {
+                              allBiz.push({...myBiz, rank: myRank});
+                              currentRank++;
+                          }
+                          allBiz.push({...c, rank: currentRank});
+                          currentRank++;
+                      }
+                      if (myRank >= currentRank) {
+                          allBiz.push({...myBiz, rank: myRank});
                       }
                       
                       const displayBiz = allBiz.slice(0, 6);
-                      const totalCompetitors = (scanResult.local_competitors || []).length + 1;
+                      if (!displayBiz.some(b => b.isMe)) {
+                          const meIndex = allBiz.findIndex(b => b.isMe);
+                          if (meIndex !== -1) {
+                              displayBiz.pop();
+                              displayBiz.push(allBiz[meIndex]);
+                          }
+                      }
+                      
+                      const totalCompetitors = allBiz.length;
                       const maxReviews = Math.max(1, ...displayBiz.map(b => b.reviews));
                       
                       return (
@@ -544,7 +559,7 @@ export function HealthCheckerFlow() {
                           </p>
                           <div className="space-y-5">
                             {displayBiz.map((biz, idx) => {
-                              const displayRank = biz.isMe ? myRank : (allBiz.indexOf(biz) + 1);
+                              const displayRank = biz.rank;
                               return (
                               <div key={idx}>
                                 <div className="flex justify-between mb-1.5 items-end">
@@ -590,15 +605,30 @@ export function HealthCheckerFlow() {
                         isMe: true, name: "You (Searched Business)", rating: scanResult.business_rating, reviews: scanResult.business_reviews, distance_km: 0, composite_score: scanResult.business_composite_score_city
                       };
                       
-                      const allBiz = [...competitors];
-                      if (myRank <= allBiz.length + 1) {
-                        allBiz.splice(myRank - 1, 0, myBiz);
-                      } else {
-                        allBiz.push(myBiz);
+                      const allBiz = [];
+                      let currentRank = 1;
+                      for (let c of competitors) {
+                          if (currentRank === myRank) {
+                              allBiz.push({...myBiz, rank: myRank});
+                              currentRank++;
+                          }
+                          allBiz.push({...c, rank: currentRank});
+                          currentRank++;
+                      }
+                      if (myRank >= currentRank) {
+                          allBiz.push({...myBiz, rank: myRank});
                       }
                       
                       const displayBiz = allBiz.slice(0, 6);
-                      const totalCompetitors = (scanResult.competitors || []).length + 1;
+                      if (!displayBiz.some(b => b.isMe)) {
+                          const meIndex = allBiz.findIndex(b => b.isMe);
+                          if (meIndex !== -1) {
+                              displayBiz.pop();
+                              displayBiz.push(allBiz[meIndex]);
+                          }
+                      }
+                      
+                      const totalCompetitors = allBiz.length;
                       const maxReviews = Math.max(1, ...displayBiz.map(b => b.reviews));
                       
                       return (
@@ -609,7 +639,7 @@ export function HealthCheckerFlow() {
                           </p>
                           <div className="space-y-5">
                             {displayBiz.map((biz, idx) => {
-                              const displayRank = biz.isMe ? myRank : (allBiz.indexOf(biz) + 1);
+                              const displayRank = biz.rank;
                               return (
                               <div key={idx}>
                                 <div className="flex justify-between mb-1.5 items-end">
