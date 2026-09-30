@@ -54,4 +54,9 @@
     <priority>0.5</priority>
     <changefreq>yearly</changefreq>
   </url>
+  <url>
+    <loc>https://www.glowqr.com/business/house-of-aadayein-a4d823</loc>
+    <priority>0.9</priority>
+    <changefreq>weekly</changefreq>
+  </url>
 </urlset>
