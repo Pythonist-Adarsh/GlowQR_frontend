@@ -28,7 +28,6 @@ const tiers = [
       'Full AR experience (particles + float)',
       'AI problem detection dashboard',
       'Scan heatmap (when customers visit)',
-      'Negative review intercept',
       'Category ratings (Food/Service/Atmosphere)',
       'Actionable weekly insights',
     ],

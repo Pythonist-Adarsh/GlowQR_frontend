@@ -360,12 +360,20 @@ export function DashboardClient({
               action: () => setActiveTab("subscription"),
             },
             {
+              id: "ai_profile",
+              icon: Sparkles,
+              label: "AI Profile (Pilot)",
+              action: () => window.open(`/business/${b?.slug}`, "_blank"),
+            },
+            {
               id: "settings",
               icon: Settings,
               label: "Settings",
               action: () => setActiveTab("settings"),
             },
-          ].map((item) => (
+          ].map((item) => {
+              if (item.id === "ai_profile" && !(b?.slug === "house-of-aadayein-a4d823" || b?.name?.includes("Aadayein"))) return null;
+              return (
               <button
                 key={item.label}
                 onClick={item.action}
@@ -375,7 +383,7 @@ export function DashboardClient({
                 <item.icon className="w-5 h-5 flex-shrink-0" />
                 {!isSidebarCollapsed && <span>{item.label}</span>}
               </button>
-            ))}
+            )})}
           </nav>
   
           <button
