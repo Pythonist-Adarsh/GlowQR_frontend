@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   BarChart3,
   ExternalLink,
@@ -26,6 +26,7 @@ import {
 } from "recharts";
 import { LockedSection, ExpiredOverlay } from "./LockedComponents";
 import { QRCodeCanvas } from "qrcode.react";
+import { Bot } from "lucide-react";
 import QRCardCanvas, { QRCardRef } from '@/components/QRCardCanvas';
 import { API_BASE_URL } from "@/lib/api-config";
 
@@ -160,6 +161,115 @@ function getDisplayMenuItems(b: any): string[] {
 
   return items.map(raw => resolveItemName(raw, b)).filter((name, i, arr) => arr.indexOf(name) === i);
 }
+
+
+const AIVisibilityCard = ({ b, token }: { b: any, token: string }) => {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/ai-visibility/${b.id}`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (res.ok) {
+          setData(await res.json());
+        }
+      } catch (e) {}
+      setLoading(false);
+    };
+    if (b.id) {
+      fetchData();
+    }
+  }, [b.id, token]);
+
+  const handleCheckNow = async () => {
+    setChecking(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/ai-visibility/${b.id}/check`, {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (res.ok) {
+        setData(await res.json());
+      } else {
+        alert("Check failed");
+      }
+    } catch (e) {
+      alert("Check failed");
+    }
+    setChecking(false);
+  };
+
+  return (
+    <div className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm flex flex-col mb-8 relative overflow-hidden">
+      <div className="absolute top-0 right-0 bg-blue-50 text-blue-600 px-4 py-2 rounded-bl-2xl text-xs font-black uppercase tracking-widest">
+        Pilot Feature
+      </div>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 shrink-0">
+            <Bot className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="font-black text-slate-900 text-lg flex items-center gap-2">
+              Mentioned on Gemini: 
+              {data?.has_data ? (
+                data.mentioned ? <span className="text-emerald-500">Yes</span> : <span className="text-red-500">No</span>
+              ) : <span className="text-slate-400">Unknown</span>}
+            </h3>
+            {data?.has_data && (
+              <p className="text-xs text-slate-500 font-medium mt-1">
+                Last checked: {new Date(data.last_checked).toLocaleString()}
+              </p>
+            )}
+          </div>
+        </div>
+        <button
+          onClick={handleCheckNow}
+          disabled={checking}
+          className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all whitespace-nowrap disabled:opacity-50"
+        >
+          {checking ? "Checking Gemini..." : "Check Now"}
+        </button>
+      </div>
+
+      {data?.has_data && (
+        <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+          <p className="text-xs text-slate-500 font-medium mb-1">Query used:</p>
+          <p className="text-sm text-slate-900 font-semibold mb-3">"{`best ${b.category} in ${b.area_locality}, ${b.city}`}"</p>
+          
+          {!data.mentioned && (
+            <>
+              <p className="text-xs text-slate-500 font-medium mb-1">Competitors mentioned instead:</p>
+              <p className="text-sm text-amber-700 font-bold bg-amber-50 px-3 py-2 rounded-lg border border-amber-200">
+                {data.competitor_mentioned || "None specified"}
+              </p>
+            </>
+          )}
+          {data.mentioned && (
+            <p className="text-sm text-emerald-700 font-bold bg-emerald-50 px-3 py-2 rounded-lg border border-emerald-200 flex items-center gap-2">
+              <Sparkles className="w-4 h-4" /> You are currently recommended by Gemini for this search!
+            </p>
+          )}
+        </div>
+      )}
+      {!data?.has_data && !loading && (
+        <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 text-center">
+          <p className="text-sm text-slate-500 font-medium">No visibility data yet. Click "Check Now" to run the first check on Gemini.</p>
+        </div>
+      )}
+      {loading && !data && (
+        <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 text-center">
+          <p className="text-sm text-slate-500 font-medium">Loading visibility data...</p>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export function OverviewTab({
   user,
@@ -381,6 +491,7 @@ export function OverviewTab({
               </div>
             </div>
           )}
+          {b.name?.toLowerCase().includes("aadayein") && <AIVisibilityCard b={b} token={localStorage.getItem("token") || ""} />}
           {/* Business Info Card */}
           <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm flex flex-col md:flex-row items-center gap-6 relative">
             <div className="absolute top-8 right-8 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-black uppercase tracking-widest">
