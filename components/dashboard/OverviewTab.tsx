@@ -29,6 +29,7 @@ import { QRCodeCanvas } from "qrcode.react";
 import { Bot } from "lucide-react";
 import QRCardCanvas, { QRCardRef } from '@/components/QRCardCanvas';
 import { API_BASE_URL } from "@/lib/api-config";
+import toast from "react-hot-toast";
 
 const CATEGORY_RATING_LABELS: Record<string, { r1: string, r2: string, r3: string }> = {
   "restaurant": { r1: "Food Quality", r2: "Service", r3: "Ambiance" },
@@ -194,12 +195,14 @@ const AIVisibilityCard = ({ b, token }: { b: any, token: string }) => {
         headers: { "Authorization": `Bearer ${token}` }
       });
       if (res.ok) {
-        setData(await res.json());
+        const json = await res.json();
+        setData({ ...json, has_data: true });
+        toast.success("AI Visibility check completed!");
       } else {
-        alert("Check failed");
+        toast.error("Check failed: API returned error");
       }
     } catch (e) {
-      alert("Check failed");
+      toast.error("Check failed: Network error");
     }
     setChecking(false);
   };
