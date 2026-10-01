@@ -129,7 +129,7 @@ export default function RequestsPage() {
                         )}
                       </div>
                     </td>
-                    <td className="p-4 font-medium text-slate-900">₹{(req.amount_paid/100).toFixed(2)}</td>
+                    <td className="p-4 font-medium text-slate-900">₹{req.amount_paid}</td>
                     <td className="p-4">
                       <div className="font-mono text-sm bg-slate-100 px-2 py-1 rounded inline-flex items-center gap-2 text-slate-700">
                         {req.utr_number}
@@ -172,7 +172,7 @@ export default function RequestsPage() {
             <div className="bg-slate-50 p-4 rounded-xl mb-6 space-y-2 text-sm text-slate-700">
               <div className="flex justify-between"><span>Business:</span> <span className="font-bold">{selectedReq.business_name}</span></div>
               <div className="flex justify-between"><span>Plan:</span> <span className="font-bold capitalize">{selectedReq.plan_requested}</span></div>
-              <div className="flex justify-between"><span>Amount:</span> <span className="font-bold">₹{selectedReq.amount_paid/100}</span></div>
+              <div className="flex justify-between"><span>Amount:</span> <span className="font-bold">₹{selectedReq.amount_paid}</span></div>
               <div className="flex justify-between"><span>UTR:</span> <span className="font-mono bg-slate-200 px-1 rounded">{selectedReq.utr_number}</span></div>
             </div>
             <p className="text-sm text-slate-600 mb-6">This will activate the {selectedReq.plan_requested} plan and send an activation email to the user.</p>
