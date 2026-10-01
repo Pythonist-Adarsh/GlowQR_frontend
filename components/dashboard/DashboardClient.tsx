@@ -372,7 +372,7 @@ export function DashboardClient({
               action: () => setActiveTab("settings"),
             },
           ].map((item) => {
-              if (item.id === "ai_profile" && !(b?.slug === "house-of-aadayein-a4d823" || b?.name?.includes("Aadayein"))) return null;
+              if (item.id === "ai_profile" && b?.slug !== "house-of-aadayein-a4d823") return null;
               return (
               <button
                 key={item.label}

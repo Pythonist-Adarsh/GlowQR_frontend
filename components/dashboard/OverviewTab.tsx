@@ -491,7 +491,7 @@ export function OverviewTab({
               </div>
             </div>
           )}
-          {b.name?.toLowerCase().includes("aadayein") && <AIVisibilityCard b={b} token={localStorage.getItem("token") || ""} />}
+          {b?.slug === "house-of-aadayein-a4d823" && <AIVisibilityCard b={b} token={localStorage.getItem("token") || ""} />}
           {/* Business Info Card */}
           <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm flex flex-col md:flex-row items-center gap-6 relative">
             <div className="absolute top-8 right-8 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-black uppercase tracking-widest">
