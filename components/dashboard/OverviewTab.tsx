@@ -243,7 +243,7 @@ const AIVisibilityCard = ({ b, token }: { b: any, token: string }) => {
       {data?.has_data && (
         <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
           <p className="text-xs text-slate-500 font-medium mb-1">Query used:</p>
-          <p className="text-sm text-slate-900 font-semibold mb-3">"{`best ${b.category} in ${b.area_locality}, ${b.city}`}"</p>
+          <p className="text-sm text-slate-900 font-semibold mb-3">"{data.query || `best ${b.category} in ${b.area_locality}, ${b.city}`}"</p>
           
           {!data.mentioned && (
             <>
