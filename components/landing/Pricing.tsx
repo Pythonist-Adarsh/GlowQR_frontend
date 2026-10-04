@@ -12,7 +12,7 @@ const tiers = [
     features: [
       '3-day full access (no card needed)',
       'AR branding experience on scan',
-      '5 AI review suggestions',
+      '5 review variants per scan',
       'Basic scan analytics',
     ],
     highlighted: false,
@@ -23,7 +23,7 @@ const tiers = [
     period: '/month',
     desc: 'Advanced tools and AI insights',
     features: [
-      '5 AI-generated review suggestions',
+      '5 review variants per scan',
       'Logo embedded in QR code',
       'Full AR experience (particles + float)',
       'AI problem detection dashboard (spots recurring issues, never blocks reviews)',

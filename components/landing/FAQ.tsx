@@ -12,7 +12,7 @@ const faqs = [
   },
   {
     q: 'How does the AI-written review stay authentic and not sound fake?',
-    a: 'The AI drafts a review based on the specific items or services the customer actually used at your business, in their own selected tone. Every review is personalized per customer, never copy-pasted, and customers can edit it before posting — so it always sounds genuine and reads naturally on Google.',
+    a: 'The AI drafts a review based on the specific items or services the customer actually used at your business, in their own selected tone. Every review is personalized per customer, never the same text twice, and customers can edit it before posting — so it always sounds genuine and reads naturally on Google.',
   },
   {
     q: 'Does GlowQR filter or hide negative reviews?',
@@ -24,7 +24,7 @@ const faqs = [
   },
   {
     q: 'How long does it take to set up?',
-    a: 'Under 10 minutes. Add your business details and menu/services once, we generate your QR code and print-ready card, and you\'re live — no developer or technical help required.',
+    a: 'Under 5 minutes. Add your business details and menu/services once, we generate your QR code and print-ready card, and you\'re live — no developer or technical help required.',
   },
   {
     q: 'Can I switch or cancel my plan anytime?',

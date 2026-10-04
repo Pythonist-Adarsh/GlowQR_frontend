@@ -52,7 +52,8 @@ export function Hero() {
             className="mt-6 text-lg text-neutral-400 md:text-xl"
           >
             Turn every scan into glowing reviews across Google Reviews —
-            with AI-crafted copy your customers can post in seconds.
+            with AI-crafted copy your customers can post in seconds.<br/><br/>
+            GlowQR helps local businesses across India collect genuine Google reviews. Customers scan a QR, get review suggestions, edit them, and post in their own words.
           </motion.p>
           <motion.div
             variants={fadeUp}

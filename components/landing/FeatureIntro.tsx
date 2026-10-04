@@ -14,7 +14,7 @@ const cards = [
   {
     icon: <QrCode className="w-8 h-8 text-slate-800" />,
     title: 'One smart QR',
-    desc: 'Route every happy guest straight to your Google Reviews page.',
+    desc: 'Send every guest straight to your Google Reviews page, whatever their rating.',
     accent: 'from-slate-100 to-white',
   },
   {
@@ -44,7 +44,7 @@ export function FeatureIntro() {
             Turn every customer into an online review.
           </motion.h2>
           <motion.p variants={fadeUp} className="mt-4 text-[var(--text-secondary)] md:text-lg">
-            GlowQR bridges the gap between a great visit and a published five-star story — without
+            GlowQR bridges the gap between a great visit and a published Google review — without
             awkward asks or blank-page friction.
           </motion.p>
         </motion.div>

@@ -184,6 +184,9 @@ export function DashboardPreview() {
             </div>
           </div>
         </motion.div>
+        <p className="mt-4 text-center text-xs text-[var(--text-tertiary)] uppercase tracking-wider">
+          Sample data
+        </p>
       </div>
     </section>
   )
