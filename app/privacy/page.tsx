@@ -3,8 +3,15 @@ import { Footer } from '@/components/landing/Footer'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy — GlowQR',
-  description: 'Privacy Policy for GlowQR.',
+  title: 'Privacy Policy | GlowQR',
+  description: 'Review GlowQR\'s Privacy Policy. Learn how we securely collect, use, and protect your data while you grow your Google reviews with our platform.',
+  alternates: {
+    canonical: 'https://www.glowqr.com/privacy',
+  },
+  openGraph: {
+    title: 'Privacy Policy | GlowQR',
+    description: 'Review GlowQR\'s Privacy Policy. Learn how we securely collect, use, and protect your data while you grow your Google reviews with our platform.',
+  }
 }
 
 export default function PrivacyPage() {

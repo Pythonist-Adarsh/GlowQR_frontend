@@ -3,8 +3,15 @@ import { Footer } from '@/components/landing/Footer'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Terms of Service — GlowQR',
-  description: 'Terms of Service for GlowQR.',
+  title: 'Terms of Service | GlowQR',
+  description: 'Read the Terms of Service for GlowQR. Understand your rights and responsibilities when using our AI-powered Google review generation platform.',
+  alternates: {
+    canonical: 'https://www.glowqr.com/terms',
+  },
+  openGraph: {
+    title: 'Terms of Service | GlowQR',
+    description: 'Read the Terms of Service for GlowQR. Understand your rights and responsibilities when using our AI-powered Google review generation platform.',
+  }
 }
 
 export default function TermsPage() {

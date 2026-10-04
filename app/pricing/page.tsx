@@ -1,9 +1,42 @@
-'use client'
-
+import { Metadata } from 'next'
 import { LandingNavbar } from '@/components/landing/LandingNavbar'
 import { Footer } from '@/components/landing/Footer'
 import { Pricing } from '@/components/landing/Pricing'
 import { CheckCircle2 } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'GlowQR Pricing: Free Trial and Premium at ₹399/month',
+  description: 'GlowQR pricing for Indian local businesses: 3-day free trial, then Premium at ₹399/month with AI review suggestions, QR with logo, scan heatmap and weekly insights. Cancel anytime.',
+  alternates: {
+    canonical: 'https://www.glowqr.com/pricing',
+  },
+  openGraph: {
+    title: 'GlowQR Pricing: Free Trial and Premium at ₹399/month',
+    description: 'GlowQR pricing for Indian local businesses: 3-day free trial, then Premium at ₹399/month with AI review suggestions, QR with logo, scan heatmap and weekly insights. Cancel anytime.',
+  }
+}
+
+const softwareAppSchema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "GlowQR",
+  "applicationCategory": "BusinessApplication",
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "Free Trial",
+      "price": "0",
+      "priceCurrency": "INR"
+    },
+    {
+      "@type": "Offer",
+      "name": "Premium",
+      "price": "399",
+      "priceCurrency": "INR",
+      "description": "billed monthly"
+    }
+  ]
+}
 
 export default function PricingPage() {
   const trustStatements = [
@@ -15,7 +48,7 @@ export default function PricingPage() {
   return (
     <div className="min-h-screen flex flex-col font-sans bg-[var(--bg-primary)] text-[var(--text-primary)]">
       <LandingNavbar forceScrolled={true} />
-      
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareAppSchema) }} />
       <main className="flex-1 pt-24 pb-12">
         <Pricing />
         

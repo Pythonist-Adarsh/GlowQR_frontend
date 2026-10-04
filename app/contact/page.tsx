@@ -5,8 +5,15 @@ import { ContactForm } from '@/components/contact/ContactForm'
 import { MessageSquare, Mail, FormInput, MapPin, Clock, CreditCard, Handshake, ChevronDown } from 'lucide-react'
 
 export const metadata = {
-  title: 'Contact Us | GlowQR',
-  description: 'We reply fast. Usually within a few hours.',
+  title: 'Contact GlowQR',
+  description: 'Get in touch with the GlowQR team. Whether you need support, have billing questions, or want to explore our AI review platform, we are here to help.',
+  alternates: {
+    canonical: 'https://www.glowqr.com/contact',
+  },
+  openGraph: {
+    title: 'Contact GlowQR',
+    description: 'Get in touch with the GlowQR team. Whether you need support, have billing questions, or want to explore our AI review platform, we are here to help.',
+  }
 }
 
 export default function ContactPage() {

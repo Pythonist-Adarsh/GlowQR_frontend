@@ -5,10 +5,14 @@ import { MeetTheFounder } from '@/components/about/MeetTheFounder'
 import { Check, X } from 'lucide-react'
 
 export const metadata = {
-  title: "About GlowQR — AI Review Platform for Indian Local Businesses",
-  description: "GlowQR was built to help Indian restaurants, salons, cafes and clinics collect more Google reviews automatically using AI and smart QR codes.",
+  title: "About GlowQR | AI Google Review Platform for Local Businesses in India",
+  description: "GlowQR empowers Indian local businesses—restaurants, salons, and clinics—to effortlessly collect genuine Google reviews via AI-driven QR code solutions.",
   alternates: {
     canonical: 'https://www.glowqr.com/about',
+  },
+  openGraph: {
+    title: "About GlowQR | AI Google Review Platform for Local Businesses in India",
+    description: "GlowQR empowers Indian local businesses—restaurants, salons, and clinics—to effortlessly collect genuine Google reviews via AI-driven QR code solutions.",
   }
 }
 
