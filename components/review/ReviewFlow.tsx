@@ -534,7 +534,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                 <h2 className="text-xl font-[600] mb-2 text-[var(--text-primary)]">We hear you.</h2>
                 <p className={`text-[13px] leading-relaxed max-w-[250px] mb-8 text-[var(--text-secondary)]`}>
                   Your honest feedback helps this business improve. 
-                  We'll help you share exactly what happened.
+                  We&apos;ll help you share exactly what happened.
                 </p>
 
                 <div className="w-full max-w-[200px] h-1.5 bg-[#E2E4E9] rounded-full overflow-hidden">

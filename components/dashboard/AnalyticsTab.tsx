@@ -184,7 +184,7 @@ export const AnalyticsTab = ({ businessId, businessData }: { businessId?: number
                 <div className="col-span-full">
                   <LockedSection 
                     title="Premium Intelligence Locked" 
-                    description="Unlock AI Problem Detection, Revenue Impact estimators, Heatmaps, and Negative Review Shield analytics."
+                    description="Unlock AI Problem Detection, Revenue Impact estimators, Heatmaps, and Instant low-rating alerts."
                     requiredPlan="premium"
                     price="₹499"
                   />

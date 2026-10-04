@@ -26,7 +26,7 @@ const tiers = [
       '5 AI-generated review suggestions',
       'Logo embedded in QR code',
       'Full AR experience (particles + float)',
-      'AI problem detection dashboard',
+      'AI problem detection dashboard (spots recurring issues, never blocks reviews)',
       'Scan heatmap (when customers visit)',
       'Category ratings (Food/Service/Atmosphere)',
       'Actionable weekly insights',

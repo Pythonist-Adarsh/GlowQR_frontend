@@ -12,8 +12,8 @@ const features = [
   },
   {
     icon: <Target className="w-7 h-7 text-slate-800" />,
-    title: 'Smart routing',
-    desc: 'Send promoters to Google and detractors to private feedback.',
+    title: 'Instant low-rating alert',
+    desc: 'When a customer gives a low rating, the business owner gets an instant WhatsApp alert so they can resolve the issue quickly. Every customer can still post their review on Google.',
   },
   {
     icon: <Palette className="w-7 h-7 text-slate-800" />,

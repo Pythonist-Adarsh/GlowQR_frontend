@@ -584,7 +584,7 @@ export function DashboardClient({
               <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-3">
                 <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="font-bold text-amber-900 text-sm">Action Recommended: Review Bomb Intercepted</h4>
+                  <h4 className="font-bold text-amber-900 text-sm">Action Recommended: Review Bomb Detected</h4>
                   <p className="text-sm text-amber-800 mt-1">
                     {analyticsSummary.flagged_count} sessions were flagged as suspicious and excluded from your organic rating. Check your Analytics tab to download the evidence report to dispute them on Google.
                   </p>

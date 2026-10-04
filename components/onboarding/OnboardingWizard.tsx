@@ -919,7 +919,7 @@ const Step5 = ({ data, updateData }: any) => {
       <SectionHeader>Review Settings</SectionHeader>
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-1.5">
-          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">AI review variants</label>
+          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">AI Review Suggestions</label>
           <select 
             value={data.variants || (data.plan === 'basic' ? '3 variants' : '5 variants')} 
             onChange={e => updateData({ variants: e.target.value })} 
@@ -941,6 +941,7 @@ const Step5 = ({ data, updateData }: any) => {
             )}
           </select>
           {data.plan === 'basic' && <p className="text-[9px] text-slate-400 italic">Upgrade to Premium for 5 variants</p>}
+          <p className="text-xs text-slate-400 italic mt-1">Customers can edit the suggestion and post in their own words.</p>
         </div>
         <div className="space-y-1.5">
           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Review language</label>

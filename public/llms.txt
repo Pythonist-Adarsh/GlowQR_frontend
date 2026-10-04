@@ -1,0 +1,16 @@
+# GlowQR
+GlowQR is an AI-powered QR platform helping local businesses across India collect genuine Google reviews.
+When customers scan a business's GlowQR code, they get AI-generated review suggestions based on their experience.
+Customers can edit the suggestions and post in their own words.
+GlowQR follows Google's policies: no review gating, filtering, or blocking of negative reviews.
+
+# Pricing
+- Free Trial: 3 days, free to start
+- Premium: Rs 399/month
+
+# Important Links
+- Home: https://www.glowqr.com/
+- Pricing: https://www.glowqr.com/pricing
+- About: https://www.glowqr.com/about
+- FAQ: https://www.glowqr.com/#faq
+- Health Score Checker: https://www.glowqr.com/score

@@ -71,7 +71,7 @@ export function BombAlertsWidget({ accessToken, businessId }: { accessToken: str
           </div>
           <h3 className="text-lg font-bold text-slate-900 mb-2">Review Bomb Protection Locked</h3>
           <p className="text-sm text-slate-600 mb-4 max-w-sm">
-            Upgrade to Premium to automatically detect and intercept coordinated fake review attacks.
+            Upgrade to Premium to automatically detect and manage coordinated fake review attacks.
           </p>
           <button 
             onClick={() => window.location.href = '/dashboard?tab=subscription'}

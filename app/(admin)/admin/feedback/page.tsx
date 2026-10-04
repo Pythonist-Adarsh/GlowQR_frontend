@@ -59,13 +59,13 @@ export default function FeedbackPage() {
     <div className="p-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-900">Negative Feedback</h1>
-        <p className="text-slate-500 mt-1">Monitor and resolve intercepted low-rating reviews.</p>
+        <p className="text-slate-500 mt-1">Monitor and resolve low-rating alerts.</p>
       </div>
 
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 text-center">
-            <p className="text-sm font-medium text-slate-500 mb-1">Total Intercepted</p>
+            <p className="text-sm font-medium text-slate-500 mb-1">Total Alerts</p>
             <h3 className="text-2xl font-bold text-slate-900">{stats.total}</h3>
           </div>
           <div className="bg-red-50 p-6 rounded-2xl shadow-sm border border-red-200 text-center">

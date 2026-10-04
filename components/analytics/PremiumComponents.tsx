@@ -234,12 +234,12 @@ export const NegativeInterceptionCard = ({ data }: any) => {
   return (
     <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-full flex flex-col">
       <h3 className="text-slate-500 font-medium mb-4 flex items-center gap-2">
-        <span className="text-emerald-500">🛡️</span> Negative Review Interception Stats
+        <span className="text-emerald-500">🛡️</span> Instant Low-Rating Alerts Stats
       </h3>
       
       <div className="bg-[#f8f9fa] border border-slate-200 rounded-xl p-4 text-center mb-6">
         <div className="text-sm font-bold text-slate-700">
-          This month intercepted: <span className="font-black text-slate-900 ml-2">{data?.interceptedCount || 0} reviews</span>
+          This month alerted: <span className="font-black text-slate-900 ml-2">{data?.interceptedCount || 0} low ratings</span>
         </div>
       </div>
       

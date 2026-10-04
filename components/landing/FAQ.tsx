@@ -15,8 +15,8 @@ const faqs = [
     a: 'The AI drafts a review based on the specific items or services the customer actually used at your business, in their own selected tone. Every review is personalized per customer, never copy-pasted, and customers can edit it before posting — so it always sounds genuine and reads naturally on Google.',
   },
   {
-    q: 'What if a customer had a bad experience? Will GlowQR force a fake 5-star review?',
-    a: 'No. If a customer indicates a negative experience, GlowQR privately routes their feedback to you instead of pushing them to post publicly — protecting your Google rating while still capturing honest feedback you can act on.',
+    q: 'Does GlowQR filter or hide negative reviews?',
+    a: "No. Every customer gets the same Google review link regardless of rating. We never hide, delay, or block any review. Low ratings simply notify the business owner so they can respond and improve. GlowQR follows Google's review policies: no incentives, no review gating, and customers choose what to post.",
   },
   {
     q: 'What do I see on my dashboard?',
@@ -33,8 +33,25 @@ const faqs = [
 ]
 
 export function FAQ() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map(faq => ({
+      "@type": "Question",
+      "name": faq.q,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.a
+      }
+    }))
+  };
+
   return (
     <section id="faq" className="py-20 md:py-28">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial="hidden"

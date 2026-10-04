@@ -3,5 +3,8 @@ Allow: /
 Disallow: /dashboard
 Disallow: /admin
 Disallow: /api/
+Disallow: /register
+Disallow: /login
+Disallow: /sign-in
 
 Sitemap: https://www.glowqr.com/sitemap.xml
