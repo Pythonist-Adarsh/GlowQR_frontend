@@ -26,7 +26,7 @@ export function CoreQr() {
             One QR Code. Straight to Google Reviews.
           </h2>
           <p className="mt-4 text-neutral-400 md:text-lg">
-            A single branded touchpoint fans out to every channel that matters — tuned for mobile,
+            A single branded QR sends every customer straight to your Google Reviews page — tuned for mobile,
             tuned for conversion.
           </p>
         </motion.div>

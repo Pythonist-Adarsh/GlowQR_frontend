@@ -24,9 +24,9 @@ const scanData = [
 ]
 
 const reviewMix = [
-  { name: 'Google', value: 62 },
-  { name: 'Yelp', value: 21 },
-  { name: 'FB', value: 17 },
+  { name: 'QR Scan', value: 62 },
+  { name: 'NFC', value: 21 },
+  { name: 'Link', value: 17 },
 ]
 
 function ChartTooltip({
