@@ -1,23 +1,69 @@
 'use client';
 
-import { useEffect, Suspense } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, XCircle, Clock, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { API_BASE_URL } from '@/lib/api-config';
 
 function PaymentSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const orderId = searchParams.get('order_id');
+  const [status, setStatus] = useState<'loading' | 'success' | 'pending' | 'failed'>('loading');
 
   useEffect(() => {
-    // Optionally we could poll the backend for status here, but for now we just show success and redirect
-    const timer = setTimeout(() => {
-      router.push('/dashboard');
-    }, 4000);
-    
-    return () => clearTimeout(timer);
-  }, [router]);
+    if (!orderId) {
+      setStatus('failed');
+      return;
+    }
+
+    const checkStatus = async () => {
+      try {
+        const token = localStorage.getItem('glowqr_token');
+        const res = await fetch(`${API_BASE_URL}/api/renewal/order/${orderId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          if (data.status === 'active' || data.status === 'paid' || data.status === 'verified') {
+            setStatus('success');
+            setTimeout(() => {
+              router.push('/dashboard');
+            }, 4000);
+          } else if (data.status === 'pending') {
+            setStatus('pending');
+          } else {
+            setStatus('failed');
+          }
+        } else {
+          setStatus('failed');
+        }
+      } catch (err) {
+        console.error(err);
+        setStatus('failed');
+      }
+    };
+
+    checkStatus();
+  }, [orderId, router]);
+
+  if (status === 'loading') {
+    return (
+      <div className="bg-white p-8 rounded-3xl shadow-xl max-w-md w-full text-center space-y-6">
+        <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto text-slate-400">
+          <Loader2 className="w-10 h-10 animate-spin" />
+        </div>
+        <div className="space-y-2">
+          <h1 className="text-2xl font-bold text-slate-900">Verifying Payment...</h1>
+          <p className="text-slate-600">Please wait while we confirm your transaction.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <motion.div 
@@ -25,13 +71,27 @@ function PaymentSuccessContent() {
       animate={{ opacity: 1, scale: 1 }}
       className="bg-white p-8 rounded-3xl shadow-xl max-w-md w-full text-center space-y-6"
     >
-      <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto text-emerald-600">
-        <CheckCircle2 className="w-10 h-10" />
+      <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto ${
+        status === 'success' ? 'bg-emerald-100 text-emerald-600' : 
+        status === 'pending' ? 'bg-amber-100 text-amber-600' : 
+        'bg-red-100 text-red-600'
+      }`}>
+        {status === 'success' && <CheckCircle2 className="w-10 h-10" />}
+        {status === 'pending' && <Clock className="w-10 h-10" />}
+        {status === 'failed' && <XCircle className="w-10 h-10" />}
       </div>
       
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold text-slate-900">Payment Successful!</h1>
-        <p className="text-slate-600">Your subscription is being activated.</p>
+        <h1 className="text-3xl font-bold text-slate-900">
+          {status === 'success' ? 'Payment Successful!' : 
+           status === 'pending' ? 'Payment Pending' : 
+           'Payment Not Completed'}
+        </h1>
+        <p className="text-slate-600">
+          {status === 'success' ? 'Your subscription is being activated.' : 
+           status === 'pending' ? 'We are waiting for payment confirmation from the bank.' : 
+           'Your payment was cancelled or failed.'}
+        </p>
       </div>
       
       {orderId && (
@@ -60,3 +120,4 @@ export default function PaymentSuccessPage() {
     </div>
   );
 }
+
