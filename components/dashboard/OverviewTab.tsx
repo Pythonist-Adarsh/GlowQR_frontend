@@ -168,6 +168,7 @@ const AIVisibilityCard = ({ b, token }: { b: any, token: string }) => {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(false);
+  const [checkError, setCheckError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -189,6 +190,7 @@ const AIVisibilityCard = ({ b, token }: { b: any, token: string }) => {
 
   const handleCheckNow = async () => {
     setChecking(true);
+    setCheckError(null);
     try {
       const res = await fetch(`${API_BASE_URL}/api/ai-visibility/${b.id}/check`, {
         method: "POST",
@@ -203,10 +205,11 @@ const AIVisibilityCard = ({ b, token }: { b: any, token: string }) => {
         if (refreshRes.ok) setData(await refreshRes.json());
       } else {
         const err = await res.json().catch(() => ({}));
-        toast.error(`Check failed: ${err.detail || "API returned error"}`);
+        const msg = err.message || err.detail || `Server error (${res.status})`;
+        setCheckError(msg);
       }
     } catch (e) {
-      toast.error("Check failed: Network error");
+      setCheckError("Network error: Could not reach server.");
     }
     setChecking(false);
   };
@@ -279,6 +282,13 @@ const AIVisibilityCard = ({ b, token }: { b: any, token: string }) => {
           {checking ? "Checking..." : "Check Now"}
         </button>
       </div>
+
+      {checkError && (
+        <div className="mb-4 text-xs font-medium bg-red-50 text-red-700 border border-red-200 px-3 py-2 rounded-lg flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          {checkError}
+        </div>
+      )}
 
       {loading && !data && (
         <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 text-center">
