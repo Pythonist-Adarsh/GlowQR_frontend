@@ -195,16 +195,65 @@ const AIVisibilityCard = ({ b, token }: { b: any, token: string }) => {
         headers: { "Authorization": `Bearer ${token}` }
       });
       if (res.ok) {
-        const json = await res.json();
-        setData({ ...json, has_data: true });
         toast.success("AI Visibility check completed!");
+        // Refresh data
+        const refreshRes = await fetch(`${API_BASE_URL}/api/ai-visibility/${b.id}`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (refreshRes.ok) setData(await refreshRes.json());
       } else {
-        toast.error("Check failed: API returned error");
+        const err = await res.json().catch(() => ({}));
+        toast.error(`Check failed: ${err.detail || "API returned error"}`);
       }
     } catch (e) {
       toast.error("Check failed: Network error");
     }
     setChecking(false);
+  };
+
+  const getEngineData = (engineName: string) => {
+    return data?.engines?.find((e: any) => e.engine === engineName);
+  };
+
+  const renderEngineRow = (title: string, engineName: string, icon: React.ReactNode) => {
+    const eData = getEngineData(engineName);
+    if (!eData && engineName === "chatgpt" && !data?.has_chatgpt_key) return null; // hide if missing key and no data
+
+    return (
+      <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 mb-4">
+        <div className="flex justify-between items-center mb-3">
+          <div className="flex items-center gap-2">
+            {icon}
+            <h4 className="font-bold text-slate-800">{title}</h4>
+          </div>
+          {eData ? (
+            <span className="text-xs font-bold px-2 py-1 bg-white rounded border border-slate-200">
+              Mentioned in {eData.mentioned_count} of {eData.total_count} searches
+            </span>
+          ) : (
+            <span className="text-xs text-slate-400">No data</span>
+          )}
+        </div>
+        
+        {eData && (
+          <>
+            <div className="space-y-2 mb-3">
+              {eData.queries.map((q: any, idx: number) => (
+                <div key={idx} className="flex justify-between items-center text-xs">
+                  <span className="text-slate-600 truncate max-w-[70%]">"{q.query}"</span>
+                  {q.mentioned ? (
+                    <span className="text-emerald-600 font-bold bg-emerald-50 px-2 rounded">Yes</span>
+                  ) : (
+                    <span className="text-red-500 font-bold bg-red-50 px-2 rounded">No</span>
+                  )}
+                </div>
+              ))}
+            </div>
+            <p className="text-[10px] text-slate-400 mt-2">Last checked: {new Date(eData.last_checked).toLocaleString()}</p>
+          </>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -218,17 +267,8 @@ const AIVisibilityCard = ({ b, token }: { b: any, token: string }) => {
             <Bot className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-black text-slate-900 text-lg flex items-center gap-2">
-              Mentioned on Gemini: 
-              {data?.has_data ? (
-                data.mentioned ? <span className="text-emerald-500">Yes</span> : <span className="text-red-500">No</span>
-              ) : <span className="text-slate-400">Unknown</span>}
-            </h3>
-            {data?.has_data && (
-              <p className="text-xs text-slate-500 font-medium mt-1">
-                Last checked: {new Date(data.last_checked).toLocaleString()}
-              </p>
-            )}
+            <h3 className="font-black text-slate-900 text-lg">AI Visibility Check</h3>
+            <p className="text-xs text-slate-500 font-medium">Are LLMs recommending your business?</p>
           </div>
         </div>
         <button
@@ -236,38 +276,37 @@ const AIVisibilityCard = ({ b, token }: { b: any, token: string }) => {
           disabled={checking}
           className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all whitespace-nowrap disabled:opacity-50"
         >
-          {checking ? "Checking Gemini..." : "Check Now"}
+          {checking ? "Checking..." : "Check Now"}
         </button>
       </div>
 
-      {data?.has_data && (
-        <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
-          <p className="text-xs text-slate-500 font-medium mb-1">Query used:</p>
-          <p className="text-sm text-slate-900 font-semibold mb-3">"{data.query || `best ${b.category} in ${b.area_locality}, ${b.city}`}"</p>
-          
-          {!data.mentioned && (
-            <>
-              <p className="text-xs text-slate-500 font-medium mb-1">Competitors mentioned instead:</p>
-              <p className="text-sm text-amber-700 font-bold bg-amber-50 px-3 py-2 rounded-lg border border-amber-200">
-                {data.competitor_mentioned || "None specified"}
-              </p>
-            </>
-          )}
-          {data.mentioned && (
-            <p className="text-sm text-emerald-700 font-bold bg-emerald-50 px-3 py-2 rounded-lg border border-emerald-200 flex items-center gap-2">
-              <Sparkles className="w-4 h-4" /> You are currently recommended by Gemini for this search!
-            </p>
-          )}
-        </div>
-      )}
-      {!data?.has_data && !loading && (
-        <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 text-center">
-          <p className="text-sm text-slate-500 font-medium">No visibility data yet. Click "Check Now" to run the first check on Gemini.</p>
-        </div>
-      )}
       {loading && !data && (
         <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 text-center">
           <p className="text-sm text-slate-500 font-medium">Loading visibility data...</p>
+        </div>
+      )}
+
+      {data?.has_data && (
+        <>
+          {renderEngineRow("Google Gemini", "gemini", <Sparkles className="w-4 h-4 text-blue-500" />)}
+          {renderEngineRow("ChatGPT (Search)", "chatgpt", <Globe className="w-4 h-4 text-emerald-500" />)}
+          
+          <div className="mt-4 pt-4 border-t border-slate-100">
+            <p className="text-xs text-slate-500 font-medium mb-2">Competitors mentioned instead of you:</p>
+            <div className="flex flex-wrap gap-2">
+              {data.competitors?.map((comp: string, i: number) => (
+                <span key={i} className="text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 px-2 py-1 rounded">
+                  {comp}
+                </span>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+
+      {!data?.has_data && !loading && (
+        <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 text-center">
+          <p className="text-sm text-slate-500 font-medium">No visibility data yet. Click "Check Now" to run the first check.</p>
         </div>
       )}
     </div>
