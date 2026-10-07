@@ -108,9 +108,16 @@ export default function RevenuePage() {
                     <td className="p-4 text-sm text-slate-600">{t.activated_at ? format(new Date(t.activated_at), 'MMM d, yyyy') : '-'}</td>
                     <td className={`p-4 text-sm font-medium ${isExpired ? 'text-red-500' : 'text-slate-600'}`}>{t.expires_at ? format(new Date(t.expires_at), 'MMM d, yyyy') : '-'}</td>
                     <td className="p-4">
-                      <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${isExpired ? 'bg-slate-100 text-slate-500' : 'bg-emerald-100 text-emerald-700'}`}>
-                        {isExpired ? 'Expired' : 'Verified'}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${isExpired ? 'bg-slate-100 text-slate-500' : 'bg-emerald-100 text-emerald-700'}`}>
+                          {isExpired ? 'Expired' : 'Verified'}
+                        </span>
+                        {t.is_test && (
+                          <span className="px-2 py-1 rounded text-xs font-bold uppercase bg-amber-100 text-amber-700">
+                            TEST
+                          </span>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );
