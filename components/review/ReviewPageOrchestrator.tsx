@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ARExperience } from './ARExperience';
 import { ClientReviewFlow } from './ClientReviewFlow';
 import { getThemeVariables } from './themeUtils';
@@ -8,9 +8,11 @@ import { trackEvent } from '@/lib/analytics';
 
 export function ReviewPageOrchestrator({ initialData, isEmbedded = false }: { initialData: any, isEmbedded?: boolean }) {
   const [showAR, setShowAR] = useState(true);
+  const scanTracked = useRef(false);
 
   useEffect(() => {
-    if (!isEmbedded) {
+    if (!isEmbedded && !scanTracked.current) {
+      scanTracked.current = true;
       const slug = typeof window !== 'undefined' ? window.location.pathname.split('/').pop() : '';
       if (slug) {
         trackEvent('qr_scanned', { 

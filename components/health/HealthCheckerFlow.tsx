@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Loader2, ArrowRight, ShieldCheck, MapPin, Building, Star, AlertTriangle, TrendingUp, CheckCircle2, ChevronRight, Sparkles, Info, XCircle } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/api-config';
 import Link from 'next/link';
+import { trackEvent } from '@/lib/analytics';
 
 const STEPS = {
   SEARCH: 1,
@@ -32,6 +33,20 @@ export function HealthCheckerFlow() {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [leadCaptured, setLeadCaptured] = useState(false);
+
+  // Guard: tracks a unique id per scan so the event fires once per scan,
+  // and fires again if the user searches a different business in the same session.
+  const trackedScanId = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (step === STEPS.RESULTS && scanResult) {
+      const id = scanResult.scan_id || scanResult.place_id || 'scan';
+      if (id !== trackedScanId.current) {
+        trackedScanId.current = id;
+        trackEvent('health_checker_completed', { business_category: category });
+      }
+    }
+  }, [step, scanResult, category]);
 
   // Debounced Search
   useEffect(() => {
@@ -105,6 +120,8 @@ export function HealthCheckerFlow() {
   };
 
   const handleSelectBusiness = async (place: any) => {
+    // Reset tracking so a second business scan fires the event again
+    trackedScanId.current = null;
     setStep(STEPS.LOADING);
     
     // Attempt to extract city from address
@@ -349,6 +366,7 @@ export function HealthCheckerFlow() {
                     <div className="text-sm font-bold uppercase tracking-wider text-[var(--accent)]">Health Score Result</div>
                     <button 
                       onClick={() => {
+                        trackedScanId.current = null;
                         setScanResult(null);
                         setStep(STEPS.SEARCH);
                         setQuery('');

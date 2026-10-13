@@ -3,6 +3,7 @@
 import { useState, useCallback, useMemo, memo, useEffect, Suspense, lazy, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import { trackEvent, getStoredUTMs } from '@/lib/analytics'
 import { 
   Building2, 
   MapPin, 
@@ -1094,6 +1095,7 @@ export default function OnboardingWizard() {
   const [showPreview, setShowPreview] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [isNewUser, setIsNewUser] = useState(false)
+  const businessSetupTracked = useRef(false)
   
   const [data, setData] = useState<any>({
     name: '', tagline: '', website: '', instagramUrl: '', googleReviewUrl: '', placeId: '',
@@ -1329,6 +1331,10 @@ export default function OnboardingWizard() {
           const completeData = await completeRes.json();
           if (completeData.qr_code && completeData.qr_code.scan_url) {
              updateData({ scanUrl: completeData.qr_code.scan_url });
+          }
+          if (!businessSetupTracked.current) {
+            businessSetupTracked.current = true;
+            trackEvent('business_setup_completed', { ...getStoredUTMs() });
           }
         }
       }
