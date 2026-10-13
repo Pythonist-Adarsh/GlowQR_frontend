@@ -222,9 +222,11 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
           category: displayCategory,
           tagline: business.tagline,
           overall_rating: ratings.overall,
-          food_rating: ratings.food,
-          service_rating: ratings.service,
-          atmosphere_rating: ratings.atmosphere,
+          ...(isFoodCategory ? {
+            food_rating: ratings.food,
+            service_rating: ratings.service,
+            atmosphere_rating: ratings.atmosphere,
+          } : {}),
           selected_items: menuItems.filter((m: any) => selectedDishes.includes(m.id)).map((m: any) => m.name),
           meal_type: mealType,
           price_range: spendRange,
@@ -547,12 +549,12 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                 </div>
                 <p className={`text-[11px] tracking-[0.3px] mt-4 text-[var(--text-muted)] font-[500]`}>Taking you to review step...</p>
               </div>
-            ) : (
+            ) : isFoodCategory ? (
               <div className="space-y-4 mb-auto">
                 {[
-                  { key: 'food', label: isTaxFirm ? 'Expertise' : isJewellery ? 'Product Quality' : isEducation ? 'Faculty' : isSalon ? 'Service Quality' : isGym ? 'Equipment & Facility' : isRealEstate ? 'Property / Deal Quality' : isDoctorClinic || isDentalClinic ? 'Doctor/Dentist Care' : isGrocery ? 'Product Quality & Variety' : 'Food', icon: isTaxFirm ? Briefcase : isJewellery ? Sparkles : isEducation ? GraduationCap : isSalon ? Sparkles : isGym ? Check : isRealEstate ? MapPin : isDoctorClinic || isDentalClinic ? Check : isGrocery ? Check : Utensils },
-                  { key: 'service', label: isJewellery ? 'Staff Helpfulness' : isEducation ? 'Support & Doubts' : isSalon ? 'Staff Behaviour' : isGym ? 'Trainer Support' : isRealEstate ? 'Agent Professionalism' : isDoctorClinic || isDentalClinic ? 'Staff & Waiting Time' : isGrocery ? 'Staff Helpfulness' : 'Service', icon: Sparkles },
-                  { key: 'atmosphere', label: isTaxFirm ? 'Professionalism' : isJewellery ? 'Store Experience' : isEducation ? 'Learning Environment' : isSalon ? 'Cleanliness' : isGym ? 'Cleanliness' : isRealEstate ? 'Transparency & Process' : isDoctorClinic || isDentalClinic ? 'Cleanliness & Hygiene' : isGrocery ? 'Store Layout & Cleanliness' : 'Atmosphere', icon: isTaxFirm ? Shield : isJewellery ? Check : isEducation ? Check : isSalon ? Check : isGym ? Check : isRealEstate ? Shield : isDoctorClinic || isDentalClinic ? Check : isGrocery ? Check : Check }
+                  { key: 'food', label: 'Food', icon: Utensils },
+                  { key: 'service', label: 'Service', icon: Sparkles },
+                  { key: 'atmosphere', label: 'Atmosphere', icon: Check }
                 ].map(({ key, label, icon: Icon }) => (
                   <div key={key} className={`flex items-center justify-between p-4 rounded-[16px] border border-[var(--border-default)] bg-[var(--bg-card)]`}>
                     <div className="flex items-center gap-3">
@@ -573,7 +575,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                   </div>
                 ))}
               </div>
-            )}
+            ) : null}
 
             {!showEmpathy && (
               <button 
