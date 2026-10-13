@@ -3,6 +3,7 @@ import Script from 'next/script'
 import './globals.css'
 import { WhatsAppButton } from '@/components/WhatsAppButton'
 import { GoogleAnalytics } from '@next/third-parties/google'
+import { UTMTracker } from '@/components/analytics/UTMTracker'
 export const metadata: Metadata = {
   title: 'GlowQR — AI Google Review Generator for Indian Local Businesses',
   description: 'GlowQR helps restaurants, salons, cafes & clinics in India get more Google reviews automatically. Customers scan a QR code, AI drafts a review, they post in seconds. Start free — no card needed.',
@@ -17,6 +18,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const gaId = process.env.NEXT_PUBLIC_GA_ID
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -31,10 +34,11 @@ export default function RootLayout({
         <Script id="glowqr-theme-init" strategy="beforeInteractive">
           {`(function(){try{var t=localStorage.getItem('glowqr-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`}
         </Script>
+        <UTMTracker />
         {children}
         <WhatsAppButton />
       </body>
-      <GoogleAnalytics gaId="G-DVHQW8Q44V" />
+      {gaId && <GoogleAnalytics gaId={gaId} />}
     </html>
   )
 }

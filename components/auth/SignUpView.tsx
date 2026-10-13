@@ -9,6 +9,7 @@ import { AuthBrandPanel } from '@/components/auth/AuthBrandPanel'
 import { AuthDivider } from '@/components/auth/AuthDivider'
 import { GoogleContinueButton } from '@/components/auth/GoogleContinueButton'
 import { API_BASE_URL } from '@/lib/api-config'
+import { trackEvent, getStoredUTMs } from '@/lib/analytics'
 
 const QUOTE =
   'From opening night to fully booked weekends — our guests finally leave the reviews we used to chase. One QR did the hospitality heavy lifting.'
@@ -58,6 +59,7 @@ export function SignUpView() {
       }
 
       const data = await res.json();
+      trackEvent('sign_up', { method: 'email', ...getStoredUTMs() });
       localStorage.setItem('token', data.access_token)
       localStorage.removeItem('glowqr_business_data')
       localStorage.setItem('onboarding_completed', data.onboarding_completed ? 'true' : 'false')
