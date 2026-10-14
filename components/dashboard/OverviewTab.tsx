@@ -269,6 +269,23 @@ const AIVisibilityCard = ({ b, token }: { b: any, token: string }) => {
             {eData.status === "error" && eData.error_type && (
               <p className="text-xs text-red-600 mt-2">Error: {eData.error_type}</p>
             )}
+            {eData.all_sources && eData.all_sources.length > 0 && (
+              <details className="mt-2">
+                <summary className="text-xs text-blue-500 cursor-pointer select-none">Sources cited ({eData.all_sources.length})</summary>
+                <div className="mt-1 space-y-1 pl-2">
+                  {eData.all_sources.map((src: string, si: number) => {
+                    let domain = src;
+                    try { domain = new URL(src).hostname.replace("www.", ""); } catch {}
+                    return (
+                      <a key={si} href={src} target="_blank" rel="noreferrer"
+                        className="block text-[10px] text-slate-500 hover:text-blue-600 truncate">
+                        {domain}
+                      </a>
+                    );
+                  })}
+                </div>
+              </details>
+            )}
             <p className="text-[10px] text-slate-400 mt-2">Last checked: {new Date(eData.last_checked).toLocaleString()}</p>
           </>
         )}
@@ -319,13 +336,29 @@ const AIVisibilityCard = ({ b, token }: { b: any, token: string }) => {
           {renderEngineRow("ChatGPT (Search)", "chatgpt", <Globe className="w-4 h-4 text-emerald-500" />)}
           
           <div className="mt-4 pt-4 border-t border-slate-100">
-            <p className="text-xs text-slate-500 font-medium mb-2">Competitors mentioned instead of you:</p>
-            <div className="flex flex-wrap gap-2">
-              {data.competitors?.map((comp: string, i: number) => (
-                <span key={i} className="text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 px-2 py-1 rounded">
-                  {comp}
-                </span>
-              ))}
+            <p className="text-xs text-slate-500 font-medium mb-2">Top competitors mentioned instead of you:</p>
+            <div className="flex flex-col gap-1.5">
+              {data.competitors?.map((comp: any, i: number) => {
+                if (typeof comp === "string") {
+                  // legacy fallback
+                  return (
+                    <span key={i} className="text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 px-2 py-1 rounded">
+                      {comp}
+                    </span>
+                  );
+                }
+                if (comp.count === 0) {
+                  return (
+                    <span key={i} className="text-xs text-slate-400 italic">{comp.name}</span>
+                  );
+                }
+                return (
+                  <div key={i} className="flex items-center justify-between text-xs bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-lg">
+                    <span className="font-bold text-amber-800">{comp.name}</span>
+                    <span className="text-amber-600 font-medium ml-2">{comp.count} of {comp.total_answers} answers</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </>
