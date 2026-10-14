@@ -218,9 +218,15 @@ const AIVisibilityCard = ({ b, token }: { b: any, token: string }) => {
     return data?.engines?.find((e: any) => e.engine === engineName);
   };
 
+  // State to track expanded query lists per engine
+  const [expandedEngines, setExpandedEngines] = React.useState<Record<string, boolean>>({});
+
   const renderEngineRow = (title: string, engineName: string, icon: React.ReactNode) => {
     const eData = getEngineData(engineName);
     if (!eData && engineName === "chatgpt" && !data?.has_chatgpt_key) return null; // hide if missing key and no data
+
+    const isExpanded = !!expandedEngines[engineName];
+    const toggleExpand = () => setExpandedEngines(prev => ({ ...prev, [engineName]: !prev[engineName] }));
 
     return (
       <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 mb-4">
@@ -229,29 +235,40 @@ const AIVisibilityCard = ({ b, token }: { b: any, token: string }) => {
             {icon}
             <h4 className="font-bold text-slate-800">{title}</h4>
           </div>
-          {eData ? (
-            <span className="text-xs font-bold px-2 py-1 bg-white rounded border border-slate-200">
-              Mentioned in {eData.mentioned_count} of {eData.total_count} searches
-            </span>
-          ) : (
-            <span className="text-xs text-slate-400">No data</span>
+          {eData && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold px-2 py-1 bg-white rounded border border-slate-200">
+                Mentioned in {eData.mentioned_count} of {eData.total_count} searches
+              </span>
+              <button
+                onClick={toggleExpand}
+                className="text-xs text-blue-600 underline"
+              >
+                {isExpanded ? "Hide" : "Show"} queries
+              </button>
+            </div>
           )}
         </div>
-        
+
         {eData && (
           <>
-            <div className="space-y-2 mb-3">
-              {eData.queries.map((q: any, idx: number) => (
-                <div key={idx} className="flex justify-between items-center text-xs">
-                  <span className="text-slate-600 truncate max-w-[70%]">"{q.query}"</span>
-                  {q.mentioned ? (
-                    <span className="text-emerald-600 font-bold bg-emerald-50 px-2 rounded">Yes</span>
-                  ) : (
-                    <span className="text-red-500 font-bold bg-red-50 px-2 rounded">No</span>
-                  )}
-                </div>
-              ))}
-            </div>
+            {isExpanded && (
+              <div className="space-y-2 mb-3">
+                {eData.queries.map((q: any, idx: number) => (
+                  <div key={idx} className="flex justify-between items-center text-xs">
+                    <span className="text-slate-600 truncate max-w-[70%]">"{q.query}"</span>
+                    {q.mentioned ? (
+                      <span className="text-emerald-600 font-bold bg-emerald-50 px-2 rounded">Yes</span>
+                    ) : (
+                      <span className="text-red-500 font-bold bg-red-50 px-2 rounded">No</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+            {eData.status === "error" && eData.error_type && (
+              <p className="text-xs text-red-600 mt-2">Error: {eData.error_type}</p>
+            )}
             <p className="text-[10px] text-slate-400 mt-2">Last checked: {new Date(eData.last_checked).toLocaleString()}</p>
           </>
         )}
