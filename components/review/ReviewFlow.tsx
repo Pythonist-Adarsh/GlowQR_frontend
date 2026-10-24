@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { flushSync } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -37,8 +37,9 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
 
   const [step, setStep] = useState(STEPS.ENJOY);
   
+  // Bug 1: no "your city" or "Mumbai" fallbacks — use empty string
   const areaPart = data.area || data.area_locality || "";
-  const cityPart = data.city || "your city";
+  const cityPart = (data.city || "").trim();
   const defaultAddress = [areaPart, cityPart].filter(Boolean).join(", ");
   
   const business = {
@@ -49,16 +50,22 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
     primaryColor: data.primaryColor || data.brandColor || "#2F5FE0",
     googleReviewUrl: data.googleReviewUrl || "#",
     plan: data.plan || (data.theme === 'free' ? 'free' : data.theme === 'classic' ? 'basic' : 'premium'),
-    city: data.city || "Mumbai",
-    area: data.area || data.area_locality || "",
+    city: cityPart,
+    area: areaPart,
     instagramUrl: data.instagram_url || data.instagramUrl || "",
     negativeFilterEnabled: data.negativeFilterEnabled ?? true
   };
 
   const rawCat = ((data.business_category || data.category || "")).toLowerCase().trim();
-  const isFoodCategory = rawCat.includes('restaurant') || rawCat.includes('cafe') || 
-    rawCat.includes('food') || rawCat.includes('bar') || rawCat.includes('bakery') || 
-    rawCat.includes('qsr') || rawCat.includes('lounge');
+  const isFoodCategory = (rawCat.includes('restaurant') || rawCat.includes('cafe') ||
+    rawCat.includes('food') || rawCat.includes('bar') || rawCat.includes('bakery') ||
+    rawCat.includes('qsr') || rawCat.includes('lounge')) && !rawCat.includes('barber');
+  // Bug 2: used only for Step 1 label — includes fine dining / cloud kitchen
+  const isFoodLabelCategory = (
+    rawCat.includes('restaurant') || rawCat.includes('cafe') || rawCat.includes('food') ||
+    rawCat.includes('bar') || rawCat.includes('bakery') || rawCat.includes('qsr') || rawCat.includes('lounge') ||
+    rawCat.includes('fine dining') || rawCat.includes('finedining') || rawCat.includes('cloud kitchen') || rawCat.includes('cloudkitchen')
+  ) && !rawCat.includes('barber');
 
   const parsedMenuData = useMemo(() => {
     let rawData = data.menu_data || data.menuCategories;
@@ -177,12 +184,35 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const [generatedReviews, setGeneratedReviews] = useState<string[]>([]);
   const [activeReviewIndex, setActiveReviewIndex] = useState(0);
   const [showEmpathy, setShowEmpathy] = useState(false);
+  // Bug 4: refs for auto-grow textareas
+  const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
 
   const nextStep = () => setStep(s => Math.min(s + 1, STEPS.COPIED));
   const prevStep = () => setStep(s => Math.max(s - 1, STEPS.ENJOY));
+
+  // Bug 4: auto-grow a single textarea
+  const growTextarea = useCallback((el: HTMLTextAreaElement | null) => {
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+  }, []);
+
+  // Bug 4: grow all rendered textareas on mount / review change
+  useEffect(() => {
+    textareaRefs.current.forEach(el => growTextarea(el));
+  }, [generatedReviews, growTextarea]);
+
+  // Bug 4: grow on window resize
+  useEffect(() => {
+    const onResize = () => textareaRefs.current.forEach(el => growTextarea(el));
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [growTextarea]);
 
   const handleGenerateReview = async () => {
     if (ratings.overall === 0) return;
@@ -222,6 +252,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
           category: displayCategory,
           tagline: business.tagline,
           overall_rating: ratings.overall,
+          // Bug 6: only send sub-ratings for food categories
           ...(isFoodCategory ? {
             food_rating: ratings.food,
             service_rating: ratings.service,
@@ -235,7 +266,8 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
           plan: business.plan,
           seating_type: seatingType,
           wait_time: waitTime,
-          city: cityPart
+          // Bug 1: send city only when non-empty
+          ...(cityPart ? { city: cityPart } : {})
         })
       });
 
@@ -280,29 +312,47 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
     }
   };
 
-  const handlePostReview = () => {
+  // Bug 5: copy, show toast for 1200 ms, then redirect
+  const handlePostReview = async () => {
+    if (isRedirecting) return;
     trackEvent('redirect_to_google', { business_id: data.qr_slug || window.location.pathname.split('/').pop() || '' });
     const reviewText = generatedReviews[activeReviewIndex] || '';
 
-    try {
-      if (reviewText) navigator.clipboard.writeText(reviewText).catch(() => {});
-    } catch (e) {}
-    
-    const isPremium = ['premium', 'trial'].includes(business.plan?.toLowerCase() || '');
-    const hasInstagram = !!business.instagramUrl;
+    // Step 1: attempt clipboard copy
+    let copied = false;
+    if (reviewText) {
+      try {
+        await navigator.clipboard.writeText(reviewText);
+        copied = true;
+      } catch {
+        // Fallback: select the active textarea text + execCommand
+        const el = textareaRefs.current[activeReviewIndex];
+        if (el) {
+          el.select();
+          try {
+            document.execCommand('copy');
+            copied = true;
+          } catch { /* silent */ }
+        }
+      }
+    }
+
+    setCopyFailed(!copied);
+    setIsCopied(true);
+    setIsRedirecting(true);
 
     sessionStorage.setItem('google_review_posted', 'true');
     sessionStorage.removeItem('thank_you_shown');
-    
-    setIsCopied(true);
 
-    if (business.googleReviewUrl && business.googleReviewUrl !== '#') {
-      window.location.href = business.googleReviewUrl;
-    } else {
-      setStep(STEPS.COPIED);
-    }
+    // Step 2: wait 1200 ms so toast is visible, then redirect
+    setTimeout(() => {
+      if (business.googleReviewUrl && business.googleReviewUrl !== '#') {
+        window.location.href = business.googleReviewUrl;
+      } else {
+        setStep(STEPS.COPIED);
+      }
 
-    try {
+      // fire-and-forget analytics record
       fetch(`${API_BASE_URL}/api/scan/record`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -314,9 +364,12 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
           redirected_to_google: !!(business.googleReviewUrl && business.googleReviewUrl !== '#'),
           device_type: 'mobile',
           overall_rating: ratings.overall,
-          food_rating: ratings.food,
-          service_rating: ratings.service,
-          atmosphere_rating: ratings.atmosphere,
+          // Bug 6: only send sub-ratings for food categories
+          ...(isFoodCategory ? {
+            food_rating: ratings.food,
+            service_rating: ratings.service,
+            atmosphere_rating: ratings.atmosphere,
+          } : {}),
           selected_items: selectedDishes.map(String),
           meal_type: mealType,
           price_range: spendRange,
@@ -328,7 +381,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
           language: data.review_language || 'english'
         })
       }).catch(() => {});
-    } catch (e) {}
+    }, 1200);
   };
 
   const pageVariants = {
@@ -382,15 +435,19 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                 </span>
               </div>
               <h2 className="text-2xl font-[600] mb-1 text-[var(--text-primary)]">What did you enjoy?</h2>
-              <div className={`flex items-center gap-1.5 text-[13px] font-medium tracking-wide text-[var(--text-secondary)]`}>
-                <MapPin className="w-3 h-3" /> {business.address}
-              </div>
+              {/* Bug 1: only show address when non-empty */}
+              {business.address && (
+                <div className={`flex items-center gap-1.5 text-[13px] font-medium tracking-wide text-[var(--text-secondary)]`}>
+                  <MapPin className="w-3 h-3" /> {business.address}
+                </div>
+              )}
             </div>
 
             <div className="flex-1 overflow-y-auto px-6 pb-6 custom-scrollbar bg-[var(--bg-primary)]">
               <div className="mt-6 mb-8 w-full overflow-hidden">
                 <p className={`text-[13px] font-[500] tracking-[0.3px] mb-3 text-[var(--text-secondary)]`}>
-                  {isTaxFirm ? "Which services did you use?" : isJewellery ? "What did you look at?" : isEducation ? "Which courses did you take?" : isGrocery ? "What did you shop for?" : (isSalon || isGym || isRealEstate || isDoctorClinic || isDentalClinic) ? "Which services did you use?" : "Select dishes you tried"} <span className="opacity-70 text-[var(--text-muted)]">(Max 5)</span>
+                  {/* Bug 2: fallback to neutral label for non-food, non-explicit categories */}
+                  {isTaxFirm ? "Which services did you use?" : isJewellery ? "What did you look at?" : isEducation ? "Which courses did you take?" : isGrocery ? "What did you shop for?" : (isSalon || isGym || isRealEstate || isDoctorClinic || isDentalClinic) ? "Which services did you use?" : isFoodLabelCategory ? "Select dishes you tried" : "What did you like?"} <span className="opacity-70 text-[var(--text-muted)]">(Max 5)</span>
                 </p>
                 {parsedMenuData && parsedMenuData.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-4">
@@ -550,6 +607,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                 <p className={`text-[11px] tracking-[0.3px] mt-4 text-[var(--text-muted)] font-[500]`}>Taking you to review step...</p>
               </div>
             ) : isFoodCategory ? (
+              // Bug 6: sub-rating rows only for food categories
               <div className="space-y-4 mb-auto">
                 {[
                   { key: 'food', label: 'Food', icon: Utensils },
@@ -575,7 +633,7 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                   </div>
                 ))}
               </div>
-            ) : null}
+            ) : null /* Bug 6: non-food → no sub-rating rows; overall star rating above is sufficient */}
 
             {!showEmpathy && (
               <button 
@@ -652,34 +710,49 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                           ))}
                         </div>
                       </div>
-                      {activeReviewIndex === idx && (
-                        <div className="w-5 h-5 rounded-full flex items-center justify-center bg-[var(--accent)] text-white">
-                          <Check className="w-3 h-3" />
-                        </div>
-                      )}
+                      <div className="flex items-center gap-2">
+                        {/* Bug 4: "Editable" hint always visible on active card */}
+                        {activeReviewIndex === idx && (
+                          <span className="text-[11px] font-[600] text-[var(--accent)] tracking-[0.3px]">✏️ Editable</span>
+                        )}
+                        {activeReviewIndex === idx && (
+                          <div className="w-5 h-5 rounded-full flex items-center justify-center bg-[var(--accent)] text-white">
+                            <Check className="w-3 h-3" />
+                          </div>
+                        )}
+                      </div>
                     </div>
+                    {/* Bug 4: ref-based auto-grow textarea — no fixed height */}
                     <textarea 
-                      className={`w-full bg-transparent text-[15px] leading-relaxed resize-none focus:outline-none text-[var(--text-primary)]`}
+                      ref={el => { textareaRefs.current[idx] = el; growTextarea(el); }}
+                      className={`w-full bg-transparent text-[15px] leading-relaxed resize-none focus:outline-none text-[var(--text-primary)] overflow-hidden`}
                       value={activeReviewIndex === idx ? generatedReviews[activeReviewIndex] : review}
                       onChange={(e) => {
                         const newReviews = [...generatedReviews];
                         newReviews[idx] = e.target.value;
                         setGeneratedReviews(newReviews);
+                        growTextarea(e.target);
                       }}
-                      style={{ height: `${Math.max(4, review.split('\n').length + 3)}rem` }}
+                      style={{ minHeight: '5rem', height: 'auto' }}
                       onClick={(e) => { if (activeReviewIndex !== idx) { e.preventDefault(); e.stopPropagation(); setActiveReviewIndex(idx); }}}
                     />
-                    {activeReviewIndex === idx && (
-                      <div className="absolute bottom-3 right-4 flex items-center gap-1 text-[11px] font-[600] text-[var(--accent)] tracking-[0.3px]">
-                        Editable
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
             </div>
 
             <div className={`p-6 pt-4 shrink-0 border-t border-[var(--border-default)] bg-[var(--bg-primary)] relative`}>
+              {/* Bug 5: toast appears above button, button disabled during redirect delay */}
+              {isCopied && (
+                <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-[var(--text-primary)] text-white px-4 py-2 rounded-full text-[13px] font-[500] shadow-md flex items-center gap-2 z-50 animate-in fade-in zoom-in duration-300 whitespace-nowrap">
+                  <Check className="w-3 h-3 text-[var(--success-main)]" /> Review copied ✓
+                </div>
+              )}
+              {copyFailed && isCopied && (
+                <div className="absolute -top-20 left-1/2 transform -translate-x-1/2 bg-amber-600 text-white px-4 py-2 rounded-full text-[12px] font-[500] shadow-md z-50 whitespace-nowrap">
+                  Select the text above and copy manually
+                </div>
+              )}
               {(ratings.overall <= 2) ? (
                 <div className="space-y-3">
                   <p className={`text-[13px] text-center leading-relaxed text-[var(--text-secondary)]`}>
@@ -688,11 +761,12 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
                   </p>
                   <button 
                     onClick={handlePostReview}
-                    className="w-full py-4 rounded-full font-[600] text-[15px] flex items-center justify-center gap-2 transition-all active:scale-[0.98] mb-3"
+                    disabled={isRedirecting}
+                    className="w-full py-4 rounded-full font-[600] text-[15px] flex items-center justify-center gap-2 transition-all active:scale-[0.98] mb-3 disabled:opacity-60 disabled:cursor-not-allowed"
                     style={isCopied ? { backgroundColor: 'var(--success-main)', color: '#fff' } : { backgroundColor: 'var(--accent)', color: 'white' }}
                   >
                     {isCopied ? (
-                      <>✓ Copied!</>
+                      <>✓ Review copied — opening Google...</>
                     ) : (
                       <>📋 Copy & Post on Google <ExternalLink className="w-4 h-4" /></>
                     )}
@@ -701,20 +775,16 @@ export default function ReviewFlow({ initialData, isPreview = false }: { initial
               ) : (
                 <button 
                   onClick={handlePostReview}
-                  className="w-full py-4 rounded-full font-[600] text-[15px] flex items-center justify-center gap-2 transition-all active:scale-[0.98] mb-3"
+                  disabled={isRedirecting}
+                  className="w-full py-4 rounded-full font-[600] text-[15px] flex items-center justify-center gap-2 transition-all active:scale-[0.98] mb-3 disabled:opacity-60 disabled:cursor-not-allowed"
                   style={isCopied ? { backgroundColor: 'var(--success-main)', color: '#fff' } : { backgroundColor: 'var(--accent)', color: 'white' }}
                 >
                   {isCopied ? (
-                    <>✓ Copied!</>
+                    <>✓ Review copied — opening Google...</>
                   ) : (
                     <>📋 Copy & Post Review <ExternalLink className="w-4 h-4" /></>
                   )}
                 </button>
-              )}
-              {isCopied && (
-                <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-[var(--text-primary)] text-white px-4 py-2 rounded-full text-[13px] font-[500] shadow-md flex items-center gap-2 z-50 animate-in fade-in zoom-in duration-300 whitespace-nowrap">
-                  <Check className="w-3 h-3 text-[var(--success-main)]" /> Review copied — now paste on Google Maps
-                </div>
               )}
               <p className={`text-[11px] text-center max-w-[280px] mx-auto leading-relaxed text-[var(--text-muted)]`}>
                 GlowQR helps you write your own review. The final text is yours to edit before posting. We never post reviews on your behalf.
